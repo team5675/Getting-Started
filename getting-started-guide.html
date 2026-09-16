@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Getting Started: From Zero to Your First Robot Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f8fa; --card: #ffffff; --ink: #182430; --ink-soft: #4a5a68;
+    --blue: #0f5cab; --blue-soft: #e3edf8;
+    --red: #c22b3d; --red-soft: #fbe9ec;
+    --green: #1e7e46; --green-soft: #e5f3ea;
+    --amber: #a86407; --amber-soft: #fdf3e0;
+    --line: #d5dde4;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --display: 'Chakra Petch', sans-serif;
+    --body: 'Public Sans', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--body); font-size:16.5px; line-height:1.65; }
+  .wrap { max-width: 860px; margin:0 auto; padding:0 22px 100px; }
+  header.hero {
+    border-bottom:3px solid var(--ink); padding:48px 0 28px; margin-bottom:36px;
+    background:
+      linear-gradient(to right, transparent 0 49.6%, var(--line) 49.6% 50.4%, transparent 50.4%),
+      repeating-linear-gradient(to right, transparent 0 54px, #eef2f5 54px 55px),
+      repeating-linear-gradient(to bottom, transparent 0 54px, #eef2f5 54px 55px);
+  }
+  .hero-tag { font-family:var(--mono); font-size:13px; letter-spacing:.08em; color:var(--blue); text-transform:uppercase; }
+  h1 { font-family:var(--display); font-size:clamp(28px,5vw,40px); line-height:1.15; margin:10px 0 12px; letter-spacing:-0.01em; }
+  .hero p.lede { font-size:18px; color:var(--ink-soft); max-width:46em; margin:0; }
+  h2 { font-family:var(--display); font-size:24px; margin:56px 0 4px; padding-top:16px; border-top:2px solid var(--ink); }
+  h2 .n { display:inline-block; font-family:var(--mono); font-size:13px; background:var(--ink); color:#fff; padding:2px 10px; border-radius:5px; vertical-align:middle; margin-right:10px; }
+  h3 { font-family:var(--display); font-size:18px; margin:26px 0 6px; }
+  p { margin:12px 0; }
+  a { color:var(--blue); }
+  code { font-family:var(--mono); font-size:.86em; background:var(--blue-soft); padding:1px 6px; border-radius:4px; color:#0b3f76; }
+  pre { font-family:var(--mono); font-size:13.5px; line-height:1.55; background:#10202e; color:#dbe7f1; border-radius:8px; padding:15px 18px; overflow-x:auto; }
+  pre code { background:none; padding:0; color:inherit; }
+  .box { border-radius:8px; padding:13px 18px; margin:18px 0; }
+  .box .box-tag { font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:4px; }
+  .try { background:var(--green-soft); border-left:4px solid var(--green); }
+  .try .box-tag { color:var(--green); }
+  .oops { background:var(--red-soft); border-left:4px solid var(--red); }
+  .oops .box-tag { color:var(--red); }
+  .next { background:var(--amber-soft); border-left:4px dashed var(--amber); }
+  .next .box-tag { color:var(--amber); }
+  .read { background:var(--blue-soft); border-left:4px solid var(--blue); }
+  .read .box-tag { color:var(--blue); }
+  figure { margin:24px 0; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 14px 6px; }
+  figcaption { font-size:13.5px; color:var(--ink-soft); padding:8px 8px; border-top:1px dashed var(--line); margin-top:8px; }
+  figure svg { width:100%; height:auto; display:block; }
+  ol li, ul li { margin:7px 0; }
+  table { border-collapse:collapse; width:100%; margin:16px 0; font-size:14.5px; }
+  th { font-family:var(--display); text-align:left; font-size:13px; border-bottom:2px solid var(--ink); padding:7px 9px; }
+  td { border-bottom:1px solid var(--line); padding:7px 9px; vertical-align:top; }
+  .toc { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 22px; columns:2; column-gap:36px; font-size:14.5px; }
+  .toc a { text-decoration:none; display:block; padding:3px 0; }
+  .toc a:hover { text-decoration:underline; }
+  @media (max-width:640px) { .toc { columns:1; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="hero-tag">FRC Team 5675 · Getting Started · zero programming experience required</span>
+  <h1>From "I've never coded" to your first robot program.</h1>
+  <p class="lede">This guide assumes nothing. Not that you've programmed before, not that
+  you know what a "variable" is, not even that you have anything installed yet. Ten short
+  chapters, each one small enough to finish in one sitting. By the end you'll have written,
+  run, and understood real Java code — and you'll be ready for Exercise 0 of the team's
+  actual 2027 robot codebase.</p>
+</header>
+
+<nav class="toc">
+  <a href="#ch1">1. The road ahead</a>
+  <a href="#ch2">2. Installing your toolbox</a>
+  <a href="#ch3">3. Hello, robot!</a>
+  <a href="#ch4">4. Storing information: variables</a>
+  <a href="#ch5">5. Making decisions: if / else</a>
+  <a href="#ch6">6. Doing things over and over: loops</a>
+  <a href="#ch7">7. Organizing code: methods</a>
+  <a href="#ch8">8. Blueprints: classes and objects</a>
+  <a href="#ch9">9. From Java to robots</a>
+  <a href="#ch10">10. Where this leads next</a>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="ch1"><span class="n">CH 1</span>The road ahead</h2>
+<p>No computer needed for this page — just read.</p>
+<p>A <b>program</b> is a list of exact instructions a computer follows, in order, one at a
+time. Nothing more, nothing less. Computers are incredibly fast, but they are also
+incredibly literal: they will do <i>exactly</i> what you tell them, even when that's not
+what you meant. Learning to program is really learning to think in a way that doesn't
+leave anything out or assume the computer will "figure out what you meant."</p>
+<p>We write our instructions in a language called <b>Java</b>. Java is what most FRC
+teams use, and it's what <b>WPILib</b> — the official FRC programming toolkit — is built
+around. A competition robot's program is, underneath everything, a loop that runs about
+50 times every second, constantly asking: <i>what are my sensors seeing right now, and
+what should the motors do about it?</i> That's genuinely most of what a robot program is.
+Everything in this guide builds toward being able to read and write that loop.</p>
+<figure>
+<svg viewBox="0 0 720 190" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="rd1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
+  <rect x="10" y="16" width="150" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="85" y="44" text-anchor="middle" font-size="12.5" fill="#0f5cab" font-weight="bold">Chapters 1–8</text>
+  <text x="85" y="58" text-anchor="middle" font-size="10.5" fill="#4a5a68">Java basics (this guide)</text>
+  <path d="M160 39 H250" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
+  <rect x="252" y="16" width="150" height="46" rx="7" fill="#fdf3e0" stroke="#a86407"/>
+  <text x="327" y="44" text-anchor="middle" font-size="12.5" fill="#a86407" font-weight="bold">Chapter 9</text>
+  <text x="327" y="58" text-anchor="middle" font-size="10.5" fill="#4a5a68">Subsystems &amp; Commands</text>
+  <path d="M402 39 H492" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
+  <rect x="494" y="16" width="150" height="46" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
+  <text x="569" y="44" text-anchor="middle" font-size="12.5" fill="#1e7e46" font-weight="bold">Exercise Ladder</text>
+  <text x="569" y="58" text-anchor="middle" font-size="10.5" fill="#4a5a68">the real 2027 codebase</text>
+  <path d="M569 62 V96" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
+  <rect x="419" y="98" width="300" height="46" rx="7" fill="#fbe9ec" stroke="#c22b3d"/>
+  <text x="569" y="126" text-anchor="middle" font-size="12.5" fill="#c22b3d" font-weight="bold">January 2027 kickoff</text>
+  <text x="569" y="140" text-anchor="middle" font-size="10.5" fill="#4a5a68">you build the real mechanisms</text>
+  <text x="10" y="175" font-size="12" fill="#4a5a68">Nobody on this team started already knowing this. Every line of the real</text>
+  <text x="10" y="189" font-size="12" fill="#4a5a68">codebase was, at some point, somebody's confusing first program.</text>
+</svg>
+<figcaption>Where this guide sits: it's the on-ramp before Exercise 0, not a
+replacement for it.</figcaption>
+</figure>
+
+<!-- ============================================================ -->
+<h2 id="ch2"><span class="n">CH 2</span>Installing your toolbox</h2>
+<p>We use exactly one thing: the <b>WPILib installer</b>. It gives you a special,
+separate copy of the VS Code editor, bundled together with Java itself, the build tool
+(Gradle), every FRC library, and the dashboards (AdvantageScope, Elastic, and others) —
+all matched to work together, so everyone on the team has an identical setup.</p>
+<ol>
+<li>Team 5675 is programming on <b>WPILib 2026</b>, targeting the classic
+    <b>roboRIO</b> control system — the same one that ran the 2026 competition robot.
+    (A couple of upperclassmen are separately bench-testing a future controller called
+    <i>SystemCore</i> for the 2027 season, on its own alpha install — that's a different
+    project, not this guide, and not something you need yet.) Go to
+    <a href="https://docs.wpilib.org" target="_blank" rel="noopener">docs.wpilib.org</a>
+    → "Zero to Robot" → Step 2, and download the newest stable release (currently WPILib
+    2026, version 2026.2.1) for your operating system.</li>
+<li>Run it. When it asks about VS Code, choose <b>"Download for this computer only"</b> —
+    WPILib can't legally bundle VS Code directly, so the installer fetches its own copy
+    for you. Just let it.</li>
+<li>Pick the full install (Java tools + all WPILib tools). It downloads several
+    gigabytes — this is a good moment for a snack.</li>
+<li>When it finishes, launch <b>"WPILib VS Code 2026"</b> specifically — not your
+    computer's regular VS Code, and not a plain copy downloaded from Microsoft. Every
+    season gets its own separate copy, so a 2025 or 2027-alpha install on the same
+    laptop won't ever conflict with this one.</li>
+</ol>
+<p><b>Check it worked:</b> in WPILib VS Code, press <code>Ctrl+Shift+P</code>
+(<code>Cmd+Shift+P</code> on a Mac) and type <code>WPILib</code>. A long list of
+WPILib-specific commands should appear. If you see that list, you're set up correctly.</p>
+<div class="box oops"><span class="box-tag">Common mistake</span>
+Don't install a second, ordinary copy of VS Code and add Java extensions to it yourself
+to "make it work" — you'll spend build season fighting version mismatches nobody else on
+the team has. One install: WPILib VS Code. That's it.</div>
+<div class="box read"><span class="box-tag">Companion reading</span>
+<a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026/installing-wpilib-and-vs-code" target="_blank" rel="noopener">Installing WPILib and VS Code</a>
+(Code with Kate) walks through this same process with screenshots, if you want a second
+explanation alongside this one.</div>
+
+<!-- ============================================================ -->
+<h2 id="ch3"><span class="n">CH 3</span>Hello, robot!</h2>
+<p>Goal for this chapter: write one line of your own code, run it on a simulated robot,
+and see proof that it ran. This is the entire edit → build → run → observe loop you'll
+use for the rest of the season — we're just doing it for the first time.</p>
+<ol>
+<li>In WPILib VS Code: <code>Ctrl+Shift+P</code> → <b>WPILib: Create a new project</b> →
+    Template → Java → <b>Command Robot</b> → team number <b>5675</b> → name it something
+    like <code>learning-sandbox</code>, saved somewhere that is <i>not</i> the team's real
+    repository. This is your personal scratch space for this whole guide.</li>
+<li>Open <code>Robot.java</code> and find the method <code>robotInit()</code>. This runs
+    exactly once, the instant your program starts.</li>
+<li>Add one line inside it:
+<pre><code>System.out.println("Hello, robot!");</code></pre></li>
+<li><code>Ctrl+Shift+P</code> → <b>WPILib: Simulate Robot Code</b>. A simulation window
+    opens, along with a console/log panel.</li>
+<li>Find <code>Hello, robot!</code> printed in that console the instant it starts.</li>
+</ol>
+<p>What each piece means: <code>public class Robot</code> is a <b>class</b> — a
+container for code (Chapter 8 goes deeper). <code>robotInit()</code> is a
+<b>method</b> — a named block of instructions (Chapter 7). <code>System.out.println(...)</code>
+is a built-in Java command that prints text; the quotes mark <code>"Hello, robot!"</code>
+as literal text, called a <b>String</b>.</p>
+<div class="box try"><span class="box-tag">Try it yourself</span>
+Change the message to include your own name. Then add a <i>second</i> <code>println</code>
+line right below the first. Re-simulate: both lines should appear, top to bottom, in the
+exact order you wrote them — programs run one line at a time, in order, no skipping
+around unless you tell them to (that's Chapters 5 and 6).</div>
+<div class="box next"><span class="box-tag">Why this matters for the robot</span>
+This is the whole game: edit code, build it, run it (simulated or real), observe the
+result. Exercise 2 of the team's real ladder is this exact loop, on the real codebase —
+you're already trained on it.</div>
+<div class="box read"><span class="box-tag">If you have a Romi</span>
+Team 5675 also has a <b>Romi</b> — a small two-wheeled practice robot that runs real
+WPILib command-based Java code on real hardware, with none of the swerve/Kraken
+complexity. Everything in this guide works fine in simulation with no Romi needed, but
+if one's free, ask a mentor for the Romi web setup steps and deploy this exact
+"Hello, robot!" program to real hardware instead of just the simulator.</div>
+
+<!-- ============================================================ -->
+<h2 id="ch4"><span class="n">CH 4</span>Storing information: variables</h2>
+<p>A <b>variable</b> is a labeled box that holds one piece of information, so your code
+can refer to it by name instead of retyping the value everywhere. Four types you'll use
+constantly:</p>
+<table>
+<tr><th>Type</th><th>Holds</th><th>Example</th></tr>
+<tr><td><code>int</code></td><td>a whole number</td><td><code>int loopCount = 0;</code></td></tr>
+<tr><td><code>double</code></td><td>a decimal number — almost everything physical: speed, distance, voltage, angle</td><td><code>double batteryVoltage = 12.6;</code></td></tr>
+<tr><td><code>boolean</code></td><td>true or false, nothing else</td><td><code>boolean isEnabled = true;</code></td></tr>
+<tr><td><code>String</code></td><td>text</td><td><code>String teamNumber = "5675";</code></td></tr>
+</table>
+<figure>
+<svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="16" width="140" height="70" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="80" y="36" text-anchor="middle" font-size="11" fill="#0f5cab" font-family="monospace">int</text>
+  <text x="80" y="54" text-anchor="middle" font-size="12.5" fill="#182430" font-weight="bold">loopCount</text>
+  <text x="80" y="74" text-anchor="middle" font-size="14" fill="#0b3f76" font-family="monospace">0</text>
+  <rect x="165" y="16" width="140" height="70" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
+  <text x="235" y="36" text-anchor="middle" font-size="11" fill="#1e7e46" font-family="monospace">double</text>
+  <text x="235" y="54" text-anchor="middle" font-size="12.5" fill="#182430" font-weight="bold">batteryVoltage</text>
+  <text x="235" y="74" text-anchor="middle" font-size="14" fill="#155c34" font-family="monospace">12.6</text>
+  <rect x="320" y="16" width="140" height="70" rx="7" fill="#fdf3e0" stroke="#a86407"/>
+  <text x="390" y="36" text-anchor="middle" font-size="11" fill="#a86407" font-family="monospace">boolean</text>
+  <text x="390" y="54" text-anchor="middle" font-size="12.5" fill="#182430" font-weight="bold">isEnabled</text>
+  <text x="390" y="74" text-anchor="middle" font-size="14" fill="#7a4d05" font-family="monospace">true</text>
+  <rect x="475" y="16" width="140" height="70" rx="7" fill="#fbe9ec" stroke="#c22b3d"/>
+  <text x="545" y="36" text-anchor="middle" font-size="11" fill="#c22b3d" font-family="monospace">String</text>
+  <text x="545" y="54" text-anchor="middle" font-size="12.5" fill="#182430" font-weight="bold">teamNumber</text>
+  <text x="545" y="74" text-anchor="middle" font-size="14" fill="#8c1f2e" font-family="monospace">"5675"</text>
+  <text x="10" y="112" font-size="12" fill="#4a5a68">Same idea every time: a type tag, a name you chose, and the value sitting inside right now.</text>
+</svg>
+<figcaption>Four boxes, four types. The type is a promise about what kind of value can go
+in that box — Java checks the promise for you.</figcaption>
+</figure>
+<div class="box try"><span class="box-tag">Try it yourself</span>
+In <code>robotInit()</code>, declare an <code>int</code> for your age and a
+<code>double</code> for your height in inches. Print a sentence that includes both,
+joined with <code>+</code>:
+<pre><code>System.out.println("I am " + age + " years old and " + heightInches + " inches tall.");</code></pre></div>
+<div class="box oops"><span class="box-tag">Common mistake</span>
+Forgetting the semicolon at the end of a line — Java will refuse to build until you fix
+it, and the error message names the exact line. Also: trying to put a decimal number
+into an <code>int</code> variable won't compile. That's not Java being difficult for no
+reason — it's catching a real mistake before your robot ever moves.</div>
+<div class="box next"><span class="box-tag">Why this matters for the robot</span>
+Every number in the real <code>Constants.java</code> — motor CAN IDs, wheel size, PID
+numbers — is just a variable with a clear name, so nobody has to remember what the raw
+number <code>0.1016</code> means (it's a wheel radius, in meters).</div>
+
+<!-- ============================================================ -->
+<h2 id="ch5"><span class="n">CH 5</span>Making decisions: if / else</h2>
+<p>A <b>boolean expression</b> — built with <code>==</code>, <code>!=</code>,
+<code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code> — is a
+yes/no question. <code>if</code> runs a block of code only when the answer is yes;
+<code>else</code> covers the "no" case.</p>
+<pre><code>double batteryVoltage = 11.2;
+if (batteryVoltage &lt; 11.5) {
+    System.out.println("Warning: battery low!");
+} else {
+    System.out.println("Battery OK.");
+}</code></pre>
+<figure>
+<svg viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="rd5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
+  <rect x="200" y="10" width="160" height="40" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="280" y="35" text-anchor="middle" font-size="12" fill="#0f5cab" font-family="monospace">voltage &lt; 11.5 ?</text>
+  <path d="M240 50 L120 100" stroke="#182430" stroke-width="2" marker-end="url(#rd5)"/>
+  <path d="M320 50 L440 100" stroke="#182430" stroke-width="2" marker-end="url(#rd5)"/>
+  <text x="150" y="72" font-size="11.5" fill="#4a5a68">yes</text>
+  <text x="400" y="72" font-size="11.5" fill="#4a5a68">no</text>
+  <rect x="20" y="102" width="200" height="38" rx="7" fill="#fbe9ec" stroke="#c22b3d"/>
+  <text x="120" y="126" text-anchor="middle" font-size="11.5" fill="#c22b3d">"Warning: battery low!"</text>
+  <rect x="340" y="102" width="200" height="38" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
+  <text x="440" y="126" text-anchor="middle" font-size="11.5" fill="#1e7e46">"Battery OK."</text>
+</svg>
+<figcaption>A fork in the road. The condition decides which branch runs — never both, and
+never neither.</figcaption>
+</figure>
+<div class="box try"><span class="box-tag">Try it yourself</span>
+Declare <code>double distanceMeters</code>. If it's less than <code>1.0</code>, print
+<code>"too close!"</code>; otherwise print <code>"clear"</code>. Change the value and
+re-simulate to see both branches run.</div>
+<div class="box next"><span class="box-tag">Why this matters for the robot</span>
+The pre-match health check you'll meet later (<code>SystemHealthCheck</code>) is a
+carefully-named pile of exactly these if-statements: "if battery voltage is below X,
+raise an alert."</div>
+
+<!-- ============================================================ -->
+<h2 id="ch6"><span class="n">CH 6</span>Doing things over and over: loops</h2>
+<p>A <code>for</code> loop repeats a known number of times. A <code>while</code> loop
+repeats until a condition becomes false.</p>
+<pre><code>for (int i = 1; i &lt;= 10; i++) {
+    System.out.println(i);
+}</code></pre>
+<p>Read it as: <i>start with <code>i</code> at 1; keep going while <code>i &lt;= 10</code>
+is true; after each pass, increase <code>i</code> by one.</i></p>
+<figure>
+<svg viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="rd6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
+  <rect x="130" y="12" width="140" height="36" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="200" y="34" text-anchor="middle" font-size="11.5" fill="#0f5cab">i &lt;= 10 ?</text>
+  <path d="M200 48 V78" stroke="#182430" stroke-width="2" marker-end="url(#rd6)"/>
+  <rect x="130" y="80" width="140" height="36" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
+  <text x="200" y="102" text-anchor="middle" font-size="11.5" fill="#1e7e46">println(i); i++;</text>
+  <path d="M270 98 C 340 98, 340 30, 272 30" stroke="#182430" stroke-width="2" fill="none" marker-end="url(#rd6)"/>
+  <text x="10" y="140" font-size="11.5" fill="#4a5a68">yes → loop back · no (i is 11) → move on, past the loop</text>
+</svg>
+<figcaption>Check, run, update, repeat — until the check finally says no.</figcaption>
+</figure>
+<div class="box try"><span class="box-tag">Try it yourself</span>
+Use a <code>for</code> loop to print the 5-times table: 5, 10, 15, … up to 50.</div>
+<div class="box oops"><span class="box-tag">Common mistake</span>
+Forgetting to update the loop variable (leaving out <code>i++</code>) creates an
+<b>infinite loop</b> — the condition never becomes false. The simulator window will just
+hang. If that happens, stop the simulation and check your loop's update step.</div>
+<div class="box next"><span class="box-tag">Why this matters for the robot</span>
+The robot's entire running life <i>is</i> a loop. <code>robotPeriodic()</code> and every
+subsystem's <code>periodic()</code> run automatically about 50 times a second while the
+robot is on — you never write that outer loop yourself, WPILib runs it for you, but
+everything inside behaves exactly like the loop body you just wrote.</div>
+
+<!-- ============================================================ -->
+<h2 id="ch7"><span class="n">CH 7</span>Organizing code: methods</h2>
+<p>A <b>method</b> is a named, reusable recipe. You give it ingredients
+(<b>parameters</b>), and it can hand back a result (a <b>return value</b>).</p>
+<pre><code>double average(double a, double b) {
+    return (a + b) / 2.0;
+}
+
+// used inside robotInit():
+System.out.println(average(4.0, 10.0));   // prints 7.0</code></pre>
+<div class="box try"><span class="box-tag">Try it yourself</span>
+Write a method that takes two <code>double</code>s and returns their average (as above),
+then call it with two <i>different</i> pairs of numbers and print both results.</div>
+<div class="box next"><span class="box-tag">Why this matters for the robot</span>
+<code>execute()</code>, <code>isFinished()</code>, and <code>periodic()</code> are just
+methods with specific names WPILib expects and calls for you at the right moment. You're
+not learning new magic in the real codebase later — just new method <i>names</i> with a
+job already defined for them.</div>
+
+<!-- ============================================================ -->
+<h2 id="ch8"><span class="n">CH 8</span>Blueprints: classes and objects</h2>
+<p>A <b>class</b> is a blueprint. An <b>object</b> is one specific thing built from that
+blueprint. <code>Robot</code>, <code>RobotContainer</code>, every Subsystem and Command
+you'll ever see — all classes.</p>
+<pre><code>class Dog {
+    String name;
+
+    Dog(String name) {       // constructor — runs when you build one
+        this.name = name;
+    }
+
+    void bark() {
+        System.out.println(name + " says woof!");
+    }
+}
+
+// used inside robotInit():
+Dog rex = new Dog("Rex");
+Dog belle = new Dog("Belle");
+rex.bark();     // "Rex says woof!"
+belle.bark();   // "Belle says woof!"</code></pre>
+<figure>
+<svg viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="rd8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
+  <rect x="10" y="42" width="150" height="60" rx="7" fill="#fdf3e0" stroke="#a86407"/>
+  <text x="85" y="66" text-anchor="middle" font-size="12" fill="#a86407" font-weight="bold">class Dog</text>
+  <text x="85" y="84" text-anchor="middle" font-size="10.5" fill="#4a5a68">the blueprint</text>
+  <path d="M162 60 H240" stroke="#182430" stroke-width="2" marker-end="url(#rd8)"/>
+  <path d="M162 88 H240" stroke="#182430" stroke-width="2" marker-end="url(#rd8)"/>
+  <rect x="242" y="18" width="150" height="52" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="317" y="40" text-anchor="middle" font-size="12" fill="#0f5cab" font-weight="bold">rex</text>
+  <text x="317" y="56" text-anchor="middle" font-size="10.5" fill="#4a5a68">name = "Rex"</text>
+  <rect x="242" y="78" width="150" height="52" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="317" y="100" text-anchor="middle" font-size="12" fill="#0f5cab" font-weight="bold">belle</text>
+  <text x="317" y="116" text-anchor="middle" font-size="10.5" fill="#4a5a68">name = "Belle"</text>
+  <text x="420" y="70" font-size="12" fill="#4a5a68" width="180">Two objects, one</text>
+  <text x="420" y="86" font-size="12" fill="#4a5a68">blueprint. Same</text>
+  <text x="420" y="102" font-size="12" fill="#4a5a68">behavior, own data.</text>
+</svg>
+<figcaption>One blueprint, many objects — each with its own field values, but the same
+methods and behavior.</figcaption>
+</figure>
+<div class="box try"><span class="box-tag">Try it yourself</span>
+Add a second field to <code>Dog</code> — <code>int age</code> — and a new method
+<code>printInfo()</code> that prints the name and age together. Update the constructor
+to accept and store the age too.</div>
+<div class="box next"><span class="box-tag">Why this matters for the robot</span>
+A <b>Subsystem</b> is just a class representing one physical part of the robot (the
+drivetrain, an arm) — fields for its motors and sensors, methods like
+<code>drive()</code> or <code>stop()</code>. A <b>Command</b> is just a class
+representing one action. You already know how to read both.</div>
+
+<!-- ============================================================ -->
+<h2 id="ch9"><span class="n">CH 9</span>From Java to robots: Subsystems and Commands</h2>
+<p>Here's the one big idea behind every FRC robot's code: <b>Subsystems are nouns</b> —
+what the robot <i>has</i> or <i>is</i>. <b>Commands are verbs</b> — what the robot
+<i>does</i>. A Command uses one or more Subsystems to do its job; a Subsystem never
+decides on its own to do something — it waits to be told.</p>
+<p>A made-up (not the team's real code) example — a light that can blink:</p>
+<pre><code>class LightSubsystem extends SubsystemBase {
+    void turnOn()  { /* tell the real hardware to turn on */ }
+    void turnOff() { /* tell the real hardware to turn off */ }
+}
+
+class BlinkCommand extends Command {
+    LightSubsystem light;
+
+    BlinkCommand(LightSubsystem light) {
+        this.light = light;
+        addRequirements(light);   // "I need exclusive use of this Subsystem"
+    }
+
+    @Override public void execute() {
+        // toggle on/off — runs every ~20ms while this command is scheduled
+    }
+}</code></pre>
+<p><code>RobotContainer</code>'s job is to build exactly one instance of each Subsystem,
+and wire up which Commands run when which buttons are pressed. That's exactly what
+you'll be reading (and eventually writing) in the real <code>RobotContainer.java</code>.</p>
+<figure>
+<svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="rd9" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
+  <rect x="20" y="30" width="170" height="60" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
+  <text x="105" y="55" text-anchor="middle" font-size="12.5" fill="#1e7e46" font-weight="bold">BlinkCommand</text>
+  <text x="105" y="72" text-anchor="middle" font-size="10.5" fill="#4a5a68">the verb — what to do</text>
+  <path d="M192 60 H280" stroke="#182430" stroke-width="2" marker-end="url(#rd9)"/>
+  <text x="235" y="52" text-anchor="middle" font-size="10.5" fill="#4a5a68">uses</text>
+  <rect x="282" y="30" width="170" height="60" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="367" y="55" text-anchor="middle" font-size="12.5" fill="#0f5cab" font-weight="bold">LightSubsystem</text>
+  <text x="367" y="72" text-anchor="middle" font-size="10.5" fill="#4a5a68">the noun — the hardware</text>
+  <text x="480" y="55" font-size="11.5" fill="#4a5a68" width="140">Wired together, once,</text>
+  <text x="480" y="71" font-size="11.5" fill="#4a5a68">in RobotContainer.</text>
+</svg>
+<figcaption>Subsystem = what the robot has. Command = what it does with it.</figcaption>
+</figure>
+<p>One thing deliberately not covered yet: once a Subsystem exists, you'll usually want to
+<i>see</i> what it's doing on a live dashboard — that's the job of a logging framework
+called AdvantageKit. You don't need it to understand what a Subsystem or Command
+<i>is</i>, so it waits until this pattern is second nature — you'll meet it in the
+teaching guide for the real codebase.</p>
+<div class="box next"><span class="box-tag">Why this matters for the robot</span>
+This is exactly the shape of <code>TemplateSubsystem</code> and <code>TemplateRequest</code>
+you'll meet in Exercises 2 through 4 of the real ladder — same idea, with a few extra
+safety patterns (request arbitration) the team learned the hard way in 2026.</div>
+
+<!-- ============================================================ -->
+<h2 id="ch10"><span class="n">CH 10</span>Where this leads next</h2>
+<p>A quick recap of what you now know, and where each piece shows up in real robot code:</p>
+<table>
+<tr><th>You learned</th><th>Shows up as</th></tr>
+<tr><td>Variables</td><td>Every constant in <code>Constants.java</code></td></tr>
+<tr><td>if / else</td><td>The pre-match health check's alerts</td></tr>
+<tr><td>Loops</td><td>The 50-times-a-second <code>periodic()</code> cycle</td></tr>
+<tr><td>Methods</td><td><code>execute()</code>, <code>isFinished()</code>, and every other method WPILib calls for you</td></tr>
+<tr><td>Classes &amp; objects</td><td><code>Robot</code>, <code>RobotContainer</code>, every Subsystem and Command</td></tr>
+<tr><td>Subsystems &amp; Commands</td><td>The whole shape of the 2027 baseline codebase</td></tr>
+</table>
+<p>Two paths from here, and you can take both:</p>
+<div class="box read"><span class="box-tag">Optional, self-paced</span>
+Browse <a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026" target="_blank" rel="noopener">Code with Kate's "Intro to Programming for FRC Teams"</a>
+course at your own speed for more practice problems on anything above. Not required —
+useful if one topic didn't quite stick.</div>
+<div class="box next"><span class="box-tag">The real thing</span>
+Open <code>exercises.html</code> and start at <b>Exercise 0</b>. Same team repo, same
+tools, same edit → build → simulate → observe loop you already used back in Chapter 3 —
+now on the actual 2027 baseline code.</div>
+<p style="margin-top:34px; padding-top:16px; border-top:2px solid var(--ink);
+font-family:var(--display); font-size:17px;">You've written variables, decisions,
+loops, methods, classes, and a Subsystem/Command pair. That's the entire toolkit the
+real codebase is built from — just organized more carefully. Go start Exercise 0.</p>
+
+</div>
+</body>
+</html>
