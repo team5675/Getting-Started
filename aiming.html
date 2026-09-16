@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Aiming Without the Red-Alliance Bug</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+<nav class="site-nav">
+  <span class="brand">FRC 5675</span>
+  <a href="index.html">Getting Started</a>
+  <a href="exercises.html">Exercise Ladder</a>
+  <a href="teaching-guide.html">Robot Architecture</a>
+</nav>
+
+<p class="sub" style="margin:10px 0 0"><a href="teaching-guide.html">← Robot Architecture guide</a>
+· section 5 · referenced from <a href="exercises.html">Exercise 7</a></p>
+
+<header class="hero">
+  <span class="hero-tag">FRC Team 5675 · Robot Architecture · deep dive</span>
+  <h1>Aiming without the red-alliance bug</h1>
+  <p class="lede"><code>FieldPointAim</code> does one generic thing: while the driver
+  keeps translating, it continuously rotates the robot to face a chosen point on the
+  field. When the 2027 game is revealed, "the point" becomes the goal / feeder /
+  whatever — the pattern doesn't change.</p>
+</header>
+
+<p>The interesting part is what's <em>missing</em>: there is no <code>if (alliance ==
+Red)</code> anywhere in the file. That absence is the design.</p>
+
+<div class="box lesson"><span class="box-tag">2026 lesson · the 180° aim bug</span>
+2026's aiming worked all season… until the first red-alliance match, where it pointed
+exactly backwards. Why: the swerve request layer already flips joystick translation for
+red (that's "operator perspective"), but the aiming code <em>also</em> did its own
+red/blue flip on the target heading. One value was in field-language, one in
+driver-language; comparing them was correct on blue and 180° wrong on red. Testing
+happened on blue. The categorical fix is a rule, not a patch: <strong>do all math in
+blue-alliance field coordinates, and let alliance enter in exactly one place.</strong></div>
+
+<p>Here, that one place is the request itself. Phoenix 6 (26.3.0+) lets a
+<code>FieldCentricFacingAngle</code> request be told its target direction is
+blue-frame:</p>
+<pre><span class="c">// The ONE place alliance is handled — CTRE flips for red internally.</span>
+new SwerveRequest.FieldCentricFacingAngle()
+    .withTargetDirectionPerspective(ForwardPerspectiveValue.<span class="h">BlueAlliance</span>);
+
+<span class="c">// Everything else is pure blue-frame geometry — no ifs:</span>
+Rotation2d headingToTarget = targetPoint.minus(robotPose.getTranslation()).getAngle();</pre>
+<p>Translation stays operator-perspective (the driver's stick feels normal), heading is
+closed-loop locked to a field-frame direction, and there is nothing for a future edit
+to get backwards. PathPlanner follows the same rule — its one flip point is the
+supplier passed to <code>AutoBuilder.configure</code>, and the health check reuses
+PathPlanner's own <code>FlippingUtil</code> instead of hand-rolling a mirror.</p>
+
+<div class="box next"><span class="box-tag">Where this shows up</span>
+<a href="exercises.html">Exercise 7</a> has you bind a second aim point and asks you to
+find where the red-alliance flip is handled — the answer is: nowhere, on purpose, for
+the reasons above.</div>
+
+<p style="margin-top:34px; padding-top:16px; border-top:2px solid var(--ink);">
+Back to the <a href="teaching-guide.html">full Robot Architecture guide</a> for how
+this fits with driving, vision, and everything else.</p>
+
+</div>
+</body>
+</html>
