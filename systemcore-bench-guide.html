@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — SystemCore Clone Bench Setup Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li { margin: 8px 0; padding-left: 1.6em; text-indent: -1.6em; }
+  .done { color: var(--ink-soft); text-decoration: line-through; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="site-nav">
+  <span class="brand">FRC 5675</span>
+  <a href="index.html">Getting Started</a>
+  <a href="exercises.html">Exercise Ladder</a>
+  <a href="teaching-guide.html">Robot Architecture</a>
+</nav>
+
+<p class="sub" style="margin:10px 0 0"><a href="teaching-guide.html">← Robot Architecture guide</a>
+· referenced from section 9 · prefer the raw source? <a href="SystemCore-Clone-Setup-Guide.md">SystemCore-Clone-Setup-Guide.md</a></p>
+
+<header class="hero">
+  <span class="hero-tag">FRC Team 5675 · SystemCore Clone Bench · pre-release, read the caveats</span>
+  <h1>SystemCore Clone Bench — Setup Guide</h1>
+  <p class="lede"><strong>Purpose:</strong> build a Raspberry Pi 5 stand-in for the
+  SystemCore control system so we can validate our <code>SYSTEMCORE-2027:</code>
+  migration seams <em>before</em> the 2027 season starts, instead of discovering them
+  during build season.</p>
+</header>
+
+<div class="box read"><span class="box-tag">Status of this document</span>
+Written August 2026, revised <strong>3 September 2026</strong>. Everything here depends
+on pre-release software (SystemCore OS <strong>beta</strong> + WPILib <strong>2027
+alpha</strong>). Expect details to shift. This guide is a map, not gospel — the Bobcat
+Robotics repo is the authoritative source and should be re-checked before each attempt.</div>
+
+<div class="box read"><span class="box-tag">What changed in the 3 Sep 2026 revision</span>
+WPILib moved to alpha 7 and SystemCore to image 14, which broke every vendor library at
+once. §4.1 is new and is the most important section in this document — read it before
+you upgrade anything. §16 is a new findings log.</div>
+
+<p><strong>Primary source:</strong> FRC Team 177 (Bobcat Robotics), <em>SystemCore Clone
+Guide v1.0</em><br>
+Repo: <a href="https://github.com/BobcatRobotics/SystemCore-Clone" target="_blank" rel="noopener">github.com/BobcatRobotics/SystemCore-Clone</a><br>
+Chief Delphi post: <a href="https://www.chiefdelphi.com/t/team-177-429-bobcat-robotics-program-2026-2027-build-thread/522511/16" target="_blank" rel="noopener">chiefdelphi.com/.../522511/16</a></p>
+
+<nav class="toc">
+  <a href="#why">1. Why 5675 is building this</a>
+  <a href="#background">2. Background for beginners</a>
+  <a href="#hardware">3. Hardware we purchased</a>
+  <a href="#software">4. Software you need to download</a>
+  <a href="#version-pinning">4.1 Version pinning</a>
+  <a href="#assembly">5. Physical assembly</a>
+  <a href="#path-a">6. Path A — prebuilt image</a>
+  <a href="#path-b">7. Path B — build from base image</a>
+  <a href="#canivore">8. Installing the CANivore drivers</a>
+  <a href="#verification">9. Verification</a>
+  <a href="#wiring">10. Wiring a real CTRE device</a>
+  <a href="#deploying">11. Deploying and running test code</a>
+  <a href="#validates">12. What this bench validates</a>
+  <a href="#gotchas">13. Known gotchas and troubleshooting</a>
+  <a href="#safety">14. Safety notes</a>
+  <a href="#open-questions">15. Open questions and next steps</a>
+  <a href="#findings">16. Findings log</a>
+  <a href="#sources">Sources</a>
+  <a href="#revision-log">Revision log</a>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="why">1. Why 5675 is building this</h2>
+<p>FRC is replacing the roboRIO with <strong>SystemCore</strong> for the 2027 season.
+That's the biggest control-system change in FRC history, and it lands the same season
+our 2027 baseline codebase targets.</p>
+<p>Our baseline is written against the current stable 2026 toolchain so it compiles and
+drives on the practice bot <em>today</em>. Everywhere the migration will require a
+change, we left a greppable marker:</p>
+<pre><code>SYSTEMCORE-2027:</code></pre>
+<p>Right now those comments describe what we <strong>believe</strong> will change. This
+bench is how we find out whether we're right, using real 2027 alpha tooling, without
+needing SystemCore hardware that isn't purchasable yet.</p>
+<p><strong>The three questions we most need answered:</strong></p>
+<table>
+<tr><th>Priority</th><th>Question</th><th>Why it matters to us</th></tr>
+<tr><td>1</td><td><strong>Commands v2 vs. v3</strong></td><td>Our entire 10-exercise teaching ladder is written v2-style. If v3 is the 2027 default, that's a teaching-guide rewrite, not a code seam — and rewrites take longer than code fixes.</td></tr>
+<tr><td>2</td><td>Does our <strong>WPILOG Analyzer</strong> still parse a 2027-generated <code>.wpilog</code>?</td><td>The analyzer parses the WPILOG binary format by hand. A format version bump, new record types, or changed struct encoding breaks our entire post-match workflow. Cheap to test, high consequence.</td></tr>
+<tr><td>3</td><td>Does the <strong>Phoenix 6 swerve generator</strong> output change shape?</td><td>Our whole drivetrain is generator-shaped. If <code>TunerConstants</code> changes, both <code>TunerConstants</code> and <code>TunerConstantsPractice</code> change.</td></tr>
+<tr><td>4</td><td><span class="done">Does <strong>AdvantageKit</strong> have a working 2027 alpha path?</span></td><td><strong>Answered 3 Sep 2026 — see §16-F.</strong> Yes, but it is pinned a full WPILib alpha and three SystemCore images behind current. You can have AdvantageKit <em>or</em> current WPILib/SystemCore, not both. Still lower priority; see the note below.</td></tr>
+</table>
+
+<h3>A note on AdvantageKit vs. our own logging stack</h3>
+<p><strong>WPILOG is a WPILib format, not an AdvantageKit format.</strong> WPILib's
+built-in <code>DataLogManager</code> writes <code>.wpilog</code> files with no
+third-party dependency, and our Unified WPILOG Analyzer reads that binary format
+directly. AdvantageKit is doing three separate jobs in the baseline:</p>
+<table>
+<tr><th>Job</th><th>Requires AdvantageKit?</th><th>Fallback</th></tr>
+<tr><td>Write <code>.wpilog</code> files for post-match analysis</td><td>No</td><td><code>DataLogManager</code> (WPILib core)</td></tr>
+<tr><td>Publish live telemetry to the dashboard</td><td>No</td><td>NT4 struct publishers → Elastic</td></tr>
+<tr><td>Deterministic replay through the IO layers</td><td><strong>Yes</strong></td><td>None</td></tr>
+</table>
+<p>So if AdvantageKit lags the 2027 alpha, we lose <strong>replay</strong> and we gain
+some duplicated call sites — we do <em>not</em> lose logging or the dashboard. That's a
+real cost but a survivable one.</p>
+<p><strong>The consequence worth deciding on:</strong> the IO-layer structure in the
+baseline exists specifically to enable replay. If replay is unavailable for 2027, those
+layers become an abstraction beginners have to learn that buys them nothing, and we
+should simplify rather than teach ceremony. Don't make that call until the bench gives
+an answer.</p>
+<div class="box read"><span class="box-tag">Update, 3 Sep 2026</span>
+The IO-layer question now has enough evidence to act on. AdvantageKit's 2027 port is
+alive and actively maintained (four of its seven published known-issues are already
+struck through as fixed), but two things push replay out of reach for this season's prep:
+<ul>
+<li>Its releases pin to a <strong>specific</strong> WPILib alpha <em>and</em> a specific
+SystemCore image. v27.0.0-alpha-4 targets WPILib alpha-6 and SystemCore image 11 — one
+WPILib alpha and three OS images behind current.</li>
+<li><strong>Only the skeleton template project exists for 2027.</strong> The
+TalonFX-swerve template — the published reference for wrapping IO layers around a CTRE
+swerve, and the thing we'd point students at — has not shipped.</li>
+</ul></div>
+<div class="box next"><span class="box-tag">Decision</span>
+Keep the IO seam in the drivetrain (it's one interface and it's cheap), but do
+<strong>not</strong> build the exercise ladder around IO layers. Teaching beginners an
+abstraction whose payoff hasn't shipped is exactly the ceremony problem flagged above.
+Revisit after kickoff.</div>
+<p>Team 177's example project ships <strong>both</strong> a Commands v2 and a Commands
+v3 version — deploy both and compare. That comparison is the most valuable single thing
+on this bench.</p>
+<p><strong>Second reference point for v3 style:</strong>
+<a href="https://www.frc5712.com/" target="_blank" rel="noopener">FRC 5712 "Gray Matter" Coding Workshop</a>
+is built specifically around Commands v3 (their own description: "the new coding
+paradigms for 2027"), on the same CTRE + Limelight + PathPlanner stack this baseline
+uses — genuinely well-regarded on Chief Delphi. Its content targets the 2027 alpha
+toolchain, same as this bench, <strong>not</strong> the current-season practice bot —
+it's a good place to see v3 idioms in a full robot program while comparing against Team
+177's v2/v3 pair, but don't point rookies there for their first command-based subsystem;
+that's what <code>Getting-Started</code>/<code>exercises.html</code> (Commands v2,
+current stable) are for.</p>
+
+<!-- ============================================================ -->
+<h2 id="background">2. Background for beginners</h2>
+<p>Read this section if any of the terms below are new. Skip it if you already know them.</p>
+
+<h3>What is a Raspberry Pi?</h3>
+<p>A small single-board computer, roughly credit-card sized, that runs Linux. It has a
+processor, RAM, USB ports, Ethernet, WiFi, and a 40-pin connector along one edge called
+the <strong>GPIO header</strong> (General Purpose Input/Output) for connecting electronics.</p>
+
+<h3>Why a Pi at all?</h3>
+<p>SystemCore is itself built on Raspberry Pi silicon — a Compute Module 5 — so a Pi 5
+running the SystemCore operating system behaves remarkably like the real thing. It is
+<em>not</em> identical (the real unit has more CAN buses, a built-in IMU, and proper
+robot power input), but it's close enough to compile against, deploy to, and spin a
+motor with.</p>
+
+<h3>What is CAN?</h3>
+<p><strong>CAN</strong> (Controller Area Network) is the two-wire communication bus that
+connects everything electrical on an FRC robot. Every Kraken motor, the Pigeon gyro, the
+CANcoders, the power distribution module — all of them are wired in a daisy chain on two
+wires called <strong>CANH</strong> and <strong>CANL</strong>.</p>
+<p>Think of it like a party line telephone: every device is on the same pair of wires,
+every device hears every message, and each message carries a device ID so devices know
+which messages are for them.</p>
+<p><strong>CAN FD</strong> ("Flexible Data-rate") is a newer version of CAN that moves
+more data per message. SystemCore uses CAN FD natively. Classic CAN 2.0 hardware
+<strong>cannot</strong> do this — which is why the specific chip on our HAT matters (see
+below).</p>
+
+<h3>What is a HAT?</h3>
+<p><strong>HAT</strong> = <em>Hardware Attached on Top</em>. It's the official Raspberry
+Pi standard for add-on boards that plug directly onto the 40-pin GPIO header. HATs carry
+a small ID chip so the Pi can recognize the board at boot.</p>
+<p><strong>Why we need one:</strong> the roboRIO has a CAN port built in. <strong>A
+Raspberry Pi has no CAN hardware whatsoever.</strong> Without a HAT, there is physically
+nothing to plug a Kraken into. The HAT <em>is</em> the Pi's CAN port.</p>
+<p>A CAN HAT contains three things:</p>
+<ul>
+<li><strong>A CAN controller chip</strong> — builds and decodes CAN messages. Ours is
+the <strong>MCP2518FD</strong>, which supports CAN FD. (The cheaper MCP2515 is classic
+CAN only — wrong chip for us.)</li>
+<li><strong>A transceiver chip</strong> — converts the controller's logic-level signals
+into the actual differential voltages on the CANH/CANL wires.</li>
+<li><strong>A 120Ω termination resistor</strong> on a jumper — a CAN bus needs one of
+these at each physical end or messages get corrupted by signal reflections.</li>
+</ul>
+
+<h3>What is SPI?</h3>
+<p><strong>SPI</strong> (Serial Peripheral Interface) is a fast wire protocol the Pi uses
+to talk to chips on add-on boards. Our CAN controller is connected to the Pi over SPI,
+not built into the Pi's processor. That's why some of the setup below involves telling
+Linux "there is an MCP2518FD chip on this SPI bus, at this chip-select pin, with a 40MHz
+clock crystal." Once Linux knows, the CAN bus shows up as a network interface named
+something like <code>can0</code>.</p>
+
+<h3>What is an "image" and "burning" it?</h3>
+<p>A disk <strong>image</strong> (<code>.img</code> file) is a byte-for-byte copy of an
+entire drive, including the operating system. <strong>Burning</strong> it means writing
+that copy onto a microSD card so the Pi can boot from it. Raspberry Pi Imager and
+balenaEtcher both do this. It completely erases the card.</p>
+
+<h3>What is SSH / SCP?</h3>
+<ul>
+<li><strong>SSH</strong> — a way to get a text command line on another computer over the network.</li>
+<li><strong>SCP</strong> — "secure copy," a way to copy files to another computer over that same connection.</li>
+</ul>
+<p>You'll only need SCP if you take Path B.</p>
+
+<!-- ============================================================ -->
+<h2 id="hardware">3. Hardware we purchased</h2>
+<p>All from PiShop.us:</p>
+<table>
+<tr><th>Item</th><th>Notes</th></tr>
+<tr><td><strong>Raspberry Pi 5, 4GB</strong></td><td>4GB specifically — closest match to SystemCore's spec. Don't spend up to 8GB.</td></tr>
+<tr><td><strong>Waveshare 2-CH CAN FD HAT</strong> (part <strong>17075</strong>)</td><td>Must be the <strong>MCP2518FD</strong> version. The near-identically-named MCP2515 board is classic CAN only.</td></tr>
+<tr><td><strong>Active Cooler</strong></td><td>The Pi 5 throttles without it.</td></tr>
+<tr><td><strong>Case</strong></td><td>See clearance warning in §5.</td></tr>
+<tr><td><strong>Official 27W USB-C power supply</strong></td><td>Do not substitute a phone charger. The Pi 5 will brown out.</td></tr>
+</table>
+<p><strong>Still needed:</strong></p>
+<table>
+<tr><th>Item</th><th>Notes</th></tr>
+<tr><td><strong>microSD card, 32GB+ — buy TWO</strong></td><td>Class 10 / A2 recommended. The second card is not optional; see §4.1.</td></tr>
+<tr><td><strong>CAN wire + a spare Kraken X60</strong></td><td>Pulled from inventory.</td></tr>
+<tr><td><strong>A 12V supply for the motor</strong></td><td>A spare battery on a breaker, or a bench supply. The Pi's USB-C supply does <strong>not</strong> power motors.</td></tr>
+<tr><td><strong>USB CANivore</strong> <em>(optional, already owned)</em></td><td>See §8.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="software">4. Software you need to download</h2>
+<table>
+<tr><th>Software</th><th>Where</th></tr>
+<tr><td><strong>Raspberry Pi Imager</strong></td><td><a href="https://www.raspberrypi.com/software/" target="_blank" rel="noopener">raspberrypi.com/software</a></td></tr>
+<tr><td><strong>WPILib 2027 alpha</strong> — <em>pin deliberately, see §4.1</em></td><td><a href="https://github.com/wpilibsuite/allwpilib/releases" target="_blank" rel="noopener">github.com/wpilibsuite/allwpilib/releases</a></td></tr>
+<tr><td><strong>Bobcat prebuilt FD image</strong></td><td>Linked from the <code>fd/</code> folder of the Bobcat repo (Google Drive link)</td></tr>
+<tr><td><strong>SystemCore OS base image</strong> <em>(Path B only)</em></td><td><a href="https://github.com/LimelightVision/systemcore-os-public/releases" target="_blank" rel="noopener">github.com/LimelightVision/systemcore-os-public</a></td></tr>
+<tr><td><strong>CANivore drivers</strong> <em>(optional)</em></td><td><code>ctre.download/files/systemcore/canivore-usb-kernel_1.18_aarch64.ipk</code> and <code>canivore-usb_1.16_aarch64.ipk</code></td></tr>
+<tr><td><strong>Phoenix Tuner X</strong></td><td>From CTRE, as usual</td></tr>
+<tr><td><strong>FRC Driver Station</strong></td><td>The 2026 install is fine for bench testing</td></tr>
+</table>
+<div class="box oops"><span class="box-tag">Don't install over your 2026 toolchain</span>
+Install WPILib 2027 alpha <strong>alongside</strong> your 2026 install, not over it. The
+alpha installs to its own year-versioned folder (<code>~/wpilib/2027</code>). Our actual
+baseline codebase still needs the 2026 toolchain to build and deploy to the practice
+bot. Do not uninstall 2026.</div>
+
+<!-- ============================================================ -->
+<h2 id="version-pinning">4.1 Version pinning — read before upgrading anything</h2>
+<p><strong>This is the section that will save you a weekend.</strong> The 2027 alpha
+ecosystem is four independent release trains — WPILib, SystemCore OS, the vendor
+libraries, and the dashboards — and they do not move together. Upgrading one of them in
+isolation is the single most reliable way to turn a working bench into a broken one.</p>
+
+<h3>The rule</h3>
+<div class="box next"><span class="box-tag">Pin a pairing and hold it</span>
+WPILib version, SystemCore image, and every vendordep move <strong>together</strong> or
+not at all. Never upgrade one because it's newer.</div>
+
+<h3>What broke on 3 Sep 2026</h3>
+<p>WPILib 2027 <strong>alpha 7</strong> shipped with an explicit note that Alpha 6 and
+prior vendordeps <strong>will not work</strong> with it, and that vendor libraries must
+be re-imported. SystemCore image 14 landed the same week with its release title
+literally reading <em>"REQUIRES WPILIB ALPHA 7 — CHECK VENDORDEP AVAILABILITY FOR ALL OF
+YOUR DEVICES BEFORE UPGRADING."</em></p>
+<p>Compatibility as of this writing:</p>
+<table>
+<tr><th>Library</th><th>2026 stable</th><th>2027 alpha 7</th></tr>
+<tr><td>WPILib</td><td>✅</td><td>✅</td></tr>
+<tr><td>Phoenix 6</td><td>✅</td><td>⚠️ alpha build exists, pinned to alpha-6</td></tr>
+<tr><td>PathPlannerLib</td><td>✅</td><td>❌ no compatible release</td></tr>
+<tr><td>AdvantageKit</td><td>✅</td><td>❌ no compatible release (pinned to alpha-6 + image 11)</td></tr>
+<tr><td>REVLib</td><td>✅</td><td>⚠️ alpha build exists</td></tr>
+</table>
+<p>Three of the four libraries our baseline depends on have <strong>no build</strong>
+that works with current WPILib. There is no combination of vendordep URLs that compiles
+the full stack on alpha 7 today.</p>
+
+<h3>The two-card strategy</h3>
+<p>Because of the above, run <strong>two SD cards</strong>, not one. They cost about
+eight dollars each and this is the whole answer.</p>
+<table>
+<tr><th></th><th>Card A — known good</th><th>Card B — bleeding edge</th></tr>
+<tr><td>WPILib</td><td>alpha-6</td><td>alpha-7 (current)</td></tr>
+<tr><td>SystemCore image</td><td>11-era (whatever Bobcat's prebuilt uses)</td><td>14</td></tr>
+<tr><td>Vendordeps</td><td>Phoenix 6 + AdvantageKit resolve</td><td>bare WPILib only</td></tr>
+<tr><td>What it's for</td><td>Full-stack tests. The complete telemetry chain end to end.</td><td>What's coming. Format and API changes only.</td></tr>
+</table>
+<p>Card A never changes once it works. Swapping cards swaps benches, and you never risk
+the one that boots.</p>
+
+<h3>Never OTA a clone</h3>
+<div class="box oops"><span class="box-tag">Do not use the web UI's OTA update</span>
+SystemCore's web UI offers an over-the-air <code>.llupdate</code> path. <strong>Do not
+use it on this bench.</strong> That update payload is built for real CM5-based
+SystemCore hardware, and our entire CAN capability lives in a hand-modified
+<code>config.txt</code> on the boot partition (§7.4). An OS update will very plausibly
+overwrite it, and you'll be debugging a dead CAN bus on top of a toolchain you just
+changed.<br><br>
+If you move to a new image, <strong>re-burn the card from the <code>.zip</code> and redo
+§7</strong>. Never OTA.</div>
+
+<h3>Alpha vs. beta images are the same software</h3>
+<p>Confusing on purpose, apparently. <code>limelightosr-2027.0.0-alpha14</code> and
+<code>beta14</code> are built from an <strong>identical source commit with the same
+build timestamp</strong>. The alpha/beta split refers to SystemCore <em>hardware
+revision</em> — beta units have configuration buttons — not to software maturity. Match
+whichever variant your current card was derived from.</p>
+<p>Release cadence has been roughly monthly (image 11 in June, 12 in July, 13 in August,
+14 on 2 September). Chasing every drop is a treadmill. Pin deliberately.</p>
+
+<!-- ============================================================ -->
+<h2 id="assembly">5. Physical assembly</h2>
+<ol>
+<li><strong>Attach the Active Cooler to the Pi first.</strong> It clips into two
+mounting holes and plugs into the small 4-pin fan connector next to the GPIO header.
+Peel the thermal pad backing.</li>
+<li><strong>⚠️ Case clearance warning.</strong> The official Raspberry Pi 5 case is not
+designed to close over a HAT, and the Active Cooler conflicts with the case's own lid
+fan. Expect to run the Pi <strong>lidless</strong> on the bench, or mount the base of
+the case only. Don't force the lid — you'll crack the cooler or bend the HAT.</li>
+<li><strong>Mount the CAN HAT.</strong> The Waveshare board ships with a 2×20 female pin
+header extender and screws/standoffs. Use them. The extender gives the HAT clearance
+over the Active Cooler, and the standoffs keep the GPIO connector from flexing every
+time someone bumps the bench.</li>
+<li><strong>Set the HAT jumpers before powering on:</strong>
+  <ul>
+  <li><strong>VIO / level select → 3.3V</strong> (the Pi is a 3.3V device)</li>
+  <li><strong>120Ω termination → ENABLED</strong> on the channel you're using. On a
+  bench with one motor, the Pi is one physical end of the bus, so it needs termination.</li>
+  </ul>
+</li>
+<li><strong>Do not connect motor power yet.</strong> Get the Pi booting and the CAN
+interfaces up first, with nothing on the bus.</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="path-a">6. Path A — Prebuilt Bobcat image (recommended first attempt)</h2>
+<p>Team 177 published a ready-made image for the FD HAT with the <code>config.txt</code>
+and the CAN bring-up service already configured. <strong>Start here.</strong> If it
+works, you skip all the Linux configuration in Path B.</p>
+<ol>
+<li><strong>Download</strong> the FD image (<code>.zip</code>) from the <code>fd/</code> folder of the Bobcat repo.</li>
+<li><strong>Unzip it</strong> to get the <code>.img</code> file.</li>
+<li><strong>Burn it</strong> to the microSD card using Raspberry Pi Imager (choose
+<em>Use custom</em> and select the <code>.img</code>) or balenaEtcher.</li>
+<li><strong>Insert the card</strong> into the Pi and power it on. First boot takes a
+couple of minutes.</li>
+<li><strong>Connect to the Pi's WiFi.</strong> The Pi broadcasts a network named
+<strong>SYSTEMCORE</strong>. The password is <strong>PASSWORD</strong> — all uppercase,
+it is case-sensitive.</li>
+<li><strong>Open the dashboard</strong> in a browser at <strong>172.30.0.1</strong> or
+<strong>robot.local</strong>.</li>
+</ol>
+<p>If the dashboard loads, you have a working SystemCore clone. Jump to §8 (CANivore,
+optional) or §9 (verification).</p>
+
+<!-- ============================================================ -->
+<h2 id="path-b">7. Path B — Build from the base image (fallback / learning path)</h2>
+<p>Take this path if the prebuilt image fails, if it's out of date, or if you want
+students to understand what's actually being configured. This is the process Team 177
+documented.</p>
+<p><strong>Prerequisites:</strong> you can burn an SD card, and you can use
+<code>scp</code> from a terminal.</p>
+
+<h3>7.1 Burn the base image</h3>
+<p>Burn the SystemCore OS base image from the LimelightVision releases page. Insert the
+card, boot the Pi.</p>
+
+<h3>7.2 Connect and open a terminal</h3>
+<p>Join the <strong>SYSTEMCORE</strong> WiFi network (password <strong>PASSWORD</strong>),
+open the web dashboard, and launch the <strong>Terminal</strong> app from the dashboard.</p>
+
+<h3>7.3 Mount the hidden boot partition</h3>
+<p>The file that controls how Linux sets up hardware lives on a partition that isn't
+mounted by default. Create a mount point and mount it:</p>
+<pre><code>sudo mkdir -p /mnt/hardware_boot
+sudo mount /dev/mmcblk0p2 /mnt/hardware_boot</code></pre>
+<div class="box read"><span class="box-tag">What's happening</span>
+<code>mmcblk0p2</code> means "SD card 0, partition 2." Mounting attaches that partition
+to the folder you just made, so its files become visible there.</div>
+
+<h3>7.4 Replace <code>config.txt</code></h3>
+<pre><code>sudo nano /mnt/hardware_boot/config.txt</code></pre>
+<p>Delete the entire contents and paste in the contents of Team 177's
+<strong>config_with_fd.txt</strong> (we have the FD HAT — do <strong>not</strong> use the
+no-FD version). This is what tells Linux the MCP2518FD chip exists and how to talk to it.</p>
+<p>Save and exit nano:</p>
+<pre><code>Ctrl + O
+Enter
+Ctrl + X</code></pre>
+<div class="box read"><span class="box-tag">nano tips for beginners</span>
+nano is a text editor that runs in the terminal. There's no mouse.
+<code>Ctrl+O</code> = write out (save), <code>Ctrl+X</code> = exit. The
+<code>^</code> symbols along the bottom of the screen mean "Ctrl."</div>
+
+<h3>7.5 Unmount and reboot</h3>
+<pre><code>sudo umount /mnt/hardware_boot
+sudo reboot</code></pre>
+
+<h3>7.6 Copy the CAN setup scripts to the Pi</h3>
+<p>From <strong>your laptop's</strong> terminal (not the Pi's), in the folder where you
+cloned the Bobcat repo:</p>
+<pre><code>scp -r systemcore-can-fd-setup systemcore@&lt;pi-address&gt;:/home/systemcore/</code></pre>
+<p>Replace <code>&lt;pi-address&gt;</code> with <code>robot.local</code> or
+<code>172.30.0.1</code>.</p>
+
+<h3>7.7 Run the installer</h3>
+<p>Back on the Pi's terminal:</p>
+<pre><code>cd ~/systemcore-can-fd-setup
+sudo ./install.sh
+sudo reboot</code></pre>
+<p>This installs the device-tree overlay and a systemd service (<code>can-bringup</code>)
+that brings the CAN interfaces up automatically at every boot.</p>
+
+<!-- ============================================================ -->
+<h2 id="canivore">8. Installing the CANivore drivers</h2>
+<p><strong>Optional.</strong> Only needed if you want to test our USB CANivore on the
+clone.</p>
+<p>Install through the web dashboard's package manager (the 4th tile on the main
+dashboard), <em>not</em> from the terminal:</p>
+<ol>
+<li>Reconnect to the <code>SYSTEMCORE</code> network if needed.</li>
+<li>Open <strong>Add Packages</strong> in the web dashboard.</li>
+<li>Drag and drop <code>canivore-usb-kernel_1.18_aarch64.ipk</code> to install.</li>
+<li>Drag and drop <code>canivore-usb_1.16_aarch64.ipk</code> to install.</li>
+<li>Reboot.</li>
+</ol>
+<div class="box read"><span class="box-tag">Install order</span>
+Team 177 noted the correct install order between these two isn't fully clear. If it
+fails, try the other order.</div>
+
+<h3>CANivore vs. HAT — what each one tests</h3>
+<table>
+<tr><th></th><th>USB CANivore</th><th>CAN FD HAT (native bus)</th></tr>
+<tr><td>CTRE devices (Kraken, Pigeon, CANcoder)</td><td>✅</td><td>✅</td></tr>
+<tr><td>Non-CTRE devices (REV, Thrifty, <strong>PDH</strong>)</td><td>❌</td><td>✅ (expected)</td></tr>
+<tr><td>Setup difficulty</td><td>Easy — plug in, install two packages</td><td>Harder — image/overlay config</td></tr>
+<tr><td>What it proves for 2027</td><td>The CTRE USB path still works</td><td><strong>The native SPI CAN FD bus works — this is the new thing</strong></td></tr>
+</table>
+<p>The CANivore is the fast path to a spinning motor. The HAT is the path that actually
+answers our seam questions. <strong>Do both.</strong></p>
+
+<!-- ============================================================ -->
+<h2 id="verification">9. Verification — how you know it worked</h2>
+<p>Run these from the Pi's terminal.</p>
+
+<h3>Check the CAN interfaces exist</h3>
+<pre><code>ip -br link show | grep can_s</code></pre>
+<p><strong>Expected:</strong> the first <strong>two</strong> channels appear as physical
+interfaces; any others show as virtual. Two physical = both HAT channels are alive.</p>
+<p><strong>If nothing appears:</strong> the SPI overlay isn't loading. That's the
+<code>config.txt</code> step (§7.4) or a seating problem on the GPIO header.</p>
+
+<h3>Check the bring-up service is running</h3>
+<pre><code>systemctl is-active can-bringup robot</code></pre>
+<p><strong>Expected:</strong> <code>active</code> for both.</p>
+
+<h3>Check the dashboard</h3>
+<p>The web dashboard should load and let you set the <strong>team number to 5675</strong>.</p>
+
+<!-- ============================================================ -->
+<h2 id="wiring">10. Wiring a real CTRE device to the bench</h2>
+<ol>
+<li><strong>Power off everything.</strong></li>
+<li>Wire <strong>CANH → CANH</strong> and <strong>CANL → CANL</strong> from the HAT's
+CAN_0 screw terminals to the Kraken. Yellow is typically CANH, green is typically CANL
+in FRC wiring — but verify against the actual device, don't assume.</li>
+<li>Confirm <strong>termination is enabled</strong> on the HAT (§5) and at the far end of
+the chain.</li>
+<li>Wire the Kraken's power leads to a <strong>12V source through a breaker</strong> — a
+battery or bench supply. The Pi's USB-C supply does not power motors and must not be
+used for this.</li>
+<li><strong>Clamp or bolt the motor down.</strong> An unsecured Kraken under power will
+move violently.</li>
+<li>Power on, then open <strong>Phoenix Tuner X</strong> and connect via
+<code>robot.local</code> or the IP address.</li>
+</ol>
+<h3>Firmware note (this is confusing on purpose)</h3>
+<p>Flash the motor to the latest <strong>2026</strong> Phoenix firmware, even though
+you're deploying 2027 alpha code. Team 177 flagged this explicitly — the 2027 firmware
+line doesn't exist yet. It is correct and expected to be running 2026 firmware on this
+bench.</p>
+
+<!-- ============================================================ -->
+<h2 id="deploying">11. Deploying and running test code</h2>
+<ol>
+<li>Open the <strong>WPILib 2027 alpha</strong> VS Code (separate from your 2026 install).</li>
+<li>Open one of the example projects from <code>project_examples/</code> in the Bobcat
+repo — there is a <strong>Commands v2</strong> version and a <strong>Commands v3</strong> version.</li>
+<li>Deploy normally (WPILib command palette → Deploy Robot Code).</li>
+<li>Open the <strong>FRC Driver Station</strong>, set team <strong>5675</strong>, enable
+<strong>Teleop</strong>.</li>
+<li>The motor should spin.</li>
+</ol>
+<p><strong>Deploy both versions.</strong> Note the differences in how commands are
+declared, scheduled, and bound. Write down what changed. That note is the input to
+whether our exercise ladder survives 2027 intact.</p>
+
+<h3>Deploying our own <code>BenchTest</code> — strip Phoenix 6 for run one</h3>
+<p>Two things to know before you try this.</p>
+<p><strong><code>BenchTest</code> is written with 2026 imports.</strong> Its three
+source files use <code>edu.wpi.first.*</code>, so it needs a trip through the WPILib
+2027 project importer just like anything else. That's correct and expected here —
+unlike the baseline, which must <em>not</em> be imported (§13).</p>
+<p><strong>Cut the Kraken telemetry out for the first run.</strong> The counter, elapsed
+time, switch state, and the synthetic <code>Pose2d</code> circle depend on
+<strong>nothing but WPILib</strong>. That version deploys against any alpha regardless
+of what the vendor libraries are doing, and it's the version that answers our
+highest-priority question. Add the Phoenix 6 motor telemetry back only once you have a
+clean <code>.wpilog</code> parsing.</p>
+<p>This is the general pattern for this bench: <strong>when a test doesn't need a
+vendordep, delete the vendordep.</strong> It makes the test immune to the compatibility
+mess in §4.1.</p>
+<p><strong>Where logs land:</strong> on SystemCore, <code>WPILOGWriter</code> defaults to
+a USB drive. Internal storage is at <code>/home/systemcore/logs</code> if you'd rather
+not fight USB mounting.</p>
+
+<!-- ============================================================ -->
+<h2 id="validates">12. What this bench validates for our codebase</h2>
+<p>Work through these in order. Record results in this document as you go.</p>
+<ul class="checklist">
+<li>☐ <strong>Commands v2 vs. v3 diff.</strong> <em>(Highest priority.)</em> What actually
+changes in a subsystem and command declaration? — affects: the entire teaching guide and
+all 10 exercises.</li>
+<li>☐ <strong>WPILOG format compatibility.</strong> Generate a <code>.wpilog</code> on
+the clone, pull it off, and load it into <strong>frc_5675_unified_wpilog_analyzer_v10.html</strong>
+(v9 is superseded — see §16-D). Does it parse? Do entry names, timestamps, and
+<code>Pose2d</code> struct decoding still come through? Check the v10 timestamp readout:
+does it say what you expect, and at what confidence? — affects: our entire post-match
+analysis workflow. <strong>Ten-minute test, do it first.</strong></li>
+<li>☐ <strong>Run the same log through on both cards.</strong> Card A (alpha-6) then
+card B (alpha-7), identical program. Alpha 7 changed raw integer timestamps from
+microseconds to nanoseconds; a log from each side isolates that change cleanly. One log
+alone leaves you guessing whether a failure was the timestamps or something else.</li>
+<li>☐ <strong>Live NT4 path without AdvantageKit.</strong> Confirm
+<code>DataLogManager</code> writes files and NT4 struct publishers reach Elastic on the
+alpha. This is the fallback telemetry stack — verify it works before we need it.</li>
+<li>☑ <span class="done"><strong>AdvantageKit under WPILib 2027 alpha.</strong></span>
+<strong>Answered from published sources, 3 Sep 2026 — see §16-F.</strong> v27.0.0-alpha-4
+resolves against WPILib alpha-6 + SystemCore image 11 only, and only the skeleton
+template exists. Decision recorded in §1. Still worth confirming on card A that it
+actually <em>builds</em>, since a published compatibility claim is not the same as a
+working Gradle resolve.</li>
+<li>☐ <strong>Phoenix 6 swerve generator output.</strong> Does the generator produce a
+differently-shaped <code>TunerConstants</code>? — affects: <code>TunerConstants</code>,
+<code>TunerConstantsPractice</code>, the <code>SYSTEMCORE-2027:</code>
+CAN-bus-construction seam.</li>
+<li>☐ <strong>CAN bus naming/construction.</strong> What string or object identifies a
+bus on SystemCore, versus <code>"rio"</code> / CANivore name today? — affects: our
+single CAN access point.</li>
+<li>☐ <strong>PDH enumeration on the native bus.</strong> Does WPILib's
+<code>PowerDistribution</code> find a PDH over the HAT's CAN FD bus? — affects: our
+<code>PowerMonitor</code> subsystem and its liveness check. <strong>Cannot be tested over
+a CANivore.</strong></li>
+<li>☐ <strong>Vision timestamps.</strong> Does the CTRE timestamp wrapper still behave
+the same, and is there any sign of the replacement described in Reference B? — affects:
+our MT1-seed/MT2-gate fusion. <em>(Note: Limelight builds SystemCore, so
+LL4-over-NetworkTables is the least likely thing to break.)</em></li>
+</ul>
+<p><strong>What this bench does NOT tell us:</strong></p>
+<ul>
+<li>Final API names. An alpha is not a release. Nothing here is a commitment.</li>
+<li>Real SystemCore behavior — the actual unit has 5 CAN FD buses, a built-in IMU, and
+different power input.</li>
+<li><span class="done">Whether PathPlanner has a 2027 build.</span> Answered from
+published sources: <strong>no compatible release</strong> for current WPILib (§4.1).
+Recheck when a 2027-targeting stable ships.</li>
+</ul>
+<div class="box read">Because we run a <strong>Pigeon 2.0 on CAN</strong>, Team 177's
+open question about integrating an IMU to match SystemCore's built-in one
+<strong>does not apply to us</strong>. Our gyro seam is unchanged.</div>
+
+<!-- ============================================================ -->
+<h2 id="gotchas">13. Known gotchas and troubleshooting</h2>
+<table>
+<tr><th>Symptom</th><th>Likely cause / fix</th></tr>
+<tr><td>No <code>can0</code>/<code>can1</code> interfaces</td><td>SPI overlay not loading. Recheck <code>config.txt</code> (§7.4); confirm you used the <strong>FD</strong> version. Reseat the HAT.</td></tr>
+<tr><td>CAN interfaces appear but no devices enumerate</td><td>Termination jumper off, CANH/CANL swapped, or device unpowered. Motors need 12V — the Pi doesn't power them.</td></tr>
+<tr><td>CAN works then randomly drops</td><td>Waveshare's own wiki documents a bug in some recent Raspberry Pi OS builds affecting this HAT, with a suggested downgrade to a mid-2024-or-earlier release. May not apply to the SystemCore image, but search this before assuming you miswired. Wiki: <a href="https://www.waveshare.com/wiki/2-CH_CAN_FD_HAT" target="_blank" rel="noopener">waveshare.com/wiki/2-CH_CAN_FD_HAT</a></td></tr>
+<tr><td>Can't find the <code>SYSTEMCORE</code> WiFi</td><td>Give it 2–3 minutes on first boot. Check the Pi actually booted (green activity LED).</td></tr>
+<tr><td>WiFi password rejected</td><td>It is <code>PASSWORD</code> in <strong>all caps</strong>. Case-sensitive.</td></tr>
+<tr><td>Bought the wrong HAT</td><td>If the board says <strong>MCP2515</strong>, it's classic CAN only. Use the no-FD image and scripts — it'll work, but it won't test the thing we care about.</td></tr>
+<tr><td>2027 alpha VS Code can't find WPILib</td><td>The alpha installs to its own year folder. Make sure you opened the 2027 VS Code, not the 2026 one.</td></tr>
+<tr><td>Pi randomly reboots / undervoltage warning</td><td>Not using the official 27W supply.</td></tr>
+<tr><td><strong>Baseline project won't compile: dozens of "package does not exist" for <code>com.ctre.phoenix6</code>, <code>com.pathplanner.lib</code>, <code>org.littletonrobotics.junction</code></strong></td><td>You opened the <strong>2026 baseline in 2027 VS Code and let it import</strong>. The importer rewrites WPILib imports but cannot bring vendor libraries across. Do not try to repair the imported copy — go back to the pre-import folder and open it in <strong>WPILib VS Code 2026</strong>. See §16-A.</td></tr>
+<tr><td>A WPILib import error says <strong>"cannot find symbol"</strong> rather than "package does not exist"</td><td>That distinction is diagnostic. "Package does not exist" = the library is missing entirely. "Cannot find symbol" = the package resolved but a class moved. <code>DriverStation.Alliance</code> is the example we hit — no longer a nested enum in 2027.</td></tr>
+<tr><td>2027 VS Code offers to import or upgrade a project</td><td><strong>Decline</strong>, unless you specifically intend to move that project to 2027. Say yes to this on the baseline and you get the row above.</td></tr>
+<tr><td>Analyzer opens a bench log but every chart is empty</td><td>Epoch timestamps. Use analyzer <strong>v10</strong>, which detects them. See §16-D.</td></tr>
+<tr><td>Analyzer opens a bench log and the data looks fine but the duration is absurd, or the log looks truncated</td><td>Nanosecond timestamps read as microseconds. v9 silently clips at its 86400 s filter and hands you partial data that looks real. v10 detects and reports this. See §16-D.</td></tr>
+<tr><td>Everything worked yesterday and nothing works today</td><td>Did someone upgrade one piece of the stack? Read §4.1.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="safety">14. Safety notes</h2>
+<div class="box oops">
+<ul>
+<li><strong>Bolt the motor down.</strong> Every time. No exceptions.</li>
+<li><strong>Breaker on the 12V line.</strong> Always.</li>
+<li><strong>Never back-power the Pi through the GPIO header</strong> while the USB-C
+supply is connected.</li>
+<li><strong>Power down before changing any CAN wiring.</strong></li>
+<li>Keep the bench battery on a charger or disconnected — don't leave a battery sitting
+connected overnight.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="open-questions">15. Open questions and next steps</h2>
+<p><strong>For us (revised 3 Sep 2026 — order matters):</strong></p>
+<ol>
+<li>Complete Path A on <strong>card A</strong>, confirm dashboard access. Do not
+upgrade anything yet.</li>
+<li>CANivore path first (fastest route to a spinning motor).</li>
+<li><strong>Deploy the vendordep-free <code>BenchTest</code>, generate a
+<code>.wpilog</code>, and feed it to analyzer v10.</strong> Fastest, highest-value
+answer available on this bench, and it needs no vendor libraries at all (§11).</li>
+<li>Deploy both Commands v2 and v3 examples; document the diff. <em>(Still the
+highest-priority question overall.)</em></li>
+<li><strong>Build card B</strong> (WPILib alpha-7 + image 14). Check the Bobcat repo
+first for a rebuilt FD image; if there isn't one, that's Path B by hand.</li>
+<li>Re-run the identical <code>.wpilog</code> test on card B. Diff the two logs — that
+isolates the microsecond→nanosecond change.</li>
+<li>Add the HAT native bus → test PDH enumeration. <em>(Card A only; Phoenix 6 has no
+alpha-7 build.)</em></li>
+<li><span class="done">Check whether AdvantageKit resolves against alpha-6.</span>
+Answered (§16-F). Confirm it actually builds on card A when convenient.</li>
+<li>Update every <code>SYSTEMCORE-2027:</code> comment in the baseline with what we
+actually learned.</li>
+</ol>
+<p><strong>Team 177's stated next steps</strong> (worth watching their thread for):</p>
+<ul>
+<li>Adding Thrifty Nova and REV SparkMax test code to the example project</li>
+<li>Mounting the clone to an actual robot</li>
+<li>Integrating an IMU to match the real SystemCore (no plan yet)</li>
+<li>Powering the Pi on-robot via a mitoCANdria or a Zinc, instead of the wall adapter</li>
+<li>Stacking CAN HATs for more channels</li>
+</ul>
+<p><strong>Questions to ask on Chief Delphi</strong> (tag <code>@aopalka</code>,
+<code>@mazziesv</code>, <code>@mustakkazi</code> in their build thread — they've invited
+questions):</p>
+<ul>
+<li>Has the WPILOG binary format changed for 2027? Any record-type or struct-encoding
+changes that would break a custom parser?</li>
+<li>Does <code>PowerDistribution</code> enumerate a REV PDH over the HAT's native FD bus?</li>
+<li>Has anyone gotten AdvantageKit building against 2027 alpha-6?</li>
+<li>Has the WPILOG <strong>timestamp epoch and unit</strong> changed on SystemCore — is
+it epoch-nanoseconds on alpha 7? <em>(We've written the analyzer to handle all four
+combinations, but a confirmation saves guessing.)</em></li>
+<li>Is anyone running a clone on image 14 + alpha 7 with a working CAN HAT? Did the
+Bobcat FD image get rebuilt?</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="findings">16. Findings log</h2>
+<p>Things we learned that aren't in anyone's documentation, or that are buried where
+you'd never find them. 🔬 marks a finding. Add an entry every time the bench — or a bad
+afternoon — teaches you something.</p>
+
+<h3>🔬 16-A. The 2027 project importer strips vendor libraries <em>(3 Sep 2026)</em></h3>
+<p>Opening a 2026 project in WPILib VS Code 2027 and accepting the import offer produces
+a project that cannot compile. The importer does two things and omits a third:</p>
+<ul>
+<li>✅ Rewrites <code>edu.wpi.first.*</code> → <code>org.wpilib.*</code> throughout the source.</li>
+<li>✅ Regenerates the Gradle shell for the 2027 toolchain.</li>
+<li>❌ Does <strong>not</strong> carry vendor libraries across — and can't, because the
+2026 vendordeps have no 2027 artifacts.</li>
+</ul>
+<p>Result: every <code>com.ctre.phoenix6</code>, <code>com.pathplanner.lib</code>, and
+<code>org.littletonrobotics.junction</code> import fails at once, which reads like a
+catastrophic breakage but is really one missing step.</p>
+<p><strong>Read the error type, not the error count.</strong> <code>package does not
+exist</code> means the library is absent. <code>cannot find symbol</code> means the
+package resolved and a <em>class</em> moved. We hit the second on
+<code>import org.wpilib.driverstation.DriverStation.Alliance</code> — <code>Alliance</code>
+is no longer a nested enum in 2027. Seeing a mix of both told us WPILib 2027 was
+installed and working, and only the vendordeps were missing. That one distinction cut
+the diagnosis from an afternoon to a minute.</p>
+<p><strong>Rule: the baseline never gets imported.</strong> It lives on 2026 until the
+full vendor stack exists for 2027. Decline the upgrade prompt every time.</p>
+
+<h3>🔬 16-B. Vendor libraries, not WPILib, are the binding constraint</h3>
+<p>Easy to assume the alpha's maturity is what gates us. It isn't. WPILib alpha 7 works
+fine. What doesn't exist is PathPlannerLib and AdvantageKit builds that resolve against
+it, plus a Phoenix 6 build newer than alpha-6.</p>
+<p>Practical consequence: <strong>judge "can I do X on 2027 yet" by the vendordep
+matrix, not the WPILib version number.</strong> See §4.1.</p>
+
+<h3>🔬 16-C. Alpha 7 breaking changes that hit our baseline directly</h3>
+<p>Not a general changelog — just the ones that touch files we've written:</p>
+<table>
+<tr><th>Alpha 7 change</th><th>What it breaks in our code</th></tr>
+<tr><td>SmartDashboard / SendableChooser / Sendable replaced by <strong>Telemetry</strong> and <strong>Tunables</strong> APIs; <code>SendableChooser</code> → <strong><code>Selectable</code></strong></td><td>The auto chooser in <code>RobotContainer</code></td></tr>
+<tr><td><code>Alert</code> moved to <strong>wpiutil</strong>, with added functionality</td><td><code>SystemHealthCheck</code> is built entirely on <code>Alert</code></td></tr>
+<tr><td>All CAN device classes now take a <strong><code>CANPort</code> enum</strong></td><td>The <code>CanSeam</code> access point</td></tr>
+<tr><td>All constants, including enum values, changed to <strong>ALL_CAPS</strong></td><td>Every enum reference in the codebase</td></tr>
+<tr><td><code>Preferences</code> moved to its own package; some geometry classes moved to <code>shape</code></td><td><code>RobotIdentity</code> (Preferences-backed)</td></tr>
+<tr><td><strong>Integer raw timestamps are now nanoseconds, not microseconds</strong></td><td>The WPILOG analyzer — see 16-D</td></tr>
+<tr><td><code>AprilTagFields</code> folded into an integrated <code>Fields</code> class</td><td>Vision constants</td></tr>
+</table>
+<p>Separately, from CTRE's own changelog: the Phoenix 6 SystemCore alpha still uses the
+<strong>2026 field coordinate system</strong>, and WPILib intends to change the field
+origin and orientation for 2027. That's a landmine for anything pose-related. Watch for
+it.</p>
+
+<h3>🔬 16-D. The analyzer had a timestamp bug we hadn't hit yet — v9 is superseded by v10 <em>(3 Sep 2026)</em></h3>
+<p>Buried in AdvantageKit's known-issues list: WPILib on SystemCore writes
+<strong>epoch</strong> timestamps (seconds since 1970) rather than time-since-boot.
+AdvantageScope had to be patched for this; their symptom was logs opening wildly zoomed
+out.</p>
+<p>Ours was worse. v9 hard-coded "relative microseconds" and then filtered out anything
+past 86400 seconds. Tested against synthetic logs in all four flavors:</p>
+<table>
+<tr><th>Log flavor</th><th>v9 behavior</th></tr>
+<tr><td>relative µs (2026 roboRIO)</td><td>correct</td></tr>
+<tr><td>relative ns</td><td><strong>4,321 of 9,000 points</strong> — silently truncated at the filter boundary</td></tr>
+<tr><td>epoch µs (SystemCore)</td><td><strong>empty</strong> — every record silently discarded</td></tr>
+<tr><td>epoch ns (both changes)</td><td><strong>empty</strong></td></tr>
+<tr><td>short relative-ns log (60 s)</td><td>3,000 points, <strong>silently 1000× too long</strong> — passes the filter</td></tr>
+</table>
+<p><strong>The truncation case is the dangerous one.</strong> We'd predicted an
+empty-chart failure and would have recognized it. Partial data that looks plausible is
+much harder to catch.</p>
+<p><strong>v10 fixes all four.</strong> It prescans record headers before decoding,
+works out origin and unit from the numbers in the file, reports what it decided and why
+with a confidence level, and offers a manual override. Silent drops are now counted and
+displayed. 2026 logs take the identical code path as before — offset <code>0n</code>,
+divisor <code>1e6</code> — verified explicitly.</p>
+<p>One implementation note worth remembering: epoch nanoseconds land around
+<strong>1.8e18</strong>, roughly 200× past the largest integer a float64 stores exactly.
+Subtracting the log start as a JS <code>Number</code> quantizes everything to ~256 ns —
+a 100 ns delta becomes 0 and 1000 ns becomes 1024. v10 does the subtraction in
+<code>BigInt</code> first. If we ever write another parser for this data, that's the
+trap.</p>
+<div class="box read"><span class="box-tag">Caveat</span>
+v10 is validated against synthetic logs built from the WPILOG spec, not a real
+SystemCore log. The four flavors are our model of what 2027 might produce. If the bench
+hands us something outside that model, the readout says what it guessed and the
+override buys time.</div>
+
+<h3>🔬 16-E. Never OTA a clone; run two SD cards</h3>
+<p>Covered in §4.1 — repeated here because it's the finding most likely to cost someone
+a working bench.</p>
+
+<h3>🔬 16-F. AdvantageKit 2027 status, read properly <em>(3 Sep 2026)</em></h3>
+<p>The compatibility line in each release note is the whole story, and it's easy to skim
+past:</p>
+<table>
+<tr><th>AdvantageKit</th><th>WPILib</th><th>SystemCore image</th></tr>
+<tr><td>v27.0.0-alpha-1</td><td>alpha-1</td><td>157</td></tr>
+<tr><td>v27.0.0-alpha-2</td><td>alpha-1</td><td>161–162</td></tr>
+<tr><td>v27.0.0-alpha-3</td><td>alpha-2</td><td>163 &amp; 166</td></tr>
+<tr><td><strong>v27.0.0-alpha-4</strong> (current)</td><td><strong>alpha-6</strong></td><td><strong>11</strong></td></tr>
+</table>
+<p>Pinned to both. So AdvantageKit and current WPILib/SystemCore are mutually exclusive
+— that's the whole reason card A exists.</p>
+<p>Other things worth knowing from their known-issues page:</p>
+<ul>
+<li><strong>Alert logging is disabled</strong> because WPILib alpha-6 lacked
+<code>Alert</code>. Alpha 7 moved <code>Alert</code> into wpiutil, so this looks
+alpha-6-specific and self-resolving. Our <code>SystemHealthCheck</code> foundation is
+fine; what lags is AdvantageKit <em>mirroring</em> alerts into the log file, which is a
+nice-to-have.</li>
+<li><code>LoggedRobot</code> still works and is the <code>TimedRobot</code> equivalent.
+No <code>OpModeRobot</code> equivalent yet.</li>
+<li>Console logging can lag ~250 ms behind the robot program.</li>
+<li>Four of seven known issues are already struck through as fixed, across AdvantageKit,
+AdvantageScope, and the OS image. <strong>This is an actively maintained port, not a
+stalled one.</strong> The lag is scheduling, not abandonment.</li>
+</ul>
+
+<h3>🔬 16-G. Newer SystemCore images have native Limelight and Hailo support</h3>
+<p>Recent images added USB camera support on all four ports, a <strong>cameras
+tab</strong> that enumerates attached Limelights and Hailo accelerators, WebRTC streams
+through the built-in Elastic package, and support for both USB (LL3A, LL3G) and ethernet
+(LL4, LL3, LL2) Limelights.</p>
+<p>Directly relevant to our LL4-plus-Hailo setup, and it may replace some of what we do
+by hand today. Not a bench priority right now — telemetry format first — but flag it for
+spring.</p>
+
+<!-- ============================================================ -->
+<h2 id="sources">Sources</h2>
+<ul>
+<li>Bobcat Robotics SystemCore-Clone repo — <a href="https://github.com/BobcatRobotics/SystemCore-Clone" target="_blank" rel="noopener">github.com/BobcatRobotics/SystemCore-Clone</a></li>
+<li>Bobcat build thread post — <a href="https://www.chiefdelphi.com/t/team-177-429-bobcat-robotics-program-2026-2027-build-thread/522511/16" target="_blank" rel="noopener">chiefdelphi.com/.../522511/16</a></li>
+<li>"DIY Systemcore for early learning?" CD thread — <a href="https://www.chiefdelphi.com/t/diy-systemcore-for-early-learning/520408" target="_blank" rel="noopener">chiefdelphi.com/.../520408</a></li>
+<li>Waveshare 2-CH CAN FD HAT wiki — <a href="https://www.waveshare.com/wiki/2-CH_CAN_FD_HAT" target="_blank" rel="noopener">waveshare.com/wiki/2-CH_CAN_FD_HAT</a></li>
+<li>SystemCore OS releases — <a href="https://github.com/LimelightVision/systemcore-os-public/releases" target="_blank" rel="noopener">github.com/LimelightVision/systemcore-os-public</a></li>
+<li>WPILib releases (all 2027 alphas) — <a href="https://github.com/wpilibsuite/allwpilib/releases" target="_blank" rel="noopener">github.com/wpilibsuite/allwpilib/releases</a></li>
+<li>WPILib 2027 changelog — <a href="https://docs.wpilib.org/en/latest/docs/yearly-overview/yearly-changelog.html" target="_blank" rel="noopener">docs.wpilib.org yearly-changelog</a></li>
+<li>SystemCore alpha/beta testing repo — <a href="https://github.com/wpilibsuite/SystemcoreTesting" target="_blank" rel="noopener">github.com/wpilibsuite/SystemcoreTesting</a></li>
+<li>AdvantageKit 2027 status + known issues — <a href="https://github.com/wpilibsuite/SystemcoreTesting/blob/main/AdvantageKit.md" target="_blank" rel="noopener">.../AdvantageKit.md</a></li>
+<li>Phoenix 6 on SystemCore — <a href="https://github.com/wpilibsuite/SystemcoreTesting/blob/main/CTR-Phoenix.md" target="_blank" rel="noopener">.../CTR-Phoenix.md</a></li>
+<li>Phoenix changelog (incl. SystemCore known issues) — <a href="https://api.ctr-electronics.com/changelog.html" target="_blank" rel="noopener">api.ctr-electronics.com/changelog.html</a></li>
+<li>Credit: Team 177 credits @DavidMasin's CAN setup work as their starting point.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="revision-log">Revision log</h2>
+<table>
+<tr><th>Date</th><th>Change</th><th>By</th></tr>
+<tr><td>2026-08-10</td><td>Initial version, written from Bobcat Robotics guide v1.0</td><td>—</td></tr>
+<tr><td>2026-09-03</td><td>Added §4.1 (version pinning, two-card strategy, no-OTA rule) and §16 (findings log). Recorded the importer trap (16-A), alpha-7 breaking changes (16-C), the analyzer timestamp bug and v10 fix (16-D), and resolved the AdvantageKit question (16-F). Updated §11, §12, §13, §15 and Sources to match.</td><td>Ed</td></tr>
+<tr><td colspan="3"><em>Add a row every time you learn something on the bench.</em></td></tr>
+</table>
+
+</div>
+</body>
+</html>

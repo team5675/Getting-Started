@@ -606,6 +606,13 @@ biggest control-system change in the program's history. This baseline is built o
 the migration will touch is fenced behind one access point with a
 <code>★ SYSTEMCORE MIGRATION SEAM ★</code> banner comment. The migration plan is:
 <strong>practice bot first</strong>, and only the seams change.</p>
+<div class="box read"><span class="box-tag">The bench that validates this</span>
+Every belief in the table below is being tested for real, ahead of kickoff, on a
+Raspberry Pi 5 SystemCore stand-in — see
+<a href="systemcore-bench-guide.html">the SystemCore Clone Bench guide</a> (or the
+raw <a href="SystemCore-Clone-Setup-Guide.md">markdown source</a>) for the
+build, the open questions, and a running findings log (including whether Commands v2
+or v3 wins, and what actually broke when the analyzer met real 2027 timestamps).</div>
 <table>
 <tr><th>Seam</th><th>File</th><th>What changes when 2027 stable ships</th></tr>
 <tr><td>CAN bus construction</td><td><code>util/CanSeam.java</code></td>
