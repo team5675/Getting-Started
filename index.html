@@ -214,6 +214,11 @@ reason — it's catching a real mistake before your robot ever moves.</div>
 Every number in the real <code>Constants.java</code> — motor CAN IDs, wheel size, PID
 numbers — is just a variable with a clear name, so nobody has to remember what the raw
 number <code>0.1016</code> means (it's a wheel radius, in meters).</div>
+<div class="box read"><span class="box-tag">Companion reading</span>
+<a href="https://frcsoftware.org/learning-course/stage0/java-fundamentals/" target="_blank" rel="noopener">Java Fundamentals</a> and
+<a href="https://frcsoftware.org/learning-course/stage0/operators/" target="_blank" rel="noopener">Operators</a>
+(FRCSoftware.org) cover this same ground with their own exercises, on the same
+2026-stable toolchain we use.</div>
 
 <!-- ============================================================ -->
 <h2 id="ch5"><span class="n">CH 5</span>Making decisions: if / else</h2>
@@ -252,6 +257,9 @@ re-simulate to see both branches run.</div>
 The pre-match health check you'll meet later (<code>SystemHealthCheck</code>) is a
 carefully-named pile of exactly these if-statements: "if battery voltage is below X,
 raise an alert."</div>
+<div class="box read"><span class="box-tag">Companion reading</span>
+<a href="https://frcsoftware.org/learning-course/stage0/conditionals/" target="_blank" rel="noopener">Conditionals</a>
+(FRCSoftware.org) — more practice problems on if/else, same toolchain.</div>
 
 <!-- ============================================================ -->
 <h2 id="ch6"><span class="n">CH 6</span>Doing things over and over: loops</h2>
@@ -286,6 +294,9 @@ The robot's entire running life <i>is</i> a loop. <code>robotPeriodic()</code> a
 subsystem's <code>periodic()</code> run automatically about 50 times a second while the
 robot is on — you never write that outer loop yourself, WPILib runs it for you, but
 everything inside behaves exactly like the loop body you just wrote.</div>
+<div class="box read"><span class="box-tag">Companion reading</span>
+<a href="https://frcsoftware.org/learning-course/stage0/loops/" target="_blank" rel="noopener">Loops</a>
+(FRCSoftware.org) — more practice problems on for/while, same toolchain.</div>
 
 <!-- ============================================================ -->
 <h2 id="ch7"><span class="n">CH 7</span>Organizing code: methods</h2>
@@ -305,6 +316,9 @@ then call it with two <i>different</i> pairs of numbers and print both results.<
 methods with specific names WPILib expects and calls for you at the right moment. You're
 not learning new magic in the real codebase later — just new method <i>names</i> with a
 job already defined for them.</div>
+<div class="box read"><span class="box-tag">Companion reading</span>
+<a href="https://frcsoftware.org/learning-course/stage0/classes-methods/" target="_blank" rel="noopener">Methods and Mutable State</a>
+(FRCSoftware.org) — more practice problems on methods, same toolchain.</div>
 
 <!-- ============================================================ -->
 <h2 id="ch8"><span class="n">CH 8</span>Blueprints: classes and objects</h2>
@@ -358,6 +372,9 @@ A <b>Subsystem</b> is just a class representing one physical part of the robot (
 drivetrain, an arm) — fields for its motors and sensors, methods like
 <code>drive()</code> or <code>stop()</code>. A <b>Command</b> is just a class
 representing one action. You already know how to read both.</div>
+<div class="box read"><span class="box-tag">Companion reading</span>
+<a href="https://frcsoftware.org/learning-course/stage0/classes-objects/" target="_blank" rel="noopener">Classes and Objects</a>
+(FRCSoftware.org) — more practice problems on classes, same toolchain.</div>
 
 <!-- ============================================================ -->
 <h2 id="ch9"><span class="n">CH 9</span>From Java to robots: Subsystems and Commands</h2>
@@ -411,6 +428,12 @@ teaching guide for the real codebase.</p>
 This is exactly the shape of <code>TemplateSubsystem</code> and <code>TemplateRequest</code>
 you'll meet in Exercises 2 through 4 of the real ladder — same idea, with a few extra
 safety patterns (request arbitration) the team learned the hard way in 2026.</div>
+<div class="box read"><span class="box-tag">Companion reading</span>
+FRCSoftware.org's Stage 1B — starting at
+<a href="https://frcsoftware.org/learning-course/stage1/stage1b/command-based-overview/" target="_blank" rel="noopener">The Concepts</a>
+— is a deeper, exercise-driven walkthrough of command-based programming (including a
+"spot the error" bonus round), on a simpler kit robot rather than swerve. Good next
+stop if this chapter went by fast.</div>
 
 <!-- ============================================================ -->
 <h2 id="ch10"><span class="n">CH 10</span>Where this leads next</h2>
