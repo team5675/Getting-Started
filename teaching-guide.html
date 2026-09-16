@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — 2027 Baseline: The Teaching Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+<nav class="site-nav">
+  <span class="brand">FRC 5675</span>
+  <a href="index.html">Getting Started</a>
+  <a href="exercises.html">Exercise Ladder</a>
+  <a href="teaching-guide.html" class="current">Robot Architecture</a>
+</nav>
+
+<header class="hero">
+  <span class="hero-tag">FRC Team 5675 · 2027 Season Baseline · for new programmers</span>
+  <h1>It drives, and it knows where it is.</h1>
+  <p class="lede">This guide explains the code you'll build the 2027 robot on top of —
+  not just <em>what</em> each file does, but <em>why</em> it's shaped the way it is.
+  Most of the "why" comes from real things that went wrong in 2026. Those stories are
+  in the red boxes. Read them; they're the tuition someone already paid for you.</p>
+  <p class="sub" style="margin-top:10px">This isn't a step before or after the
+  <a href="exercises.html">Exercise Ladder</a> — read them side by side. Each exercise
+  that leans on an architecture idea links to the exact section here that explains it.</p>
+</header>
+
+<nav class="toc">
+  <a href="#big-picture">1. The big picture</a>
+  <a href="#command-based">2. Command-based in five minutes</a>
+  <a href="#driving">3. Driving: stick to swerve module</a>
+  <a href="#vision">4. Vision: how the robot knows where it is</a>
+  <a href="#aiming">5. Aiming without the red-alliance bug</a>
+  <a href="#requests">6. The request pattern (copy this in January)</a>
+  <a href="#logging">7. Logging &amp; dashboards — your X-ray vision</a>
+  <a href="#health">8. Power, health checks, and the pre-auto routine</a>
+  <a href="#systemcore">9. The SystemCore seams (2027 migration map)</a>
+  <a href="#lessons">10. Twelve 2026 lessons, designed out</a>
+  <a href="#kickoff">11. Kickoff day: how to extend this</a>
+</nav>
+
+<!-- ================================================================ -->
+<h2 id="big-picture">1. The big picture</h2>
+<p>This project is a <strong>chassis that runs</strong>: you can deploy it, pick up a
+controller, and drive a swerve robot that continuously knows its position on the
+field. There are deliberately <strong>no game mechanisms</strong> — no intake, no
+shooter — because the 2027 game doesn't exist yet. What exists is everything a game
+mechanism will need to stand on.</p>
+
+<figure>
+<svg viewBox="0 0 860 400" role="img" aria-label="Architecture overview diagram">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a5a68"/>
+    </marker>
+    <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0f5cab"/>
+    </marker>
+  </defs>
+  <!-- Inputs column -->
+  <rect x="20" y="30" width="150" height="52" rx="8" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="95" y="52" text-anchor="middle" class="svg-t" font-size="13" fill="#0b3f76">Driver controller</text>
+  <text x="95" y="70" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">Xbox, port 0</text>
+
+  <rect x="20" y="110" width="150" height="52" rx="8" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="95" y="132" text-anchor="middle" class="svg-t" font-size="13" fill="#0b3f76">Limelight 4 ×3–4</text>
+  <text x="95" y="150" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">AprilTags, 360° cover</text>
+
+  <rect x="20" y="190" width="150" height="52" rx="8" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="95" y="212" text-anchor="middle" class="svg-t" font-size="13" fill="#0b3f76">PathPlanner files</text>
+  <text x="95" y="230" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">autos from the GUI</text>
+
+  <rect x="20" y="270" width="150" height="52" rx="8" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="95" y="292" text-anchor="middle" class="svg-t" font-size="13" fill="#0b3f76">PDH + battery</text>
+  <text x="95" y="310" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">volts &amp; amps</text>
+
+  <!-- Middle subsystems -->
+  <rect x="250" y="110" width="190" height="60" rx="8" fill="#fff" stroke="#182430" stroke-width="1.5"/>
+  <text x="345" y="134" text-anchor="middle" class="svg-t" font-size="13" font-weight="600">VisionSubsystem</text>
+  <text x="345" y="152" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">seed → maintain → filter</text>
+
+  <rect x="250" y="30" width="190" height="60" rx="8" fill="#fff" stroke="#182430" stroke-width="1.5"/>
+  <text x="345" y="54" text-anchor="middle" class="svg-t" font-size="13" font-weight="600">RobotContainer</text>
+  <text x="345" y="72" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">bindings + auto chooser</text>
+
+  <rect x="250" y="190" width="190" height="60" rx="8" fill="#fff" stroke="#182430" stroke-width="1.5"/>
+  <text x="345" y="214" text-anchor="middle" class="svg-t" font-size="13" font-weight="600">FieldPointAim</text>
+  <text x="345" y="232" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">blue-frame heading math</text>
+
+  <rect x="250" y="270" width="190" height="60" rx="8" fill="#fff" stroke="#182430" stroke-width="1.5"/>
+  <text x="345" y="294" text-anchor="middle" class="svg-t" font-size="13" font-weight="600">PowerMonitor +</text>
+  <text x="345" y="312" text-anchor="middle" class="svg-t" font-size="13" font-weight="600">SystemHealthCheck</text>
+
+  <!-- Drivetrain hub -->
+  <rect x="520" y="110" width="210" height="140" rx="10" fill="#0f5cab"/>
+  <text x="625" y="145" text-anchor="middle" class="svg-t" font-size="15" font-weight="700" fill="#fff">CommandSwerve</text>
+  <text x="625" y="165" text-anchor="middle" class="svg-t" font-size="15" font-weight="700" fill="#fff">Drivetrain</text>
+  <text x="625" y="192" text-anchor="middle" class="svg-t" font-size="11" fill="#cfe1f5">8 Krakens · 4 CANcoders</text>
+  <text x="625" y="208" text-anchor="middle" class="svg-t" font-size="11" fill="#cfe1f5">Pigeon 2 · pose estimator</text>
+  <text x="625" y="230" text-anchor="middle" class="svg-t" font-size="11" fill="#ffd479">owns THE pose</text>
+
+  <!-- Logger bar -->
+  <rect x="250" y="352" width="480" height="36" rx="8" fill="#182430"/>
+  <text x="490" y="375" text-anchor="middle" class="svg-t" font-size="13" fill="#fff">AdvantageKit Logger → .wpilog file + live NT4 → dashboards</text>
+
+  <!-- arrows -->
+  <line x1="170" y1="56" x2="250" y2="58" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="170" y1="136" x2="250" y2="138" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="170" y1="216" x2="250" y2="218" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="170" y1="296" x2="250" y2="298" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="440" y1="60" x2="545" y2="112" stroke="#0f5cab" stroke-width="1.8" marker-end="url(#arrB)"/>
+  <line x1="440" y1="140" x2="520" y2="150" stroke="#0f5cab" stroke-width="1.8" marker-end="url(#arrB)"/>
+  <line x1="440" y1="218" x2="520" y2="200" stroke="#0f5cab" stroke-width="1.8" marker-end="url(#arrB)"/>
+  <line x1="625" y1="250" x2="625" y2="352" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="345" y1="330" x2="345" y2="352" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr)"/>
+  <!-- labels on key arrows -->
+  <text x="472" y="128" class="svg-t" font-size="10.5" fill="#0f5cab">addVisionMeasurement</text>
+  <text x="470" y="222" class="svg-t" font-size="10.5" fill="#0f5cab">swerve requests</text>
+</svg>
+<figcaption><strong>The whole robot on one screen.</strong> Sensors and inputs on the
+left feed subsystems in the middle; everything converges on the drivetrain, which owns
+the single official answer to "where are we?" — and every box reports to the logger at
+the bottom, which is how you'll debug all of it.</figcaption>
+</figure>
+
+<p>Three ideas organize everything you'll read below:</p>
+<p><strong>One owner per fact.</strong> The drivetrain owns the pose. The
+<code>Constants</code> camera array owns the camera list. <code>CanSeam</code> owns how
+CAN buses are made. <code>RobotIdentity</code> owns which robot we're on. When a fact
+lives in exactly one place, changing it is one edit — and it can't disagree with itself.</p>
+<p><strong>Failures should be loud.</strong> A robot that silently does the wrong thing
+is worse than one that visibly breaks. That's why placeholder practice-bot calibration
+is <em>obviously</em> wrong (all zeros, giant banner) instead of subtly wrong, why every
+health problem raises a <em>named</em> alert, and why timeouts log a warning when they fire.</p>
+<p><strong>2026 already paid for these lessons.</strong> Twelve specific bugs from last
+season's code review are designed out of this baseline — not patched, but made
+structurally hard to reintroduce. Section 10 has the full scorecard.</p>
+
+<!-- ================================================================ -->
+<h2 id="command-based">2. Command-based in five minutes</h2>
+<p>WPILib's <strong>command-based</strong> framework has two main characters:</p>
+<p>A <strong>Subsystem</strong> is a chunk of hardware and the code that owns it — the
+drivetrain, a future intake. Each subsystem has a <code>periodic()</code> method that
+runs automatically every 20&nbsp;ms, always, no matter what else is happening. That's
+where monitoring and logging live.</p>
+<p>A <strong>Command</strong> is a thing the robot does for a while — "drive with the
+sticks," "aim at that point," "run the auto." Commands have a tiny lifecycle:
+<code>initialize()</code> once at start, <code>execute()</code> every 20&nbsp;ms,
+<code>isFinished()</code> asked every cycle, <code>end()</code> once at the end.
+The <strong>scheduler</strong> (run from <code>Robot.robotPeriodic()</code>) is the
+referee: it watches buttons, starts and stops commands, and enforces one rule —</p>
+<div class="box note"><span class="box-tag">The requirements rule</span>
+Every command declares which subsystems it <em>requires</em>. Two commands that require
+the same subsystem can never run at once; scheduling the second interrupts the first.
+This is how "hold right bumper to aim" cleanly takes the drivetrain away from normal
+driving and hands it back on release. A command that forgets to declare a requirement
+opts out of this protection — that was 2026 bug 2.10, and you'll see
+<code>addRequirements(...)</code> called religiously in every command here.</div>
+<p>One more player: the <strong>default command</strong>. Each subsystem may have one
+command that runs whenever nothing else claims it. The drivetrain's default command is
+"drive with the joysticks" — which is why the robot is drivable the moment it boots.</p>
+
+<!-- ================================================================ -->
+<h2 id="driving">3. Driving: from stick to swerve module <span class="key">Drivetrain/*</span></h2>
+<p>Push the left stick and, 20&nbsp;ms later, eight motors are doing coordinated math.
+Here's the whole journey:</p>
+
+<figure>
+<svg viewBox="0 0 860 210" role="img" aria-label="Teleop driving data flow">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a5a68"/>
+    </marker>
+  </defs>
+  <rect x="14" y="60" width="130" height="70" rx="8" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="79" y="88" text-anchor="middle" class="svg-t" font-size="12.5" fill="#0b3f76">Raw sticks</text>
+  <text x="79" y="106" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">-1 … 1, drifty</text>
+
+  <rect x="184" y="60" width="150" height="70" rx="8" fill="#fff" stroke="#182430" stroke-width="1.5"/>
+  <text x="259" y="83" text-anchor="middle" class="svg-t" font-size="12.5" font-weight="600">JoystickUtil</text>
+  <text x="259" y="100" text-anchor="middle" class="svg-t" font-size="10.5" fill="#4a5a68">2D deadband · square</text>
+  <text x="259" y="115" text-anchor="middle" class="svg-t" font-size="10.5" fill="#4a5a68">two-sided clamp</text>
+
+  <rect x="374" y="60" width="170" height="70" rx="8" fill="#fff" stroke="#182430" stroke-width="1.5"/>
+  <text x="459" y="83" text-anchor="middle" class="svg-t" font-size="12.5" font-weight="600">FieldCentric request</text>
+  <text x="459" y="100" text-anchor="middle" class="svg-t" font-size="10.5" fill="#4a5a68">m/s + rad/s, field frame</text>
+  <text x="459" y="115" text-anchor="middle" class="svg-t" font-size="10.5" fill="#a86407">operator perspective</text>
+
+  <rect x="584" y="60" width="130" height="70" rx="8" fill="#0f5cab"/>
+  <text x="649" y="88" text-anchor="middle" class="svg-t" font-size="12.5" fill="#fff" font-weight="600">CTRE swerve</text>
+  <text x="649" y="106" text-anchor="middle" class="svg-t" font-size="10.5" fill="#cfe1f5">inverse kinematics</text>
+
+  <rect x="754" y="40" width="92" height="34" rx="6" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="800" y="62" text-anchor="middle" class="svg-t" font-size="11" fill="#0b3f76">8 motors</text>
+  <rect x="754" y="118" width="92" height="34" rx="6" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="800" y="140" text-anchor="middle" class="svg-t" font-size="11" fill="#0b3f76">4 angles</text>
+
+  <line x1="144" y1="95" x2="184" y2="95" stroke="#4a5a68" stroke-width="1.7" marker-end="url(#arr2)"/>
+  <line x1="334" y1="95" x2="374" y2="95" stroke="#4a5a68" stroke-width="1.7" marker-end="url(#arr2)"/>
+  <line x1="544" y1="95" x2="584" y2="95" stroke="#4a5a68" stroke-width="1.7" marker-end="url(#arr2)"/>
+  <line x1="714" y1="82" x2="754" y2="60" stroke="#4a5a68" stroke-width="1.7" marker-end="url(#arr2)"/>
+  <line x1="714" y1="108" x2="754" y2="132" stroke="#4a5a68" stroke-width="1.7" marker-end="url(#arr2)"/>
+  <text x="430" y="170" text-anchor="middle" class="svg-t" font-size="11.5" fill="#4a5a68">…this lambda runs top-to-bottom every 20 ms inside the drivetrain's default command</text>
+</svg>
+<figcaption><strong>The teleop pipeline.</strong> Notice that the code never talks to a
+motor: it builds a <em>request</em> ("go this fast, this direction, spinning this much")
+and CTRE's swerve library figures out what all eight motors must do to make it true.</figcaption>
+</figure>
+
+<p><strong>Field-centric</strong> means "stick up" always drives away from your own
+alliance wall, regardless of which way the robot's nose points — the robot subtracts
+its own heading (from the pose estimate!) before doing wheel math. This is why driving
+gets weird when the pose is wrong, and why the vision section matters to drivers, not
+just programmers.</p>
+
+<div class="box lesson"><span class="box-tag">2026 lesson · the one-sided clamp</span>
+Slow mode in 2026 used <code>Math.max(input, -limit)</code> to cap stick input. Look
+carefully: that only limits <em>one direction</em>. Pushed the other way, the stick was
+never capped at all — slow mode half-worked, all season, and nobody noticed in the shop
+because you naturally test driving forward. <code>JoystickUtil</code> now uses
+<code>MathUtil.clamp(v, -limit, +limit)</code> — a floor <em>and</em> a ceiling — and
+processes X and Y together as one 2D vector so diagonals and deadband behave the same in
+every direction. When you write any limiter: <strong>always ask "what happens with a
+negative input?"</strong></div>
+
+<div class="box try"><span class="box-tag">Try it</span>
+Deploy, then in AdvantageScope plot <code>Drivetrain/ModuleStates</code> on the Swerve
+tab while someone wiggles the sticks (robot on blocks!). You will literally watch the
+request pipeline think. Hold left bumper and watch every speed scale down — in both
+directions.</div>
+
+<!-- ================================================================ -->
+<h2 id="vision">4. Vision: how the robot knows where it is <span class="key">Vision/*</span></h2>
+<p>The drivetrain counts wheel rotations to track position ("odometry"). Wheels slip;
+tiny errors add up; two minutes into a match, pure odometry can be off by a meter. The
+fix: cameras that recognize <strong>AprilTags</strong> — barcodes bolted to the field at
+known coordinates — and calculate the robot's position from them. Fusing "wheels say
+we moved this much" with "camera says we're exactly here" is the whole game.</p>
+
+<p>The Limelight offers two ways to get a pose, and the difference between them is the
+key to the entire design:</p>
+
+<table>
+<tr><th></th><th>MegaTag1</th><th>MegaTag2</th></tr>
+<tr><td><strong>Needs to be told our heading?</strong></td><td>No — solves position <em>and</em> heading from tag geometry alone</td><td>Yes — you feed it the robot's heading every frame</td></tr>
+<tr><td><strong>Quality</strong></td><td>Trustworthy from a cold boot, but noisy at range</td><td>Very stable position — <em>if</em> the heading you fed it was right</td></tr>
+<tr><td><strong>Failure mode</strong></td><td>Jitter</td><td>Garbage in, confident garbage out</td></tr>
+<tr><td><strong>Our use</strong></td><td><strong>Seed</strong>: once, at startup</td><td><strong>Maintain</strong>: every frame after seeding</td></tr>
+</table>
+
+<figure>
+<svg viewBox="0 0 860 330" role="img" aria-label="Vision pipeline: seed then maintain">
+  <defs>
+    <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a5a68"/>
+    </marker>
+    <marker id="arr3g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e7e46"/>
+    </marker>
+    <marker id="arr3r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c22b3d"/>
+    </marker>
+  </defs>
+  <!-- Phase 1 -->
+  <rect x="14" y="16" width="400" height="130" rx="10" fill="#fdf3e0" stroke="#a86407" stroke-dasharray="5 4"/>
+  <text x="30" y="40" class="svg-t" font-size="12" font-weight="600" fill="#a86407">PHASE 1 · UNSEEDED (boot, or after every disable)</text>
+  <rect x="30" y="54" width="170" height="40" rx="6" fill="#fff" stroke="#182430"/>
+  <text x="115" y="79" text-anchor="middle" class="svg-t" font-size="11.5">Ask every camera: MT1?</text>
+  <rect x="230" y="54" width="168" height="40" rx="6" fill="#fff" stroke="#182430"/>
+  <text x="314" y="72" text-anchor="middle" class="svg-t" font-size="11.5">best camera wins:</text>
+  <text x="314" y="87" text-anchor="middle" class="svg-t" font-size="10.5" fill="#4a5a68">most tags, then closest</text>
+  <line x1="200" y1="74" x2="230" y2="74" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr3)"/>
+  <text x="115" y="118" text-anchor="middle" class="svg-t" font-size="10.5" fill="#a86407">retries every ~200 ms,</text>
+  <text x="115" y="132" text-anchor="middle" class="svg-t" font-size="10.5" fill="#a86407">even while disabled</text>
+  <rect x="230" y="104" width="168" height="34" rx="6" fill="#1e7e46"/>
+  <text x="314" y="126" text-anchor="middle" class="svg-t" font-size="11.5" fill="#fff">resetPose( ) → SEEDED</text>
+  <line x1="314" y1="94" x2="314" y2="104" stroke="#1e7e46" stroke-width="1.8" marker-end="url(#arr3g)"/>
+
+  <!-- Phase 2 -->
+  <rect x="14" y="166" width="832" height="148" rx="10" fill="#e5f3ea" stroke="#1e7e46"/>
+  <text x="30" y="190" class="svg-t" font-size="12" font-weight="600" fill="#1e7e46">PHASE 2 · SEEDED (every 20 ms, every camera)</text>
+  <rect x="30" y="204" width="150" height="44" rx="6" fill="#fff" stroke="#182430"/>
+  <text x="105" y="222" text-anchor="middle" class="svg-t" font-size="11">tell camera our</text>
+  <text x="105" y="237" text-anchor="middle" class="svg-t" font-size="11">heading → get MT2</text>
+  <!-- filter chain -->
+  <g class="svg-t" font-size="10.5">
+    <rect x="212" y="204" width="98" height="44" rx="6" fill="#fff" stroke="#c22b3d"/>
+    <text x="261" y="222" text-anchor="middle">null / no</text><text x="261" y="236" text-anchor="middle">tags?</text>
+    <rect x="342" y="204" width="98" height="44" rx="6" fill="#fff" stroke="#c22b3d"/>
+    <text x="391" y="222" text-anchor="middle">spinning</text><text x="391" y="236" text-anchor="middle">&gt; 720°/s?</text>
+    <rect x="472" y="204" width="98" height="44" rx="6" fill="#fff" stroke="#c22b3d"/>
+    <text x="521" y="222" text-anchor="middle">tags &gt; 4 m</text><text x="521" y="236" text-anchor="middle">away?</text>
+    <rect x="602" y="204" width="98" height="44" rx="6" fill="#fff" stroke="#c22b3d"/>
+    <text x="651" y="222" text-anchor="middle">pose off the</text><text x="651" y="236" text-anchor="middle">field (+0.25 m)?</text>
+  </g>
+  <rect x="732" y="200" width="104" height="52" rx="6" fill="#0f5cab"/>
+  <text x="784" y="220" text-anchor="middle" class="svg-t" font-size="10.5" fill="#fff">addVision-</text>
+  <text x="784" y="234" text-anchor="middle" class="svg-t" font-size="10.5" fill="#fff">Measurement</text>
+  <text x="784" y="247" text-anchor="middle" class="svg-t" font-size="9.5" fill="#ffd479">weighted by quality</text>
+
+  <line x1="180" y1="226" x2="212" y2="226" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr3)"/>
+  <line x1="310" y1="226" x2="342" y2="226" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr3)"/>
+  <line x1="440" y1="226" x2="472" y2="226" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr3)"/>
+  <line x1="570" y1="226" x2="602" y2="226" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr3)"/>
+  <line x1="700" y1="226" x2="732" y2="226" stroke="#1e7e46" stroke-width="1.8" marker-end="url(#arr3g)"/>
+  <!-- reject drains -->
+  <line x1="261" y1="248" x2="261" y2="278" stroke="#c22b3d" stroke-width="1.5" marker-end="url(#arr3r)"/>
+  <line x1="391" y1="248" x2="391" y2="278" stroke="#c22b3d" stroke-width="1.5" marker-end="url(#arr3r)"/>
+  <line x1="521" y1="248" x2="521" y2="278" stroke="#c22b3d" stroke-width="1.5" marker-end="url(#arr3r)"/>
+  <line x1="651" y1="248" x2="651" y2="278" stroke="#c22b3d" stroke-width="1.5" marker-end="url(#arr3r)"/>
+  <text x="456" y="298" text-anchor="middle" class="svg-t" font-size="11" fill="#c22b3d">yes → REJECT (a wrong measurement is worse than none — each rejection is logged with its reason)</text>
+</svg>
+<figcaption><strong>Seed once, maintain forever, trust nothing blindly.</strong> Every
+box in the filter chain is a question; answering "yes" to any of them throws the
+measurement away. What survives is weighted: more tags and closer range = the filter
+listens harder (<code>Vision/&lt;camera&gt;/StdDev</code> shows the weight live).</figcaption>
+</figure>
+
+<p>Three details worth understanding deeply:</p>
+<p><strong>Heading is gyro territory.</strong> Once seeded, vision is only allowed to
+correct X and Y — its rotation estimate is fed to the filter with a gigantic
+uncertainty (9999999), which is Kalman-filter language for "ignore this." The Pigeon's
+heading barely drifts in a match, while vision heading jitters; letting them fight made
+2026's pose shimmy.</p>
+<p><strong>Every disable clears the seed.</strong> <code>Robot.disabledInit()</code>
+calls <code>clearPoseSeeded()</code>, and re-seeding restarts automatically. Fresh
+enable, fresh lock — never trust drift you accumulated before sitting still.</p>
+<p><strong>The camera list is one array.</strong> <code>Constants.VisionConstants.kCompCameras</code>
+holds a name and mounting position per camera. The subsystem loops over whatever is
+there — adding a fourth camera at kickoff is one line, and its mounting offsets are
+pushed to the Limelight automatically at boot.</p>
+
+<div class="box lesson"><span class="box-tag">2026 lesson · the lopsided field fence</span>
+2026's "is this pose possible?" filter checked <code>y &lt; 0.5 || x &lt; 0.5 || x &gt; 17</code>
+— three edges of a four-edged field, with margins that pointed <em>inward</em>. Result:
+no filtering at all past one sideline, and legitimate poses <em>rejected</em> whenever
+the robot legally hugged a wall (exactly where autos start!). The rewritten
+<code>isOnField()</code> bounds both ends of both axes symmetrically, with a small
+margin pointing <em>outward</em>, and reads field dimensions from WPILib's official tag
+layout so they update themselves at 2027 kickoff. The lesson generalizes: <strong>when
+you write a boundary check, draw the rectangle on paper and check all four lines.</strong></div>
+
+<div class="box try"><span class="box-tag">Try it</span>
+Set the robot on the floor near a printed AprilTag, open AdvantageScope's Odometry tab,
+and add <code>Drivetrain/Pose</code>. Watch <code>Vision/SeedStatus</code> flip from
+<code>WAITING_FOR_VISION</code> to <code>OK from limelight-… [MT1]</code>. Then cover
+the camera: the pose keeps moving on odometry alone. Uncover it and watch vision pull
+it back. That tug is the fusion working.</div>
+
+<!-- ================================================================ -->
+<h2 id="aiming">5. Aiming without the red-alliance bug <span class="key">Aim/*</span></h2>
+<p><code>FieldPointAim</code> does one generic thing: while the driver keeps
+translating, it continuously rotates the robot to face a chosen point on the field.
+When the 2027 game is revealed, "the point" becomes the goal / feeder / whatever —
+the pattern doesn't change.</p>
+<p>The interesting part is what's <em>missing</em>: there is no <code>if (alliance ==
+Red)</code> anywhere in the file. That absence is the design.</p>
+
+<div class="box lesson"><span class="box-tag">2026 lesson · the 180° aim bug</span>
+2026's aiming worked all season… until the first red-alliance match, where it pointed
+exactly backwards. Why: the swerve request layer already flips joystick translation for
+red (that's "operator perspective"), but the aiming code <em>also</em> did its own
+red/blue flip on the target heading. One value was in field-language, one in
+driver-language; comparing them was correct on blue and 180° wrong on red. Testing
+happened on blue. The categorical fix is a rule, not a patch: <strong>do all math in
+blue-alliance field coordinates, and let alliance enter in exactly one place.</strong></div>
+
+<p>Here, that one place is the request itself. Phoenix 6 (26.3.0+) lets a
+<code>FieldCentricFacingAngle</code> request be told its target direction is
+blue-frame:</p>
+<pre><span class="c">// The ONE place alliance is handled — CTRE flips for red internally.</span>
+new SwerveRequest.FieldCentricFacingAngle()
+    .withTargetDirectionPerspective(ForwardPerspectiveValue.<span class="h">BlueAlliance</span>);
+
+<span class="c">// Everything else is pure blue-frame geometry — no ifs:</span>
+Rotation2d headingToTarget = targetPoint.minus(robotPose.getTranslation()).getAngle();</pre>
+<p>Translation stays operator-perspective (the driver's stick feels normal), heading is
+closed-loop locked to a field-frame direction, and there is nothing for a future edit
+to get backwards. PathPlanner follows the same rule — its one flip point is the
+supplier passed to <code>AutoBuilder.configure</code>, and the health check reuses
+PathPlanner's own <code>FlippingUtil</code> instead of hand-rolling a mirror.</p>
+
+<!-- ================================================================ -->
+<h2 id="requests">6. The request pattern <span class="key">Template/*</span></h2>
+<p>The <code>subsystems/template/</code> folder is a complete, working demonstration of
+the team's <strong>request-based state manager</strong> — the pattern every real 2027
+mechanism will copy. It "drives" a pretend motor so you can play with it today (hold A
+and B on the controller and watch <code>Template/CurrentRequest</code>).</p>
+<p><strong>The problem it solves:</strong> two commands both want the same mechanism.
+The driver holds a button to run an intake fast; an automation wants it slow in the
+background. If both write motor power directly, last-writer-wins, and when the driver's
+command ends and zeroes the motor, it stomps the automation that still wanted it.</p>
+<p><strong>The pattern:</strong> commands never touch hardware. They <em>add a
+request</em> when they start and <em>remove it</em> when they end. The subsystem keeps
+the set of active requests and, whenever it changes, applies the highest-priority one.</p>
+
+<figure>
+<svg viewBox="0 0 860 250" role="img" aria-label="Request arbitration diagram">
+  <defs>
+    <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a5a68"/>
+    </marker>
+  </defs>
+  <g class="svg-t">
+  <rect x="14" y="20" width="180" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="104" y="40" text-anchor="middle" font-size="11.5" fill="#0b3f76">Command A (button held)</text>
+  <text x="104" y="56" text-anchor="middle" font-size="10.5" fill="#4a5a68">add NORMAL_ACTION (20)</text>
+  <rect x="14" y="86" width="180" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="104" y="106" text-anchor="middle" font-size="11.5" fill="#0b3f76">Command B (button held)</text>
+  <text x="104" y="122" text-anchor="middle" font-size="10.5" fill="#4a5a68">add URGENT_ACTION (30)</text>
+  <rect x="14" y="152" width="180" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab" stroke-dasharray="4 3"/>
+  <text x="104" y="172" text-anchor="middle" font-size="11.5" fill="#0b3f76">Auto routine</text>
+  <text x="104" y="188" text-anchor="middle" font-size="10.5" fill="#4a5a68">add BACKGROUND_ACTION (10)</text>
+
+  <rect x="280" y="60" width="240" height="120" rx="9" fill="#fff" stroke="#182430" stroke-width="1.6"/>
+  <text x="400" y="86" text-anchor="middle" font-size="13" font-weight="600">Active request SET</text>
+  <text x="400" y="110" text-anchor="middle" font-size="11.5" fill="#4a5a68">{ URGENT(30), NORMAL(20),</text>
+  <text x="400" y="126" text-anchor="middle" font-size="11.5" fill="#4a5a68">BACKGROUND(10) }</text>
+  <text x="400" y="156" text-anchor="middle" font-size="11" fill="#c22b3d">requests come and go freely</text>
+
+  <rect x="580" y="76" width="150" height="88" rx="9" fill="#182430"/>
+  <text x="655" y="102" text-anchor="middle" font-size="12.5" fill="#fff" font-weight="600">arbitrate()</text>
+  <text x="655" y="122" text-anchor="middle" font-size="10.5" fill="#ffd479">max by .priority field</text>
+  <text x="655" y="142" text-anchor="middle" font-size="10.5" fill="#cfe1f5">→ URGENT wins</text>
+
+  <rect x="766" y="94" width="80" height="52" rx="7" fill="#1e7e46"/>
+  <text x="806" y="116" text-anchor="middle" font-size="11" fill="#fff">hardware</text>
+  <text x="806" y="132" text-anchor="middle" font-size="11" fill="#fff">output</text>
+
+  <line x1="194" y1="43" x2="280" y2="80" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr4)"/>
+  <line x1="194" y1="109" x2="280" y2="115" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr4)"/>
+  <line x1="194" y1="175" x2="280" y2="150" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr4)"/>
+  <line x1="520" y1="120" x2="580" y2="120" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr4)"/>
+  <line x1="730" y1="120" x2="766" y2="120" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr4)"/>
+  <text x="430" y="228" text-anchor="middle" font-size="11.5" fill="#4a5a68">Release B → URGENT leaves the set → arbitration falls back to NORMAL automatically. Nobody "turns it back on."</text>
+  </g>
+</svg>
+<figcaption><strong>Arbitration, not arguments.</strong> Any number of commands can
+want the subsystem at once; behavior is always deterministic — highest active priority
+wins — and releasing a high-priority request <em>falls back</em> instead of falling off.</figcaption>
+</figure>
+
+<div class="box lesson"><span class="box-tag">2026 lesson · the priority field nobody read</span>
+2026's request enums carried priority numbers — and the arbitration loop never looked
+at them. It walked declaration order, which merely <em>happened</em> to agree. Any
+student rearranging the enum for readability would have silently changed robot
+behavior. Now <code>arbitrate()</code> explicitly sorts by the field:
+<code>max(Comparator.comparingInt(r -&gt; r.priority))</code> — one source of truth, and
+the comparator line <em>is</em> the policy, readable in plain sight. If a codebase
+carries two ways to express the same rule, delete one.</div>
+
+<p><code>TemplateActionCommand</code> demonstrates two more habits in twenty lines:
+the request is removed in <code>end()</code> <em>even when interrupted</em> (so requests
+never leak), and <code>isFinished()</code> pairs its sensor condition with a
+<strong>timeout</strong> that logs a warning when it fires — because in an auto, a
+command waiting forever on a broken sensor eats the whole autonomous period
+(2026 bug 2.6).</p>
+
+<!-- ================================================================ -->
+<h2 id="logging">7. Logging &amp; dashboards — your X-ray vision <span class="key">Logger.recordOutput</span></h2>
+<p>You cannot ssh into a robot mid-match. Logging is how the robot testifies about what
+happened — and on this baseline, logging is not an afterthought bolted on with
+<code>SmartDashboard.putNumber</code> calls. (In fact, SmartDashboard appears
+<em>nowhere</em> in this codebase: it is removed from WPILib in 2027, and 2026's habit
+of using it live while the "real" logging sat commented out is exactly what we're not
+repeating.)</p>
+<p>Every interesting value flows through one call — <code>Logger.recordOutput("Some/Key",
+value)</code> — and AdvantageKit fans it out to two destinations at once:</p>
+
+<figure>
+<svg viewBox="0 0 860 270" role="img" aria-label="Logging data flow">
+  <defs>
+    <marker id="arr5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a5a68"/>
+    </marker>
+  </defs>
+  <g class="svg-t">
+  <rect x="14" y="30" width="170" height="150" rx="9" fill="#fff" stroke="#182430" stroke-width="1.5"/>
+  <text x="99" y="56" text-anchor="middle" font-size="12.5" font-weight="600">Every subsystem</text>
+  <text x="99" y="80" text-anchor="middle" font-size="10.5" fill="#4a5a68">Drivetrain/Pose</text>
+  <text x="99" y="98" text-anchor="middle" font-size="10.5" fill="#4a5a68">Vision/OdometryOnlyPose</text>
+  <text x="99" y="116" text-anchor="middle" font-size="10.5" fill="#4a5a68">Power/ChannelPeaks</text>
+  <text x="99" y="134" text-anchor="middle" font-size="10.5" fill="#4a5a68">Template/CurrentRequest</text>
+  <text x="99" y="152" text-anchor="middle" font-size="10.5" fill="#4a5a68">Health/AutoStartAligned…</text>
+
+  <rect x="250" y="75" width="170" height="60" rx="9" fill="#182430"/>
+  <text x="335" y="100" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">AdvantageKit</text>
+  <text x="335" y="118" text-anchor="middle" font-size="11" fill="#cfe1f5">Logger (in Robot.java)</text>
+
+  <rect x="490" y="20" width="160" height="56" rx="9" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="570" y="43" text-anchor="middle" font-size="12" fill="#0b3f76" font-weight="600">.wpilog file</text>
+  <text x="570" y="60" text-anchor="middle" font-size="10.5" fill="#4a5a68">USB stick · after match</text>
+
+  <rect x="490" y="130" width="160" height="56" rx="9" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="570" y="153" text-anchor="middle" font-size="12" fill="#0b3f76" font-weight="600">NetworkTables 4</text>
+  <text x="570" y="170" text-anchor="middle" font-size="10.5" fill="#4a5a68">live · during match</text>
+
+  <rect x="700" y="8" width="146" height="40" rx="7" fill="#fff" stroke="#182430"/>
+  <text x="773" y="33" text-anchor="middle" font-size="11">AdvantageScope</text>
+  <rect x="700" y="56" width="146" height="40" rx="7" fill="#fff" stroke="#182430"/>
+  <text x="773" y="74" text-anchor="middle" font-size="11">5675 WPILOG</text>
+  <text x="773" y="88" text-anchor="middle" font-size="11">Analyzer</text>
+  <rect x="700" y="118" width="146" height="40" rx="7" fill="#fff" stroke="#182430"/>
+  <text x="773" y="143" text-anchor="middle" font-size="11">Elastic (drive team)</text>
+  <rect x="700" y="166" width="146" height="40" rx="7" fill="#fff" stroke="#182430"/>
+  <text x="773" y="191" text-anchor="middle" font-size="11">AdvantageScope (live)</text>
+
+  <line x1="184" y1="105" x2="250" y2="105" stroke="#4a5a68" stroke-width="1.7" marker-end="url(#arr5)"/>
+  <line x1="420" y1="90" x2="490" y2="50" stroke="#4a5a68" stroke-width="1.7" marker-end="url(#arr5)"/>
+  <line x1="420" y1="120" x2="490" y2="155" stroke="#4a5a68" stroke-width="1.7" marker-end="url(#arr5)"/>
+  <line x1="650" y1="36" x2="700" y2="28" stroke="#4a5a68" stroke-width="1.5" marker-end="url(#arr5)"/>
+  <line x1="650" y1="56" x2="700" y2="72" stroke="#4a5a68" stroke-width="1.5" marker-end="url(#arr5)"/>
+  <line x1="650" y1="146" x2="700" y2="138" stroke="#4a5a68" stroke-width="1.5" marker-end="url(#arr5)"/>
+  <line x1="650" y1="166" x2="700" y2="184" stroke="#4a5a68" stroke-width="1.5" marker-end="url(#arr5)"/>
+  <text x="335" y="235" text-anchor="middle" font-size="11.5" fill="#4a5a68">One recordOutput call. Two destinations. Four tools. Zero SmartDashboard.</text>
+  </g>
+</svg>
+<figcaption><strong>One call, everywhere.</strong> The same key you watch live in
+Elastic during a match is the key you graph in the Analyzer afterward — no separate
+"dashboard code" and "logging code" to drift apart.</figcaption>
+</figure>
+
+<h3>Dashboards as a learning tool</h3>
+<p>Here's the suggested way to <em>use</em> the two dashboards — not just as displays,
+but as how new programmers build intuition:</p>
+<p><strong>Elastic is the match dashboard.</strong> Keep it boring and glanceable:
+the Alerts widget (every health check reports there by name), the auto chooser,
+battery voltage, <code>Vision/SeedStatus</code>. Drive team sees green or they see a
+named problem. Build the layout together once and save it with the code.</p>
+<p><strong>AdvantageScope is the engineering microscope.</strong> A great standing
+exercise for every new programmer, in order: (1) Odometry tab — add
+<code>Drivetrain/Pose</code>, push the robot by hand, watch it move on the field map;
+(2) add <code>Vision/OdometryOnlyPose</code> in a second color and watch the two
+separate as wheels slip; (3) Swerve tab with <code>Drivetrain/ModuleStates</code> vs
+<code>ModuleTargets</code> — commanded vs actual, the daily driver for "why does it
+drive weird"; (4) Line graph of <code>Power/BatteryVoltage</code> during hard driving —
+learn what brownout looks like <em>before</em> it costs a match. Each exercise is ten
+minutes and permanently upgrades what a student can debug.</p>
+<p><strong>Rule of thumb:</strong> when you write a feature, decide its log keys in the
+same commit. If you can't name what you'd want to see on a graph when it misbehaves,
+you're not done designing it.</p>
+
+<div class="box note"><span class="box-tag">The team's WPILOG Analyzer</span>
+The team's own <em>Unified WPILOG Analyzer</em> (the HTML tool in the project
+knowledge) reads exactly the files this robot writes. Feed it a match
+<code>.wpilog</code> and point its pose sources at <code>Drivetrain/Pose</code> (the
+fused track) and <code>Vision/OdometryOnlyPose</code> (the shadow track that never gets
+vision corrections). The gap between those two lines <em>is</em> wheel drift — the
+robot keeps both on purpose, anchored to the same seed, precisely so that comparison
+stays meaningful. Heat maps of <code>Power/ChannelPeaks</code> answer "what browned us
+out" without guessing.</div>
+
+<!-- ================================================================ -->
+<h2 id="health">8. Power, health checks, and the pre-auto routine <span class="key">Health/*</span></h2>
+<p>Two subsystems watch the robot so humans don't have to remember to:</p>
+<p><strong>PowerMonitor</strong> tracks battery voltage, total and per-channel current,
+per-channel <em>peaks</em> across the match, and amp-hours — with alerts at warning and
+critical thresholds. One structural detail matters beyond power:</p>
+<div class="box lesson"><span class="box-tag">2026 lesson · the phantom device</span>
+<code>new PowerDistribution(...)</code> "succeeds" even when no such device is on the
+CAN bus — you just get an object whose channels all read zero. 2026 wrapped the
+constructor in try/catch and believed it. The 2027 rule: <strong>constructing a
+hardware object proves nothing; demand proof of life.</strong> PowerMonitor only marks
+the device real after it reports a plausible battery voltage (&gt;4&nbsp;V) for ten
+straight cycles; otherwise a named alert says it's missing and its readings are
+skipped, not trusted. The same principle explains why the health check tests that the
+gyro's data is <em>fresh</em>, not merely that the gyro is "connected."</div>
+
+<p><strong>SystemHealthCheck</strong> runs the automated half of the pre-match
+checklist, every cycle, while disabled — which is exactly the window when the robot
+sits on the field before a match. Each check raises its own narrowly-named alert
+("<code>limelight-back not responding</code>", not "something's wrong"), because a
+stressed pit crew needs a destination, not a mood. It verifies: every expected CAN
+device answers (missing ones listed by name), gyro data fresh, every camera's
+heartbeat beating, battery match-safe, a real auto selected, and deployed constants
+matching the physical robot.</p>
+
+<h3>The pre-auto startup routine</h3>
+<p>The last two checks are the 2027 addition: before auto ever starts, the robot
+compares its <strong>live fused pose</strong> against the <strong>selected auto's
+starting pose</strong> (read from the PathPlanner file, mirrored via PathPlanner's own
+utility on red). More than 0.5&nbsp;m off, or facing more than 15° wrong, and an alert
+names the auto and the error size. Setup stops being a guess:</p>
+<pre><span class="c">Alerts panel, robot sitting on the field:</span>
+<span class="s">✓ CAN devices OK          ✓ Cameras OK           ✓ Gyro fresh</span>
+<span class="s">✓ Vision seeded (MT1)     ✓ Battery 12.7 V</span>
+<span class="h">⚠ Robot 0.82 m from 'CenterTwoPiece' start position</span>
+<span class="c">→ slide the robot until the warning clears. Then play.</span></pre>
+<p>Notice the quiet bonus: this check can only pass if the <em>entire vision
+pipeline</em> — cameras, seeding, filtering, fusion — is alive. Green light on
+positioning is a green light on localization.</p>
+
+<!-- ================================================================ -->
+<h2 id="systemcore">9. The SystemCore seams (2027 migration map) <span class="key">★ SEAM ★</span></h2>
+<p>In January 2027, FRC replaces the roboRIO with <strong>SystemCore</strong> — the
+biggest control-system change in the program's history. This baseline is built on the
+<em>current stable</em> toolchain so it deploys to real hardware today, and every place
+the migration will touch is fenced behind one access point with a
+<code>★ SYSTEMCORE MIGRATION SEAM ★</code> banner comment. The migration plan is:
+<strong>practice bot first</strong>, and only the seams change.</p>
+<table>
+<tr><th>Seam</th><th>File</th><th>What changes when 2027 stable ships</th></tr>
+<tr><td>CAN bus construction</td><td><code>util/CanSeam.java</code></td>
+<td>SystemCore has multiple onboard CAN buses; Phoenix 6 moves to a
+<code>CANBus.systemCore(busId)</code>-style factory and constructing devices from bare
+name strings is removed. Change the body of <code>driveBus()</code>; nothing else in
+the codebase touches bus names.</td></tr>
+<tr><td>Vision timestamps</td><td><code>drivetrain/CommandSwerveDrivetrain.java</code>
+(<code>addVisionMeasurement</code> overrides)</td>
+<td>Today the roboRIO and Phoenix run different clocks, so
+<code>Utils.fpgaToCurrentTime()</code> converts Limelight timestamps — skip it and the
+pose quietly corrupts. On SystemCore the clocks are shared; CTRE deletes the
+converter and their generator removes these overrides. Re-run the generator, match its
+output. VisionSubsystem doesn't change — that's the point of the seam.</td></tr>
+<tr><td>Swerve calibration</td><td><code>generated/TunerConstants*.java</code></td>
+<td>Regenerated by the CTRE tool against the 2027 toolchain (practice file first).
+Re-apply the two ★-marked 5675 edits after any regeneration.</td></tr>
+<tr><td>Robot identity</td><td><code>util/RobotIdentity.java</code></td>
+<td><code>RobotController.getSerialNumber()</code> reads a roboRIO serial; verify the
+SystemCore equivalent and update the one detection method.</td></tr>
+<tr><td>Joystick math</td><td><code>util/JoystickUtil.java</code></td>
+<td>2027 WPILib adds an official 2D joystick utility doing what this class does —
+consider swapping to it. Concepts transfer 1:1.</td></tr>
+<tr><td>Dashboard chooser</td><td><code>RobotContainer.java</code></td>
+<td>SmartDashboard/NT3 are removed in 2027; this codebase already uses zero
+SmartDashboard, and the chooser goes through AdvantageKit's
+<code>LoggedDashboardChooser</code>, which tracks the 2027 API internally. Verify its
+class name against the stable 2027 AdvantageKit release.</td></tr>
+</table>
+<div class="box seam"><span class="box-tag">The rule that makes this work</span>
+Nothing in this repo guesses at unreleased 2027 API names — alpha names shift, and code
+written against them breaks twice. Each seam comment describes the <em>destination</em>
+in words; the <em>diff</em> gets written when the stable release exists to compile
+against. Until then, everything here builds and drives on the hardware the team
+actually owns. Grep for <code>SYSTEMCORE MIGRATION SEAM</code> to see every site.</div>
+
+<!-- ================================================================ -->
+<h2 id="lessons">10. Twelve 2026 lessons, designed out</h2>
+<p>The 2026 code review found these. Each one is not merely fixed but made structurally
+hard to reintroduce — and each fix's home file explains its story in a comment.</p>
+<table>
+<tr><th>#</th><th>2026 bug</th><th>2027 design answer</th><th>Where</th></tr>
+<tr><td>2.1</td><td>Named commands registered as shared instances — state leaked between auto uses</td><td>Every registration uses <code>Commands.defer(...)</code> (a factory), from the very first placeholder</td><td><code>RobotContainer.registerNamedCommands</code></td></tr>
+<tr><td>2.2</td><td>Hand-rolled red/blue flip fought operator perspective → aimed 180° wrong on red</td><td>All math blue-frame; alliance enters only via <code>TargetDirectionPerspective</code> / AutoBuilder's flip supplier</td><td><code>FieldPointAim</code></td></tr>
+<tr><td>2.3</td><td>One-sided <code>Math.max</code> "clamp" — slow mode limited one direction only</td><td>Two-sided <code>MathUtil.clamp</code>, 2D circular stick processing</td><td><code>JoystickUtil</code></td></tr>
+<tr><td>2.4</td><td>Timer/reset written but never started/called — feature silently dead</td><td>Timers restarted where the timed thing begins; resets wired to lifecycle in the same commit</td><td><code>TemplateActionCommand</code>, <code>Robot.autonomousInit</code></td></tr>
+<tr><td>2.6</td><td>Hardware-gated <code>isFinished()</code> hung forever when a sensor failed</td><td>Sensor <strong>or</strong> timeout, with a logged warning when the timeout fires</td><td><code>TemplateActionCommand</code></td></tr>
+<tr><td>2.7</td><td>Auto chooser default was a string lookup that could silently match nothing</td><td>Default is the DriveOffLine command <em>object</em>; PathPlanner autos enumerated from files actually deployed; health check nags until a real auto is picked</td><td><code>RobotContainer.buildAutoChooser</code></td></tr>
+<tr><td>2.8</td><td>Field-bounds filter checked 3 of 4 edges, margins pointed inward</td><td>Symmetric bounds, both axes, 0.25 m <em>outward</em> margin, dimensions from the official tag layout</td><td><code>VisionSubsystem.isOnField</code></td></tr>
+<tr><td>2.9</td><td><code>.schedule()</code> fired inside a command — ran outside parent's lifecycle</td><td>Compose, don't schedule: sequences/deadlines only</td><td><code>DriveOffLine</code></td></tr>
+<tr><td>2.10</td><td>Command skipped <code>addRequirements</code> — conflicts invisible to scheduler</td><td>Requirements declared in every command constructor, demonstrated in the template</td><td><code>TemplateActionCommand</code>, <code>FieldPointAim</code></td></tr>
+<tr><td>2.11</td><td>(auto breadcrumbs missing — failures undiagnosable)</td><td>Placeholder named command prints checkpoints; pattern ready for real ones</td><td><code>RobotContainer</code></td></tr>
+<tr><td>2.12</td><td>PDH "detected" because its constructor didn't throw</td><td>Liveness state machine: proof-of-life voltage for N cycles before trusting</td><td><code>PowerMonitor</code></td></tr>
+<tr><td>—</td><td>Priority field on requests that arbitration never read</td><td>Arbitration explicitly sorts by the field; the comparator is the policy</td><td><code>TemplateSubsystem.arbitrate</code></td></tr>
+</table>
+
+<!-- ================================================================ -->
+<h2 id="kickoff">11. Kickoff day: how to extend this</h2>
+<p>January 2027, game reveal weekend. Here's the play:</p>
+<p><strong>1. Mechanisms.</strong> Copy <code>subsystems/template/</code> per mechanism.
+Rename the enum to the mechanism's requests, put real motors in the subsystem
+constructor (via <code>CanSeam</code>, never a raw bus string), real sensor reads in the
+command's <code>isFinished()</code> — keeping the timeout. Delete the template's demo
+bindings from RobotContainer once real ones exist.</p>
+<p><strong>2. Field points.</strong> Add the game's aim-worthy coordinates to
+<code>FieldConstants</code> (blue-frame, always). <code>FieldPointAim</code> works
+immediately; bind buttons that call <code>setTargetPoint</code>.</p>
+<p><strong>3. Cameras.</strong> Re-measure mounts on the 2027 chassis, update the one
+array in <code>Constants</code>. Done.</p>
+<p><strong>4. Autos.</strong> Draw paths in the PathPlanner GUI (enable Reset Odometry
+on every start pose), register real named commands — deferred, like the placeholder
+shows. New autos appear in the chooser by themselves, and the pre-auto positioning
+check starts verifying your lineup automatically.</p>
+<p><strong>5. Field dimensions.</strong> Install 2027 WPILib; the tag layout — and with
+it the vision bounds and field constants — updates itself. Verify once.</p>
+<p><strong>6. SystemCore.</strong> When (and only when) the stable 2027 toolchain
+ships: practice bot first, seams only. Section 9 is the map.</p>
+
+<p style="margin-top:40px; padding-top:18px; border-top:2px solid var(--ink);
+font-family:var(--display); font-size:18px;">The chassis runs. It knows where it is.
+Everything else is January's problem — and now you know exactly where January's code
+will go.</p>
+
+</div>
+</body>
+</html>

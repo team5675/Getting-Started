@@ -6,64 +6,17 @@
 <title>Team 5675 — Getting Started: From Zero to Your First Robot Code</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --paper: #f6f8fa; --card: #ffffff; --ink: #182430; --ink-soft: #4a5a68;
-    --blue: #0f5cab; --blue-soft: #e3edf8;
-    --red: #c22b3d; --red-soft: #fbe9ec;
-    --green: #1e7e46; --green-soft: #e5f3ea;
-    --amber: #a86407; --amber-soft: #fdf3e0;
-    --line: #d5dde4;
-    --mono: 'JetBrains Mono', ui-monospace, monospace;
-    --display: 'Chakra Petch', sans-serif;
-    --body: 'Public Sans', system-ui, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--body); font-size:16.5px; line-height:1.65; }
-  .wrap { max-width: 860px; margin:0 auto; padding:0 22px 100px; }
-  header.hero {
-    border-bottom:3px solid var(--ink); padding:48px 0 28px; margin-bottom:36px;
-    background:
-      linear-gradient(to right, transparent 0 49.6%, var(--line) 49.6% 50.4%, transparent 50.4%),
-      repeating-linear-gradient(to right, transparent 0 54px, #eef2f5 54px 55px),
-      repeating-linear-gradient(to bottom, transparent 0 54px, #eef2f5 54px 55px);
-  }
-  .hero-tag { font-family:var(--mono); font-size:13px; letter-spacing:.08em; color:var(--blue); text-transform:uppercase; }
-  h1 { font-family:var(--display); font-size:clamp(28px,5vw,40px); line-height:1.15; margin:10px 0 12px; letter-spacing:-0.01em; }
-  .hero p.lede { font-size:18px; color:var(--ink-soft); max-width:46em; margin:0; }
-  h2 { font-family:var(--display); font-size:24px; margin:56px 0 4px; padding-top:16px; border-top:2px solid var(--ink); }
-  h2 .n { display:inline-block; font-family:var(--mono); font-size:13px; background:var(--ink); color:#fff; padding:2px 10px; border-radius:5px; vertical-align:middle; margin-right:10px; }
-  h3 { font-family:var(--display); font-size:18px; margin:26px 0 6px; }
-  p { margin:12px 0; }
-  a { color:var(--blue); }
-  code { font-family:var(--mono); font-size:.86em; background:var(--blue-soft); padding:1px 6px; border-radius:4px; color:#0b3f76; }
-  pre { font-family:var(--mono); font-size:13.5px; line-height:1.55; background:#10202e; color:#dbe7f1; border-radius:8px; padding:15px 18px; overflow-x:auto; }
-  pre code { background:none; padding:0; color:inherit; }
-  .box { border-radius:8px; padding:13px 18px; margin:18px 0; }
-  .box .box-tag { font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:4px; }
-  .try { background:var(--green-soft); border-left:4px solid var(--green); }
-  .try .box-tag { color:var(--green); }
-  .oops { background:var(--red-soft); border-left:4px solid var(--red); }
-  .oops .box-tag { color:var(--red); }
-  .next { background:var(--amber-soft); border-left:4px dashed var(--amber); }
-  .next .box-tag { color:var(--amber); }
-  .read { background:var(--blue-soft); border-left:4px solid var(--blue); }
-  .read .box-tag { color:var(--blue); }
-  figure { margin:24px 0; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 14px 6px; }
-  figcaption { font-size:13.5px; color:var(--ink-soft); padding:8px 8px; border-top:1px dashed var(--line); margin-top:8px; }
-  figure svg { width:100%; height:auto; display:block; }
-  ol li, ul li { margin:7px 0; }
-  table { border-collapse:collapse; width:100%; margin:16px 0; font-size:14.5px; }
-  th { font-family:var(--display); text-align:left; font-size:13px; border-bottom:2px solid var(--ink); padding:7px 9px; }
-  td { border-bottom:1px solid var(--line); padding:7px 9px; vertical-align:top; }
-  .toc { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 22px; columns:2; column-gap:36px; font-size:14.5px; }
-  .toc a { text-decoration:none; display:block; padding:3px 0; }
-  .toc a:hover { text-decoration:underline; }
-  @media (max-width:640px) { .toc { columns:1; } }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrap">
+
+<nav class="site-nav">
+  <span class="brand">FRC 5675</span>
+  <a href="index.html" class="current">Getting Started</a>
+  <a href="exercises.html">Exercise Ladder</a>
+  <a href="teaching-guide.html">Robot Architecture</a>
+</nav>
 
 <header class="hero">
   <span class="hero-tag">FRC Team 5675 · Getting Started · zero programming experience required</span>
@@ -103,29 +56,38 @@ around. A competition robot's program is, underneath everything, a loop that run
 what should the motors do about it?</i> That's genuinely most of what a robot program is.
 Everything in this guide builds toward being able to read and write that loop.</p>
 <figure>
-<svg viewBox="0 0 720 190" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg">
   <defs><marker id="rd1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
   <rect x="10" y="16" width="150" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
-  <text x="85" y="44" text-anchor="middle" font-size="12.5" fill="#0f5cab" font-weight="bold">Chapters 1–8</text>
-  <text x="85" y="58" text-anchor="middle" font-size="10.5" fill="#4a5a68">Java basics (this guide)</text>
-  <path d="M160 39 H250" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
-  <rect x="252" y="16" width="150" height="46" rx="7" fill="#fdf3e0" stroke="#a86407"/>
-  <text x="327" y="44" text-anchor="middle" font-size="12.5" fill="#a86407" font-weight="bold">Chapter 9</text>
-  <text x="327" y="58" text-anchor="middle" font-size="10.5" fill="#4a5a68">Subsystems &amp; Commands</text>
-  <path d="M402 39 H492" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
-  <rect x="494" y="16" width="150" height="46" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
-  <text x="569" y="44" text-anchor="middle" font-size="12.5" fill="#1e7e46" font-weight="bold">Exercise Ladder</text>
-  <text x="569" y="58" text-anchor="middle" font-size="10.5" fill="#4a5a68">the real 2027 codebase</text>
-  <path d="M569 62 V96" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
-  <rect x="419" y="98" width="300" height="46" rx="7" fill="#fbe9ec" stroke="#c22b3d"/>
-  <text x="569" y="126" text-anchor="middle" font-size="12.5" fill="#c22b3d" font-weight="bold">January 2027 kickoff</text>
-  <text x="569" y="140" text-anchor="middle" font-size="10.5" fill="#4a5a68">you build the real mechanisms</text>
-  <text x="10" y="175" font-size="12" fill="#4a5a68">Nobody on this team started already knowing this. Every line of the real</text>
-  <text x="10" y="189" font-size="12" fill="#4a5a68">codebase was, at some point, somebody's confusing first program.</text>
+  <text x="85" y="38" text-anchor="middle" font-size="12.5" fill="#0f5cab" font-weight="bold">Chapters 1–8</text>
+  <text x="85" y="54" text-anchor="middle" font-size="10.5" fill="#4a5a68">Java basics (this guide)</text>
+  <path d="M160 39 H242" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
+  <rect x="244" y="16" width="150" height="46" rx="7" fill="#fdf3e0" stroke="#a86407"/>
+  <text x="319" y="38" text-anchor="middle" font-size="12.5" fill="#a86407" font-weight="bold">Chapter 9</text>
+  <text x="319" y="54" text-anchor="middle" font-size="10.5" fill="#4a5a68">Subsystems &amp; Commands</text>
+  <path d="M300 64 L120 96" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
+  <path d="M340 64 L470 96" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
+  <rect x="10" y="98" width="220" height="50" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
+  <text x="120" y="120" text-anchor="middle" font-size="12.5" fill="#1e7e46" font-weight="bold">Exercise Ladder</text>
+  <text x="120" y="136" text-anchor="middle" font-size="10.5" fill="#4a5a68">hands-on rungs, real repo</text>
+  <rect x="360" y="98" width="220" height="50" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="470" y="120" text-anchor="middle" font-size="12.5" fill="#0f5cab" font-weight="bold">Robot Architecture</text>
+  <text x="470" y="136" text-anchor="middle" font-size="10.5" fill="#4a5a68">why it's built this way</text>
+  <path d="M232 123 H358" stroke="#4a5a68" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="295" y="115" text-anchor="middle" font-size="10" fill="#4a5a68">read side by side</text>
+  <path d="M110 150 L235 188" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
+  <path d="M480 150 L355 188" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
+  <rect x="145" y="190" width="330" height="46" rx="7" fill="#fbe9ec" stroke="#c22b3d"/>
+  <text x="310" y="212" text-anchor="middle" font-size="12.5" fill="#c22b3d" font-weight="bold">January 2027 kickoff</text>
+  <text x="310" y="228" text-anchor="middle" font-size="10.5" fill="#4a5a68">you build the real mechanisms</text>
 </svg>
-<figcaption>Where this guide sits: it's the on-ramp before Exercise 0, not a
-replacement for it.</figcaption>
+<figcaption>Where this guide sits: the on-ramp before the fork. The Exercise Ladder
+and the Robot Architecture guide are companions, not a sequence — work the rungs and
+read the architecture guide alongside them, in whichever order helps a given exercise.
+Nobody on this team started already knowing any of it; every line of the real codebase
+was, at some point, somebody's confusing first program.</figcaption>
 </figure>
+
 
 <!-- ============================================================ -->
 <h2 id="ch2"><span class="n">CH 2</span>Installing your toolbox</h2>
@@ -462,15 +424,20 @@ safety patterns (request arbitration) the team learned the hard way in 2026.</di
 <tr><td>Classes &amp; objects</td><td><code>Robot</code>, <code>RobotContainer</code>, every Subsystem and Command</td></tr>
 <tr><td>Subsystems &amp; Commands</td><td>The whole shape of the 2027 baseline codebase</td></tr>
 </table>
-<p>Two paths from here, and you can take both:</p>
+<p>Three paths from here, and the last two run in parallel — take them together:</p>
 <div class="box read"><span class="box-tag">Optional, self-paced</span>
 Browse <a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026" target="_blank" rel="noopener">Code with Kate's "Intro to Programming for FRC Teams"</a>
 course at your own speed for more practice problems on anything above. Not required —
 useful if one topic didn't quite stick.</div>
 <div class="box next"><span class="box-tag">The real thing</span>
-Open <code>exercises.html</code> and start at <b>Exercise 0</b>. Same team repo, same
+Open <a href="exercises.html"><code>exercises.html</code></a> and start at <b>Exercise 0</b>. Same team repo, same
 tools, same edit → build → simulate → observe loop you already used back in Chapter 3 —
 now on the actual 2027 baseline code.</div>
+<div class="box next"><span class="box-tag">Its companion</span>
+Keep <a href="teaching-guide.html"><code>teaching-guide.html</code></a> open alongside the
+ladder, not after it — it explains <em>why</em> the real codebase is shaped the way it
+is, and several exercises link straight to the section that explains what you're
+looking at.</div>
 <p style="margin-top:34px; padding-top:16px; border-top:2px solid var(--ink);
 font-family:var(--display); font-size:17px;">You've written variables, decisions,
 loops, methods, classes, and a Subsystem/Command pair. That's the entire toolkit the

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — The Exercise Ladder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+<nav class="site-nav">
+  <span class="brand">FRC 5675</span>
+  <a href="index.html">Getting Started</a>
+  <a href="exercises.html" class="current">Exercise Ladder</a>
+  <a href="teaching-guide.html">Robot Architecture</a>
+</nav>
+
+<header class="hero">
+  <h1>The Exercise Ladder</h1>
+  <p class="sub">Ten rungs, 0 through 9, in order, each one page. Every exercise
+  changes (or observes) the <b>real robot code</b> and ends with something you can
+  <b>see on a dashboard</b> — no toy programs. Work in pairs. Simulation counts:
+  everything here runs on a laptop with <i>Simulate Robot Code</i> if the practice
+  bot is busy. By rung 9 you'll have built a new subsystem the same way you will in
+  January.</p>
+  <p class="sub" style="margin-top:10px"><b>The Git ritual</b> (set up in Exercise 0,
+  details in <code>docs/github-guide.md</code>): every exercise starts on a fresh
+  branch named <code>yourname/exercise-N</code> and ends with a commit and push —
+  that push <i>is</i> your "done." From Exercise 4 on, done means a <b>pull request
+  a teammate or mentor has reviewed</b>. Code that only exists on your laptop
+  doesn't exist.</p>
+  <p class="sub" style="margin-top:10px"><b>Companion reading:</b> a few rungs below
+  link to lessons from <a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026"
+  target="_blank" rel="noopener">Code with Kate's "Intro to Programming for FRC
+  Teams" (2026)</a> — read the linked lesson <i>before</i> that rung, not instead of
+  it. Two caveats: that site also has older course editions built around
+  <b>IntelliJ</b>, not our <b>WPILib VS Code</b> — if a lesson mentions IntelliJ,
+  skip it, it's not ours. And its PhotonVision lesson describes a different vendor
+  stack (a separate coprocessor + USB cameras) than our <b>Limelight 4</b> setup —
+  interesting background, but don't use it as a reference for
+  <code>VisionSubsystem.java</code>.</p>
+</header>
+
+<!-- ══════════════════════════ 0 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">0</span>Get the code, own a branch</h2>
+<p class="meta">Files touched: <b>none yet</b> · New ideas: clone, branch, commit, push</p>
+<div class="read"><b>Read first:</b>
+<a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026/installing-wpilib-and-vs-code" target="_blank" rel="noopener">Installing WPILib and VS Code</a> and
+<a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026/where-to-find-help" target="_blank" rel="noopener">Where to Find Help</a>
+(Code with Kate) — what WPILib actually is, and the four places to look before
+you ask a mentor.</div>
+<ol>
+<li>Make a GitHub account (school email is fine) and get added to the
+    <b>team5675</b> organization by a mentor.</li>
+<li>In WPILib VS Code: <b>Ctrl+Shift+P → Git: Clone</b> → paste the repo URL →
+    pick a folder. You now have the team's entire code history on your laptop.</li>
+<li>Open the <b>Source Control</b> panel (the branching-lines icon on the left).
+    Click the branch name in the bottom-left corner → <i>Create new branch</i> →
+    name it <code>yourname/exercise-0</code>. You are now working on a copy that
+    can't hurt anyone.</li>
+<li>Prove the pipeline: open <code>README.md</code> and add your name to a
+    "Programmers" list at the bottom (start the list if you're first). In Source
+    Control: the file appears under <i>Changes</i> — click it to <b>see the diff</b>
+    (green = added). Stage it (+), write the message
+    <code>Add &lt;name&gt; to programmers list</code>, click <b>Commit</b>, then
+    <b>Publish/Sync</b> to push.</li>
+<li>Open the repo on github.com, find your branch, and look at your commit —
+    that exact diff, with your name on it, forever in the history.</li>
+</ol>
+<div class="win"><b>You win when:</b> your commit is visible on github.com and you
+can answer: what's the difference between <i>committing</i> and <i>pushing</i>?
+(One is a local save point; one shares it.)</div>
+<div class="why"><b>Why this matters:</b> during build season, "whose laptop has the
+working code?" has ended more shop nights than any bug. The answer is now always the
+same: GitHub has it, with the history of how it got that way.</div>
+</div>
+
+<!-- ══════════════════════════ 1 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">1</span>Deploy, drive, and watch the robot think</h2>
+<p class="meta">Files touched: <b>none</b> · New ideas: deploy loop, AdvantageScope, log keys</p>
+<ol>
+<li>Open the project in WPILib VS Code. Press <b>Ctrl+Shift+P → Simulate Robot Code</b>
+    (or Deploy, if you have the practice bot).</li>
+<li>Open <b>AdvantageScope</b> → <i>Connect to Simulator</i> (or to the robot).</li>
+<li>In the left tree, expand <code>RealOutputs/Drivetrain</code>. Drag
+    <code>Pose</code> onto an <b>Odometry</b> view. Attach a gamepad/keyboard in the
+    sim GUI and drive.</li>
+<li>Now find and plot <code>Drivetrain/HeadingDeg</code> and
+    <code>Template/Winner</code>. Press the A button. Watch the winner change.</li>
+</ol>
+<figure>
+<svg viewBox="0 0 640 120" xmlns="http://www.w3.org/2000/svg" width="100%">
+  <rect x="8" y="34" width="150" height="52" rx="8" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="83" y="56" text-anchor="middle" font-size="13" fill="#0f5cab" font-weight="bold">Your code</text>
+  <text x="83" y="74" text-anchor="middle" font-size="11" fill="#4a5a68">Logger.recordOutput</text>
+  <path d="M158 60 H250" stroke="#182430" stroke-width="2" marker-end="url(#a1)"/>
+  <rect x="252" y="34" width="150" height="52" rx="8" fill="#fdf3e0" stroke="#a86407"/>
+  <text x="327" y="56" text-anchor="middle" font-size="13" fill="#a86407" font-weight="bold">One log stream</text>
+  <text x="327" y="74" text-anchor="middle" font-size="11" fill="#4a5a68">file + live network</text>
+  <path d="M402 48 H490 V30" stroke="#182430" stroke-width="2" marker-end="url(#a1)"/>
+  <path d="M402 72 H490 V90" stroke="#182430" stroke-width="2" marker-end="url(#a1)"/>
+  <text x="560" y="26" text-anchor="middle" font-size="12.5" fill="#1e7e46" font-weight="bold">AdvantageScope</text>
+  <text x="560" y="100" text-anchor="middle" font-size="12.5" fill="#c22b3d" font-weight="bold">Elastic</text>
+  <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+    <path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
+</svg>
+<figcaption>One <code>recordOutput</code> call feeds everything. Learn to read the
+stream and you can see every thought the robot has.</figcaption>
+</figure>
+<div class="win"><b>You win when:</b> you can drive the ghost robot around the field
+view AND point at the exact log key that proves the A button does something.</div>
+</div>
+
+<!-- ══════════════════════════ 2 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">2</span>Your first log line</h2>
+<p class="meta">Files touched: <code>TemplateSubsystem.java</code> · New ideas: periodic(), editing real code safely</p>
+<p>The template subsystem's <code>periodic()</code> runs 50 times a second. Add a
+loop counter to it and publish it:</p>
+<pre><code>// Near the top of the class, with the other fields:
+private int loopCount = 0;
+
+// Inside periodic(), anywhere:
+loopCount++;
+Logger.recordOutput("Template/LoopCount", loopCount);</code></pre>
+<ol>
+<li>Build. Fix any red squiggles <i>before</i> deploying (read the message — it
+    names the file and line).</li>
+<li>Simulate/deploy, then find <code>Template/LoopCount</code> in AdvantageScope
+    and plot it.</li>
+</ol>
+<div class="win"><b>You win when:</b> you see a perfectly straight line climbing by
+50 every second — you just watched the scheduler's heartbeat. <b>Ship it:</b> commit
+on <code>yourname/exercise-2</code> and push — your first <i>code</i> change in the
+team's history.</div>
+<div class="why"><b>Why this matters:</b> "add a number, log it, look at it" is 80%
+of real robot debugging. You now know the whole loop: edit → build → run → observe.</div>
+</div>
+
+<!-- ══════════════════════════ 3 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">3</span>Watch an argument get settled</h2>
+<p class="meta">Files touched: <b>none</b> · New ideas: requests, arbitration, priority</p>
+<p>Two commands are about to want the same subsystem at the same time. Old code
+fights; ours arbitrates. Open AdvantageScope and watch
+<code>Template/ActiveRequests</code>, <code>Template/Winner</code>, and
+<code>Template/OutputPercent</code> side by side, then:</p>
+<ol>
+<li>Hold <b>A</b>. → active: <code>[RUN_FORWARD]</code>, winner
+    <code>RUN_FORWARD</code>, output <code>0.8</code>.</li>
+<li>Keep holding A, <b>also hold B</b>. → active shows <i>both</i>; winner flips to
+    <code>PANIC_REVERSE</code>, output <code>-1.0</code>.</li>
+<li>Release <b>B only</b>. → winner falls <i>back</i> to
+    <code>RUN_FORWARD</code> — not to off. Nobody had to remember to restart it.</li>
+</ol>
+<figure>
+<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" width="88%">
+  <text x="10" y="18" font-size="12.5" fill="#4a5a68">The priority ladder — first ACTIVE rung wins:</text>
+  <rect x="30" y="30" width="260" height="24" rx="5" fill="#fbe9ec" stroke="#c22b3d"/>
+  <text x="40" y="47" font-size="12.5" fill="#c22b3d" font-weight="bold">PANIC_REVERSE (100)</text>
+  <rect x="30" y="60" width="260" height="24" rx="5" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="40" y="77" font-size="12.5" fill="#0f5cab" font-weight="bold">RUN_FORWARD (50)</text>
+  <rect x="30" y="90" width="260" height="24" rx="5" fill="#eef2f5" stroke="#8fa0ae"/>
+  <text x="40" y="107" font-size="12.5" fill="#4a5a68">HOLD (10)</text>
+  <rect x="30" y="120" width="260" height="24" rx="5" fill="#eef2f5" stroke="#8fa0ae"/>
+  <text x="40" y="137" font-size="12.5" fill="#4a5a68">NONE (0)</text>
+  <text x="330" y="47" font-size="12.5" fill="#182430">← B held: this rung is active → it wins</text>
+  <text x="330" y="77" font-size="12.5" fill="#182430">← A held: active, but outranked while B is down</text>
+  <text x="330" y="107" font-size="12.5" fill="#4a5a68">← inactive rungs are simply skipped</text>
+</svg>
+</figure>
+<div class="win"><b>You win when:</b> you can narrate step 3 to a teammate:
+<i>why</i> did the output become 0.8 and not 0.0 when B was released?</div>
+</div>
+
+<!-- ══════════════════════════ 4 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">4</span>Add a rung to the ladder</h2>
+<p class="meta">Files touched: <code>TemplateRequest.java</code>, <code>RobotContainer.java</code> · New ideas: enums, the ordering contract</p>
+<ol>
+<li>In <code>TemplateRequest</code>, add a new request between RUN_FORWARD and HOLD:
+<pre><code>SLOW_REVERSE(25, -0.3),</code></pre></li>
+<li>In <code>RobotContainer.configureBindings()</code>, bind it:
+<pre><code>driver.y().whileTrue(TemplateCommands.request(template, TemplateRequest.SLOW_REVERSE));</code></pre></li>
+<li>Run it. Hold Y alone; then Y+A; then Y+A+B. Predict each winner <i>before</i>
+    you look.</li>
+<li><b>Now break it on purpose:</b> change SLOW_REVERSE's priority number to
+    <code>75</code> (leaving it declared below RUN_FORWARD's 50) and run again.
+    Read the crash message carefully — the robot refused to start and told you
+    exactly which two lines disagree. Fix it back.</li>
+</ol>
+<div class="win"><b>You win when:</b> all three predictions were right, and you saw
+<code>validateOrdering()</code> catch your deliberate bug at boot instead of at a
+match. <b>Ship it:</b> commit (the <i>fixed</i> version!), push, and open your first
+<b>pull request</b> — a teammate reviews the diff before it merges. From here on,
+every exercise ends with a reviewed PR.</div>
+<div class="why"><b>Why this matters:</b> in 2026 a request enum carried priority
+numbers that nothing actually read. Code that <i>looks</i> like it means something it
+doesn't will eventually fool someone — so this codebase checks itself.</div>
+</div>
+
+<!-- ══════════════════════════ 5 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">5</span>Never wait forever</h2>
+<p class="meta">Files touched: <code>TemplateCommands.java</code>, <code>RobotContainer.java</code> · New ideas: command factories, race, timeouts</p>
+<p>Press <b>X</b> and watch <code>Template/Winner</code>: RUN_FORWARD holds for
+exactly 2 seconds, then stops, and <code>Template/TimeoutFired</code> appears in the
+log. The "sensor" (<code>isAtGoal()</code>) never fired — the timeout saved us.</p>
+<p>Now build your own version. In <code>TemplateCommands</code>, copy
+<code>runForwardUntilGoal</code> into a new factory
+<code>holdBriefly(TemplateSubsystem s, double seconds)</code> that requests
+<code>HOLD</code> and gives up after <code>seconds</code>. Bind it:</p>
+<pre><code>driver.povUp().onTrue(TemplateCommands.holdBriefly(template, 3.0));</code></pre>
+<figure>
+<svg viewBox="0 0 640 110" xmlns="http://www.w3.org/2000/svg" width="92%">
+  <text x="10" y="16" font-size="12.5" fill="#4a5a68">Commands.race( ) — first to finish ends BOTH:</text>
+  <rect x="30" y="28" width="420" height="26" rx="5" fill="#e3edf8" stroke="#0f5cab"/>
+  <text x="40" y="46" font-size="12.5" fill="#0f5cab">request(HOLD).until(isAtGoal)  … sensor never fires …</text>
+  <rect x="30" y="64" width="300" height="26" rx="5" fill="#fdf3e0" stroke="#a86407"/>
+  <text x="40" y="82" font-size="12.5" fill="#a86407">waitSeconds(3.0)</text>
+  <line x1="330" y1="20" x2="330" y2="100" stroke="#c22b3d" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="338" y="102" font-size="12" fill="#c22b3d" font-weight="bold">timeout wins → whole race ends, warning logged</text>
+</svg>
+</figure>
+<div class="win"><b>You win when:</b> POV-up produces 3 s of HOLD and your own
+timeout warning in the log. <b>Ship it:</b> PR it — and in the description, explain
+in one sentence why the timeout exists. PR descriptions are where you practice
+explaining code.</div>
+<div class="why"><b>Why this matters:</b> a 2026 auto once waited on a sensor that
+never answered — and ate the rest of the auto. Every hardware wait in this codebase
+races a timeout. Every one you ever write should too.</div>
+</div>
+
+<!-- ══════════════════════════ 6 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">6</span>Where am I? (pose math)</h2>
+<p class="meta">Files touched: <code>RobotContainer.java</code> or a subsystem · New ideas: Pose2d, Translation2d, field frame</p>
+<div class="read"><b>Read first:</b>
+<a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026/wpilib-swerve-classes" target="_blank" rel="noopener">WPILib Swerve Classes</a>
+(Code with Kate) — the full API surface of <code>Pose2d</code>,
+<code>Translation2d</code>, and <code>ChassisSpeeds</code>. You've been calling
+these since Exercise 1; this is where you get fluent in them.</div>
+<p>The robot always knows its field pose: <code>drivetrain.getState().Pose</code>.
+Field frame means: origin at the <b>blue corner</b>, X toward the red wall, Y left,
+in meters — always, for everyone, on both alliances.</p>
+<ol>
+<li>Somewhere that runs every loop (the drivetrain's <code>periodic()</code> is
+    fine), compute and log the straight-line distance to field center:
+<pre><code>Translation2d center = new Translation2d(
+        fieldLayout.getFieldLength() / 2.0, fieldLayout.getFieldWidth() / 2.0);
+double dist = getState().Pose.getTranslation().getDistance(center);
+Logger.recordOutput("Drivetrain/DistanceToCenterM", dist);</code></pre>
+    (You'll need an <code>AprilTagFieldLayout</code> — copy how
+    <code>VisionSubsystem</code> loads one.)</li>
+<li>Drive around the sim field watching the number. Park exactly on the center
+    mark: can you get it under 0.10?</li>
+</ol>
+<div class="win"><b>You win when:</b> the number shrinks as you approach center from
+<i>any</i> direction — proof it's geometry, not guesswork.</div>
+<div class="why"><b>Why this matters:</b> "distance from my pose to a field point" is
+the seed of every auto-aim, auto-align, and shoot-on-the-move feature you'll write in
+January.</div>
+</div>
+
+<!-- ══════════════════════════ 7 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">7</span>Aim somewhere new</h2>
+<p class="meta">Files touched: <code>RobotContainer.java</code> · New ideas: field points, aim command, alliance mirroring</p>
+<p>Left bumper already aims at field center. Add a second aim point of your own:</p>
+<pre><code>// A made-up target 2 m in from the blue corner:
+Translation2d myPoint = new Translation2d(2.0, 2.0);
+driver.rightStick().whileTrue(
+        aim.aimAt(myPoint, () -> -driver.getLeftY(), () -> -driver.getLeftX()));</code></pre>
+<ol>
+<li>Drive around holding the binding — the robot should keep its nose on that spot
+    while you strafe circles around it. Watch <code>Aim/IsAimed</code> flicker true.</li>
+<li>Question to answer out loud (check <a href="teaching-guide.html#aiming">section 5 of the teaching guide</a>): where in
+    this code is the red-alliance 180° handled? <i>Trick question — find who handles
+    it for us, and why there's no <code>if (red)</code> anywhere.</i></li>
+<li>Bonus: wrap your point in <code>FieldPointAim.flipIfRed(myPoint)</code> and
+    explain what that changes — and what kind of alliance logic it is
+    (data-level: choosing <i>which point</i>; never angle math).</li>
+</ol>
+<div class="win"><b>You win when:</b> the robot orbits your point nose-in, and you
+can explain to a mentor why this bug <i>can't</i> come back on red alliance.</div>
+</div>
+
+<!-- ══════════════════════════ 8 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">8</span>Hook a command into an auto</h2>
+<p class="meta">Files touched: <code>AutoRoutines.java</code> + PathPlanner GUI · New ideas: named commands, defer, event markers, resetOdom</p>
+<ol>
+<li>In <code>AutoRoutines</code>, register your exercise-5 command as a named
+    command — <b>copy the defer pattern exactly</b>:
+<pre><code>NamedCommands.registerCommand("HoldBriefly",
+        Commands.defer(() -> TemplateCommands.holdBriefly(template, 1.0),
+                Set.of(template)));</code></pre></li>
+<li>In the PathPlanner desktop app, open the DriveOffLine auto (make it if it's
+    missing — the code has been alerting about it). Confirm <b>Reset Odometry</b> is
+    on for the start. Add an <b>event marker</b> mid-path that triggers
+    <code>HoldBriefly</code>.</li>
+<li>Simulate: select the auto in the chooser, run autonomous, and watch
+    <code>Template/Winner</code> flip to HOLD right as the ghost robot crosses your
+    marker.</li>
+</ol>
+<div class="win"><b>You win when:</b> the log shows your command firing mid-path —
+you just built the exact mechanism autos will use to score in 2027.</div>
+<div class="why"><b>Why <code>defer</code>, always:</b> registering a bare
+<code>new</code> command hands PathPlanner ONE shared object; reuse the name twice and
+the scheduler chokes on it. <code>defer</code> makes a fresh command every trigger.
+2026 learned this the annoying way. We don't relearn it.</div>
+<div class="read"><b>Optional enrichment:</b>
+<a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026/choreo-physicsbased-path-planning" target="_blank" rel="noopener">Choreo: Physics-Based Path Planning</a>
+(Code with Kate) — a different trajectory tool some teams use instead of
+PathPlanner. We've already committed to PathPlanner; read this as "why we didn't
+pick Choreo," not a live decision.</div>
+</div>
+
+<!-- ══════════════════════════ 9 ══════════════════════════ -->
+<div class="ex">
+<h2><span class="n">9</span>Graduation: build a subsystem from the template</h2>
+<p class="meta">Files touched: <b>new package!</b> · New ideas: everything above, combined — this is the January skill</p>
+<div class="read"><b>Read first:</b>
+<a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026/wpilib-pidcontroller" target="_blank" rel="noopener">WPILib PIDController</a>
+(Code with Kate). The template's requests are just fixed percentages on purpose —
+real 2027 mechanisms will need a PID loop to hold a position or a velocity, and
+this is the class for it. Nothing in this exercise requires PID yet, but January
+will.</div>
+<p>Invent a fake mechanism (a "widget spinner"). Build it exactly the way you'll
+build the real 2027 mechanisms:</p>
+<ol>
+<li>Make <code>subsystems/spinner/</code>. Copy <code>TemplateRequest</code> →
+    <code>SpinnerRequest</code> and <code>TemplateSubsystem</code> →
+    <code>SpinnerSubsystem</code> (fix packages/names — the compiler will point at
+    every spot you miss).</li>
+<li>Design its request menu: at least <code>EJECT</code> (top priority),
+    <code>SPIN</code>, <code>NONE</code>. Choose priorities; keep declaration order =
+    priority order — <code>validateOrdering()</code> is watching.</li>
+<li>Make <code>SpinnerCommands</code> with a <code>request(...)</code> factory
+    and one timeout-guarded action.</li>
+<li>Construct it in <code>RobotContainer</code>, bind two buttons, log under
+    <code>Spinner/*</code>.</li>
+<li>Demo to a mentor: buttons, arbitration, fallback, logs. Then answer:
+    <i>"In January this spinner becomes an intake with a real motor. Which class
+    changes, and which classes don't?"</i> (Hint: look at the IO seam at the bottom
+    of the template.)</li>
+</ol>
+<div class="win"><b>You win when:</b> a teammate can operate your subsystem from
+your dashboard traces alone — and your <b>pull request is merged into
+<code>main</code></b> after a real review: the reviewer ran your branch, pressed your
+buttons, and asked at least one question you had to answer with a code change or a
+comment. Merged means you can add a game mechanism to this robot without a mentor
+driving the keyboard. That's the whole point of the fall.</div>
+</div>
+
+</div>
+</body>
+</html>
