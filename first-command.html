@@ -3,7 +3,7 @@
 <title>Team 5675 — Start and stop one action</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css"></head><body>
+<link rel="stylesheet" href="style.css?v=20260923-nav"></head><body>
 <a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
 <main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 8 of 8 · Begin at your own pace</span><h1>Start and stop one action</h1><p class="lede">Let the robot framework start a small action and clean up when it ends.</p></header>
 <section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Turn a pretend light on for about two seconds, then off. Trace which method runs at each stage.</p>
@@ -93,7 +93,10 @@ does not depend on which of those happened; both need the light turned off.</p>
 <details><summary>Nothing prints for the light</summary><ol><li>Check the build succeeded and you restarted after saving.</li><li>Check you selected Autonomous, not only launched the disabled simulator.</li><li>Check you replaced the existing getAutonomousCommand, rather than adding an unrelated method.</li><li>Ask a mentor to confirm the template’s Robot.autonomousInit schedules that returned command and robotPeriodic still runs the scheduler.</li></ol></details><details><summary>A package or class cannot be found</summary><p>Check each file’s package against its folder: PracticeLight is in frc.robot.subsystems; KeepLightOn is in frc.robot.commands. Compare both imports in RobotContainer and save all files. Do not solve this by adding hardware vendor libraries; this example only uses WPILib.</p></details><div class="checkpoint"><b>Pause and check</b><p>Trace the action with your finger: RobotContainer creates one light; the command remembers it; initialize turns it on; end turns it off. Explain why creating the Java files alone did not start the action.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>This is a substantial new idea. Repeat it before moving to a larger project. When you can explain start and cleanup, try the last-year command reading with a mentor. The full swerve/vision project can wait.</p>
 <p>Save your files. In your learning notes, write one thing you changed, what happened,
 and one question. Note the lesson number so you can resume here next time.</p></section>
-<nav class="lesson-next" aria-label="Lesson navigation"><a href="lesson-7-objects.html">← Build two objects</a><a href="team-examples.html">When you’re ready: Read team examples →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<nav class="lesson-next" aria-label="Lesson navigation">
+<a href="lesson-7-objects.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Build two objects</span></a>
+<a href="team-examples.html" rel="next"><span class="lesson-direction">Next →</span> <span>Read team examples</span></a>
+</nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
 <a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
 Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
 </div></body></html>
