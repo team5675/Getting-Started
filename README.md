@@ -1,7 +1,7 @@
 # Team 5675 — Getting Started
 
 Beginner Java and robot-programming lessons for the Mattawan WiredCats.
-Open `index.html` in a browser to start. These are static pages; no package install is required.
+Open `[index.html](https://team5675.github.io/Getting-Started/)` in a browser to start. These are static pages; no package install is required.
 
 ## Pages
 
