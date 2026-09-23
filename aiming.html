@@ -3,69 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team 5675 — Aiming Without the Red-Alliance Bug</title>
+<title>Team 5675 — Aiming in Field Coordinates</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <div class="wrap">
 
 <nav class="site-nav">
   <span class="brand">FRC 5675</span>
   <a href="index.html">Getting Started</a>
-  <a href="exercises.html">Exercise Ladder</a>
+  <a href="exercises.html">Robot Programming Practice</a>
   <a href="teaching-guide.html">Robot Architecture</a>
 </nav>
 
 <p class="sub" style="margin:10px 0 0"><a href="teaching-guide.html">← Robot Architecture guide</a>
-· section 5 · referenced from <a href="exercises.html">Exercise 7</a></p>
+· section 5 · referenced from <a href="exercises.html">Activity 7</a></p>
 
-<header class="hero">
+<header class="hero" id="main-content" tabindex="-1">
   <span class="hero-tag">FRC Team 5675 · Robot Architecture · deep dive</span>
-  <h1>Aiming without the red-alliance bug</h1>
+  <h1>Aiming in field coordinates</h1>
   <p class="lede"><code>FieldPointAim</code> does one generic thing: while the driver
   keeps translating, it continuously rotates the robot to face a chosen point on the
   field. When the 2027 game is revealed, "the point" becomes the goal / feeder /
   whatever — the pattern doesn't change.</p>
 </header>
 
-<p>The interesting part is what's <em>missing</em>: there is no <code>if (alliance ==
-Red)</code> anywhere in the file. That absence is the design.</p>
-
-<div class="box lesson"><span class="box-tag">2026 lesson · the 180° aim bug</span>
-2026's aiming worked all season… until the first red-alliance match, where it pointed
-exactly backwards. Why: the swerve request layer already flips joystick translation for
-red (that's "operator perspective"), but the aiming code <em>also</em> did its own
-red/blue flip on the target heading. One value was in field-language, one in
-driver-language; comparing them was correct on blue and 180° wrong on red. Testing
-happened on blue. The categorical fix is a rule, not a patch: <strong>do all math in
-blue-alliance field coordinates, and let alliance enter in exactly one place.</strong></div>
-
-<p>Here, that one place is the request itself. Phoenix 6 (26.3.0+) lets a
-<code>FieldCentricFacingAngle</code> request be told its target direction is
-blue-frame:</p>
-<pre><span class="c">// The ONE place alliance is handled — CTRE flips for red internally.</span>
-new SwerveRequest.FieldCentricFacingAngle()
-    .withTargetDirectionPerspective(ForwardPerspectiveValue.<span class="h">BlueAlliance</span>);
-
-<span class="c">// Everything else is pure blue-frame geometry — no ifs:</span>
-Rotation2d headingToTarget = targetPoint.minus(robotPose.getTranslation()).getAngle();</pre>
-<p>Translation stays operator-perspective (the driver's stick feels normal), heading is
-closed-loop locked to a field-frame direction, and there is nothing for a future edit
-to get backwards. PathPlanner follows the same rule — its one flip point is the
-supplier passed to <code>AutoBuilder.configure</code>, and the health check reuses
-PathPlanner's own <code>FlippingUtil</code> instead of hand-rolling a mirror.</p>
-
-<div class="box next"><span class="box-tag">Where this shows up</span>
-<a href="exercises.html">Exercise 7</a> has you bind a second aim point and asks you to
-find where the red-alliance flip is handled — the answer is: nowhere, on purpose, for
-the reasons above.</div>
+<h2>One physical point, one field heading</h2>
+<p>In the 2026 baseline, express both the robot position and the target point in the
+blue-alliance field frame. At the same robot pose, facing the same physical point needs
+the same heading regardless of alliance.</p>
+<figure><svg viewBox="0 0 620 170" role="img" aria-label="Robot at one field position, arrow toward a target point">
+<rect x="16" y="15" width="588" height="135" rx="8" fill="#e3edf8" stroke="#0f5cab"/>
+<rect x="100" y="75" width="62" height="40" rx="5" fill="#182430"/>
+<text x="100" y="135" font-size="14" fill="#182430">Robot position</text>
+<path d="M165 93 L438 51 L425 45 M438 51 L428 63" fill="none" stroke="#1e7e46" stroke-width="4"/>
+<circle cx="457" cy="48" r="8" fill="#c22b3d"/><text x="449" y="85" font-size="14" fill="#182430">Target point</text>
+</svg><figcaption>Subtract the robot position from the target position. The direction of that vector is the target heading.</figcaption></figure>
+<pre><code>Rotation2d headingToTarget = targetPoint.minus(robotPose.getTranslation()).getAngle();</code></pre>
+<p><code>minus</code> gives the displacement from robot to target. <code>getAngle()</code>
+gives its direction. This is a geometry excerpt; the existing aim helper supplies the surrounding control code.</p>
+<h2>Keep joystick direction separate</h2>
+<p>The driver may expect forward stick to mean away from their alliance wall. That is
+operator-relative translation. The target heading above is field-relative. Set the swerve
+request's target-direction perspective to <b>BlueAlliance</b> using the starter's pinned
+Phoenix API so an operator-perspective rotation is not also applied to this heading.</p>
+<div class="box note"><span class="box-tag">The rule to remember</span>
+Do not add your own red-alliance 180° offset to a blue-frame target heading. Selecting an
+alliance-specific target <em>point</em> is a separate decision about where to aim.</div>
+<div class="box try"><span class="box-tag">Check your understanding</span>
+In simulation, hold the robot pose and target fixed. Predict the heading on blue and red.
+Then test both. Explain separately what happens to joystick translation when alliance changes.</div>
+<p><b>SYSTEMCORE-2027:</b> confirm the new field and vendor coordinate conventions as part
+of migration. This page describes the stable 2026 teaching baseline.</p>
+<p>Return to <a href="exercises.html">Activity 7</a> to try another target point.</p>
 
 <p style="margin-top:34px; padding-top:16px; border-top:2px solid var(--ink);">
 Back to the <a href="teaching-guide.html">full Robot Architecture guide</a> for how
 this fits with driving, vision, and everything else.</p>
 
+<footer class="page-footer">Revised September 23, 2026 · Student lessons use WPILib 2026.<br>
+<a href="team-examples.html">2026 team examples</a> · <a href="git-guide.html">Save and share</a> · <a href="mentor-notes.html">For mentors</a></footer>
 </div>
 </body>
 </html>

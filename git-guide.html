@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Save and share your work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap">
+<nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Getting Started</a>
+<a href="exercises.html">Robot Programming Practice</a>
+<a href="teaching-guide.html">Robot Architecture</a>
+</nav>
+<header class="hero" id="main-content" tabindex="-1"><span class="hero-tag">Team 5675 · Learn, try, explain</span><h1>Save and share your work</h1><p class="lede">Use Git to keep useful checkpoints and let a teammate review what changed.</p></header>
+<h2>One practice branch, small checkpoints</h2><p>Activities 0–9 build on each other. Use <code>yourname/programming-practice</code> throughout. Ask your mentor for a training repository and starting version; do not use the competition repository unless directed.</p>
+<ol><li>Before editing, check the branch name at the bottom-left of VS Code.</li><li>Make one small change and run the relevant simulation check.</li><li>Open Source Control and click each changed file to read the diff. Stage only the files you intended to change.</li><li>Commit with a message explaining the change, then push. Check that the commit appears on your branch on GitHub.</li></ol>
+<p>A <b>commit</b> saves a local checkpoint. A <b>push</b> shares commits. A <b>pull request</b> lets someone review proposed changes. A <b>merge</b> brings reviewed changes into another branch.</p>
+<h2>First-time setup</h2><p>If Git asks for your name or email, work with your mentor to set your chosen commit identity. A GitHub-provided private commit email can be used. If pushing asks you to sign in, follow VS Code's GitHub sign-in flow; do not put passwords or access tokens into project files.</p>
+<h2>Keep the learning evidence</h2><p>For an observation-only activity, update <code>learning-notes.md</code> and commit it:</p><pre><code>Activity:
+I expected:
+I observed:
+My explanation:
+One question I still have:</code></pre>
+<h2>Review together</h2><p>At Activity 4, open one draft PR from your practice branch. Continue pushing later activities to that branch; the PR updates with them. Ask for feedback along the way. At Activity 9, mark it ready for review. The mentor decides whether to merge, keep it as a learning record, or move selected work elsewhere.</p>
+<p>Suggested PR description: what changed, how you checked it, and one question for the reviewer. Review the code and explanation; nobody needs to invent a correction just to make a review count.</p>
+<h2>If something goes wrong</h2><ul><li><b>Unexpected changes:</b> read the diff before staging. Use Undo for a recent edit. Ask for help before discarding files.</li><li><b>Push rejected or merge conflict:</b> stop and ask a mentor to help reconcile the histories. Do not force-push to make the message disappear.</li><li><b>Hundreds of generated files:</b> check the project's ignore rules. Do not commit <code>build/</code>, <code>.gradle/</code>, secrets, or robot log files.</li></ul>
+<p><a href="exercises.html">Return to Robot Programming Practice</a></p>
+<footer class="page-footer">Student lessons use WPILib 2026. Revised September 23, 2026.<br>
+<a href="index.html">Getting Started</a> · <a href="git-guide.html">Save and share your work</a> · <a href="mentor-notes.html">For mentors</a></footer>
+</div></body></html>

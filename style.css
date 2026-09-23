@@ -60,7 +60,7 @@
    <nav class="site-nav">
      <span class="brand">FRC 5675</span>
      <a href="index.html">Getting Started</a>
-     <a href="exercises.html">Exercise Ladder</a>
+     <a href="exercises.html">Robot Programming Practice</a>
      <a href="teaching-guide.html">Robot Architecture</a>
    </nav>
 
@@ -84,9 +84,9 @@
    forward: green/.try = hands-on exercise, red/.oops = common mistake,
    amber/.next = "why this matters for the robot" forward link,
    blue/.read = companion note or reading. */
-.win { background:var(--green-soft); border-left:4px solid var(--green);
+.checkpoint { background:var(--green-soft); border-left:4px solid var(--green);
   border-radius:0 8px 8px 0; padding:10px 16px; margin-top:14px; }
-.win b { color:var(--green); }
+.checkpoint b { color:var(--green); }
 .why { background:var(--amber-soft); border-left:4px solid var(--amber);
   border-radius:0 8px 8px 0; padding:10px 16px; margin-top:14px; font-size:15px; }
 .why b { color:var(--amber); }
@@ -117,3 +117,37 @@ h2 .key { display:inline-block; font-family:var(--mono); font-size:12px;
   padding:1px 6px; border-radius:4px; color:#0b3f76; }
 pre .c { color:#7fa3bd; } pre .s { color:#a1d9a5; } pre .h { color:#ffd479; }
 .svg-t { font-family:var(--mono); }
+
+/* Student navigation and practice support. */
+html { scroll-padding-top: 1rem; }
+.skip-link { position:absolute; left:1rem; top:-100px; z-index:10; padding:10px 16px; background:white; }
+.skip-link:focus { top:8px; }
+:focus-visible { outline:3px solid var(--blue); outline-offset:4px; }
+.start-card { background:var(--card); border:2px solid var(--blue); border-radius:10px; padding:20px 24px; margin:24px 0; }
+.start-card h2 { margin:0; padding:0; border:0; }
+details { border:1px solid var(--line); background:var(--card); border-radius:8px; padding:12px 16px; margin:18px 0; }
+summary { cursor:pointer; font-weight:600; color:var(--blue); }
+.page-footer { margin-top:40px; border-top:1px solid var(--line); padding-top:16px; font-size:14px; }
+.read { padding:12px 16px; border-radius:0 8px 8px 0; margin:14px 0; }
+.box.read { border-radius:8px; padding:13px 18px; }
+.table-scroll { overflow-x:auto; }
+.table-scroll table { min-width:520px; }
+pre { max-width:100%; }
+p, li, td, .meta { overflow-wrap:anywhere; }
+pre code { overflow-wrap:normal; font-size:inherit; }
+@media (max-width:640px) {
+  .wrap { padding:0 16px 60px; }
+  header.hero { padding:30px 0 22px; }
+  .ex, .start-card { padding:18px 16px; }
+  .site-nav { gap:10px 16px; }
+  .site-nav .brand { flex-basis:100%; }
+  figure { overflow-x:auto; }
+  figure svg { min-width:560px; }
+  figcaption { min-width:0; }
+}
+@media print {
+  .skip-link, .site-nav { display:none; }
+  .ex { page-break-after:auto; page-break-inside:auto; }
+  figure { break-inside:avoid; }
+  pre { white-space:pre-wrap; }
+}

@@ -9,26 +9,38 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <div class="wrap">
 
 <nav class="site-nav">
   <span class="brand">FRC 5675</span>
-  <a href="index.html" class="current">Getting Started</a>
-  <a href="exercises.html">Exercise Ladder</a>
+  <a href="index.html" class="current" aria-current="page">Getting Started</a>
+  <a href="exercises.html">Robot Programming Practice</a>
   <a href="teaching-guide.html">Robot Architecture</a>
 </nav>
 
-<header class="hero">
+<header class="hero" id="main-content" tabindex="-1">
   <span class="hero-tag">FRC Team 5675 · Getting Started · zero programming experience required</span>
   <h1>From "I've never coded" to your first robot program.</h1>
-  <p class="lede">This guide assumes nothing. Not that you've programmed before, not that
-  you know what a "variable" is, not even that you have anything installed yet. Ten short
-  chapters, each one small enough to finish in one sitting. By the end you'll have written,
-  run, and understood real Java code — and you'll be ready for Exercise 0 of the team's
-  actual 2027 robot codebase.</p>
+  <p class="lede">Learn robot programming one small change at a time. In each chapter,
+  you'll try something, run the code, and look at what happens. Start with a working
+  project and gradually make more of it your own. No programming experience is needed.</p>
 </header>
+<section class="start-card" aria-labelledby="start-here">
+  <h2 id="start-here">Your first meeting</h2>
+  <p>Start with chapters 1–3. Your goal is to run a program, change its message, and explain
+  where the new message came from. You do not need a robot or a gamepad.</p>
+  <ol><li>Ask a mentor to help finish the <a href="#ch2">tool setup</a>.</li>
+  <li>Follow <a href="#ch3">Hello, robot!</a> and make one change of your own.</li>
+  <li>Show a partner the result. Take turns at the keyboard every 10–15 minutes.</li></ol>
+  <p>If a result differs from your prediction, use that difference to decide what to check
+  next. Ask for help when you need it. There is no race to finish.</p>
+  <p class="meta">Student lessons: WPILib 2026 · Content revised September 23, 2026<br>
+  Returning? Use the chapter links below. Mentors: see the <a href="mentor-notes.html">session preparation guide</a>.</p>
+</section>
 
-<nav class="toc">
+<p><a href="team-examples.html">See these ideas in our 2026 robot code</a> — short, optional examples to read as you learn.</p>
+<nav class="toc" aria-label="Chapters">
   <a href="#ch1">1. The road ahead</a>
   <a href="#ch2">2. Installing your toolbox</a>
   <a href="#ch3">3. Hello, robot!</a>
@@ -45,7 +57,7 @@
 <h2 id="ch1"><span class="n">CH 1</span>The road ahead</h2>
 <p>No computer needed for this page — just read.</p>
 <p>A <b>program</b> is a list of exact instructions a computer follows, in order, one at a
-time. Nothing more, nothing less. Computers are incredibly fast, but they are also
+time. For now, we will trace one short block of instructions at a time. Computers are incredibly fast, but they are also
 incredibly literal: they will do <i>exactly</i> what you tell them, even when that's not
 what you meant. Learning to program is really learning to think in a way that doesn't
 leave anything out or assume the computer will "figure out what you meant."</p>
@@ -53,10 +65,10 @@ leave anything out or assume the computer will "figure out what you meant."</p>
 teams use, and it's what <b>WPILib</b> — the official FRC programming toolkit — is built
 around. A competition robot's program is, underneath everything, a loop that runs about
 50 times every second, constantly asking: <i>what are my sensors seeing right now, and
-what should the motors do about it?</i> That's genuinely most of what a robot program is.
+what should the motors do about it?</i> That repeated check is central to robot programming.
 Everything in this guide builds toward being able to read and write that loop.</p>
 <figure>
-<svg viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg">
+<svg role="img" aria-label="Learning path from Java basics to robot programming" viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg">
   <defs><marker id="rd1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
   <rect x="10" y="16" width="150" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
   <text x="85" y="38" text-anchor="middle" font-size="12.5" fill="#0f5cab" font-weight="bold">Chapters 1–8</text>
@@ -68,8 +80,8 @@ Everything in this guide builds toward being able to read and write that loop.</
   <path d="M300 64 L120 96" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
   <path d="M340 64 L470 96" stroke="#182430" stroke-width="2" marker-end="url(#rd1)"/>
   <rect x="10" y="98" width="220" height="50" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
-  <text x="120" y="120" text-anchor="middle" font-size="12.5" fill="#1e7e46" font-weight="bold">Exercise Ladder</text>
-  <text x="120" y="136" text-anchor="middle" font-size="10.5" fill="#4a5a68">hands-on rungs, real repo</text>
+  <text x="120" y="120" text-anchor="middle" font-size="12.5" fill="#1e7e46" font-weight="bold">Robot Programming Practice</text>
+  <text x="120" y="136" text-anchor="middle" font-size="10.5" fill="#4a5a68">hands-on code activities</text>
   <rect x="360" y="98" width="220" height="50" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
   <text x="470" y="120" text-anchor="middle" font-size="12.5" fill="#0f5cab" font-weight="bold">Robot Architecture</text>
   <text x="470" y="136" text-anchor="middle" font-size="10.5" fill="#4a5a68">why it's built this way</text>
@@ -81,8 +93,8 @@ Everything in this guide builds toward being able to read and write that loop.</
   <text x="310" y="212" text-anchor="middle" font-size="12.5" fill="#c22b3d" font-weight="bold">January 2027 kickoff</text>
   <text x="310" y="228" text-anchor="middle" font-size="10.5" fill="#4a5a68">you build the real mechanisms</text>
 </svg>
-<figcaption>Where this guide sits: the on-ramp before the fork. The Exercise Ladder
-and the Robot Architecture guide are companions, not a sequence — work the rungs and
+<figcaption>Where this guide sits: the on-ramp before the fork. Robot Programming Practice
+and the Robot Architecture guide are companions, not a sequence — try the activities and
 read the architecture guide alongside them, in whichever order helps a given exercise.
 Nobody on this team started already knowing any of it; every line of the real codebase
 was, at some point, somebody's confusing first program.</figcaption>
@@ -91,36 +103,34 @@ was, at some point, somebody's confusing first program.</figcaption>
 
 <!-- ============================================================ -->
 <h2 id="ch2"><span class="n">CH 2</span>Installing your toolbox</h2>
-<p>We use exactly one thing: the <b>WPILib installer</b>. It gives you a special,
-separate copy of the VS Code editor, bundled together with Java itself, the build tool
-(Gradle), every FRC library, and the dashboards (AdvantageScope, Elastic, and others) —
-all matched to work together, so everyone on the team has an identical setup.</p>
+<p>The <b>WPILib installer</b> provides the Java tools, a separate copy of VS Code,
+and FRC tools used in these lessons. The team's later robot project also needs vendor
+libraries; your mentor prepares those in the starter project.</p>
 <ol>
 <li>Team 5675 is programming on <b>WPILib 2026</b>, targeting the classic
     <b>roboRIO</b> control system — the same one that ran the 2026 competition robot.
     (A couple of upperclassmen are separately bench-testing a future controller called
     <i>SystemCore</i> for the 2027 season, on its own alpha install — that's a different
-    project, not this guide, and not something you need yet.) Go to
-    <a href="https://docs.wpilib.org" target="_blank" rel="noopener">docs.wpilib.org</a>
-    → "Zero to Robot" → Step 2, and download the newest stable release (currently WPILib
-    2026, version 2026.2.1) for your operating system.</li>
+    project, not this guide, and not something you need yet.) Use the team's approved
+    <a href="https://github.com/wpilibsuite/allwpilib/releases/tag/v2026.2.1">WPILib 2026.2.1 installer</a>
+    for these instructions, or the specific 2026 release your mentor has checked with the starter.
+    Do not choose a 2027 alpha installer for these activities.</li>
 <li>Run it. When it asks about VS Code, choose <b>"Download for this computer only"</b> —
     WPILib can't legally bundle VS Code directly, so the installer fetches its own copy
-    for you. Just let it.</li>
+    for you. Follow the installer prompts.</li>
 <li>Pick the full install (Java tools + all WPILib tools). It downloads several
     gigabytes — this is a good moment for a snack.</li>
 <li>When it finishes, launch <b>"WPILib VS Code 2026"</b> specifically — not your
     computer's regular VS Code, and not a plain copy downloaded from Microsoft. Every
     season gets its own separate copy, so a 2025 or 2027-alpha install on the same
-    laptop won't ever conflict with this one.</li>
+    laptop has its own tools. Check that the window you opened says 2026; do not import the student project into a 2027 installation.</li>
 </ol>
 <p><b>Check it worked:</b> in WPILib VS Code, press <code>Ctrl+Shift+P</code>
 (<code>Cmd+Shift+P</code> on a Mac) and type <code>WPILib</code>. A long list of
-WPILib-specific commands should appear. If you see that list, you're set up correctly.</p>
+WPILib-specific commands should appear. That confirms the WPILib extension is available. Running chapter 3 checks that the build and simulator work too.</p>
 <div class="box oops"><span class="box-tag">Common mistake</span>
-Don't install a second, ordinary copy of VS Code and add Java extensions to it yourself
-to "make it work" — you'll spend build season fighting version mismatches nobody else on
-the team has. One install: WPILib VS Code. That's it.</div>
+Use the WPILib VS Code shortcut for these lessons. If commands are missing, check
+which editor you opened before adding extensions or changing settings. Your mentor can help.</div>
 <div class="box read"><span class="box-tag">Companion reading</span>
 <a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026/installing-wpilib-and-vs-code" target="_blank" rel="noopener">Installing WPILib and VS Code</a>
 (Code with Kate) walks through this same process with screenshots, if you want a second
@@ -134,20 +144,32 @@ use for the rest of the season — we're just doing it for the first time.</p>
 <ol>
 <li>In WPILib VS Code: <code>Ctrl+Shift+P</code> → <b>WPILib: Create a new project</b> →
     Template → Java → <b>Command Robot</b> → team number <b>5675</b> → name it something
-    like <code>learning-sandbox</code>, saved somewhere that is <i>not</i> the team's real
-    repository. This is your personal scratch space for this whole guide.</li>
-<li>Open <code>Robot.java</code> and find the method <code>robotInit()</code>. This runs
-    exactly once, the instant your program starts.</li>
-<li>Add one line inside it:
-<pre><code>System.out.println("Hello, robot!");</code></pre></li>
+    like <code>learning-sandbox</code>. On Windows, use a local folder such as
+    <code>C:\dev</code> as the base folder. Keep this practice project outside OneDrive
+    and separate from the team's robot repository.</li>
+<li>In the Explorer panel, open <code>src/main/java/frc/robot/Robot.java</code>.
+    Find <code>public Robot()</code>, the constructor, and the closing brace for that constructor.
+    <b>Keep the existing constructor and all other methods.</b> The 2026 template does not
+    include a <code>robotInit()</code> override, so add this complete method immediately
+    after the constructor's closing brace, still inside the <code>Robot</code> class:</li>
+</ol>
+<pre><code>// Add this method inside the Robot class, outside its other methods.
+@Override
+public void robotInit() {
+    // WPILib calls this once when the program starts.
+    System.out.println("Hello, robot!");
+}</code></pre>
+<p>If your starter already has <code>robotInit()</code>, add only the print line inside
+that existing method. Java cannot have two methods with this same name and parameters.</p>
+<ol start="3">
 <li><code>Ctrl+Shift+P</code> → <b>WPILib: Simulate Robot Code</b>. A simulation window
-    opens, along with a console/log panel.</li>
-<li>Find <code>Hello, robot!</code> printed in that console the instant it starts.</li>
+    opens when the build succeeds. Select the Simulation GUI if prompted. Look in the VS Code Terminal panel for program output.</li>
+<li>Find <code>Hello, robot!</code> printed in that console when the program starts. This message appears while disabled; you do not need to enable the simulator for this chapter.</li>
 </ol>
 <p>What each piece means: <code>public class Robot</code> is a <b>class</b> — a
 container for code (Chapter 8 goes deeper). <code>robotInit()</code> is a
 <b>method</b> — a named block of instructions (Chapter 7). <code>System.out.println(...)</code>
-is a built-in Java command that prints text; the quotes mark <code>"Hello, robot!"</code>
+is a Java method call that prints text; the quotes mark <code>"Hello, robot!"</code>
 as literal text, called a <b>String</b>.</p>
 <div class="box try"><span class="box-tag">Try it yourself</span>
 Change the message to include your own name. Then add a <i>second</i> <code>println</code>
@@ -155,30 +177,41 @@ line right below the first. Re-simulate: both lines should appear, top to bottom
 exact order you wrote them — programs run one line at a time, in order, no skipping
 around unless you tell them to (that's Chapters 5 and 6).</div>
 <div class="box next"><span class="box-tag">Why this matters for the robot</span>
-This is the whole game: edit code, build it, run it (simulated or real), observe the
-result. Exercise 2 of the team's real ladder is this exact loop, on the real codebase —
-you're already trained on it.</div>
+This edit → build → run → observe cycle is how you will investigate robot behavior.
+Activity 2 in Robot Programming Practice uses the same cycle to graph a value.</div>
 <div class="box read"><span class="box-tag">If you have a Romi</span>
-Team 5675 also has a <b>Romi</b> — a small two-wheeled practice robot that runs real
-WPILib command-based Java code on real hardware, with none of the swerve/Kraken
-complexity. Everything in this guide works fine in simulation with no Romi needed, but
-if one's free, ask a mentor for the Romi web setup steps and deploy this exact
-"Hello, robot!" program to real hardware instead of just the simulator.</div>
+Team 5675 also has a <b>Romi</b>, a small two-wheeled practice robot. Its Java
+program runs on your laptop and communicates with the Romi through WPILib simulation.
+Ask a mentor to help open a configured Romi project and use <b>Simulate Robot Code</b>.
+Do not deploy this generic project directly to the Romi.
+<a href="https://docs.wpilib.org/en/stable/docs/romi-robot/programming-romi.html">WPILib's Romi instructions</a>
+explain that setup. You can finish this guide without a Romi.</div>
 
+<details><summary>If you're stuck: finding and fixing the first error</summary>
+<ol><li>Save <code>Robot.java</code> with <code>Ctrl+S</code>. Run <b>WPILib: Build Robot Code</b>.</li>
+<li>If the build fails, read the first relevant error in the Terminal panel. It often
+names a file and line. Check that line and the one above it for a missing quote, semicolon, or brace.</li>
+<li>If the build succeeds but the message is absent, stop the previous simulation using
+the terminal's stop/trash control (or <code>Ctrl+C</code> in that terminal), then simulate again.</li>
+<li>If you're still stuck after about five focused minutes, show a mentor the first error,
+what you expected, and the last change you made.</li></ol>
+<p><b>Practice recovering:</b> remove the semicolon from the print line, build, and find
+the error. Put the semicolon back and build again. Errors are information you can use.</p>
+</details>
 <!-- ============================================================ -->
 <h2 id="ch4"><span class="n">CH 4</span>Storing information: variables</h2>
 <p>A <b>variable</b> is a labeled box that holds one piece of information, so your code
 can refer to it by name instead of retyping the value everywhere. Four types you'll use
 constantly:</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Type</th><th>Holds</th><th>Example</th></tr>
 <tr><td><code>int</code></td><td>a whole number</td><td><code>int loopCount = 0;</code></td></tr>
 <tr><td><code>double</code></td><td>a decimal number — almost everything physical: speed, distance, voltage, angle</td><td><code>double batteryVoltage = 12.6;</code></td></tr>
 <tr><td><code>boolean</code></td><td>true or false, nothing else</td><td><code>boolean isEnabled = true;</code></td></tr>
 <tr><td><code>String</code></td><td>text</td><td><code>String teamNumber = "5675";</code></td></tr>
-</table>
+</table></div>
 <figure>
-<svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg">
+<svg role="img" aria-label="Four Java variable types and their values" viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg">
   <rect x="10" y="16" width="140" height="70" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
   <text x="80" y="36" text-anchor="middle" font-size="11" fill="#0f5cab" font-family="monospace">int</text>
   <text x="80" y="54" text-anchor="middle" font-size="12.5" fill="#182430" font-weight="bold">loopCount</text>
@@ -213,7 +246,7 @@ reason — it's catching a real mistake before your robot ever moves.</div>
 <div class="box next"><span class="box-tag">Why this matters for the robot</span>
 Every number in the real <code>Constants.java</code> — motor CAN IDs, wheel size, PID
 numbers — is just a variable with a clear name, so nobody has to remember what the raw
-number <code>0.1016</code> means (it's a wheel radius, in meters).</div>
+number <code>0.1016</code> means. A name such as <code>wheelDiameterMeters</code> tells you both the measurement and its units.</div>
 <div class="box read"><span class="box-tag">Companion reading</span>
 <a href="https://frcsoftware.org/learning-course/stage0/java-fundamentals/" target="_blank" rel="noopener">Java Fundamentals</a> and
 <a href="https://frcsoftware.org/learning-course/stage0/operators/" target="_blank" rel="noopener">Operators</a>
@@ -226,6 +259,7 @@ number <code>0.1016</code> means (it's a wheel radius, in meters).</div>
 <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code> — is a
 yes/no question. <code>if</code> runs a block of code only when the answer is yes;
 <code>else</code> covers the "no" case.</p>
+<p>Put this example inside <code>robotInit()</code>. If you already declared a variable called <code>batteryVoltage</code> there, replace its declaration rather than adding a second one.</p>
 <pre><code>double batteryVoltage = 11.2;
 if (batteryVoltage &lt; 11.5) {
     System.out.println("Warning: battery low!");
@@ -233,7 +267,7 @@ if (batteryVoltage &lt; 11.5) {
     System.out.println("Battery OK.");
 }</code></pre>
 <figure>
-<svg viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg">
+<svg role="img" aria-label="If-else chooses one branch based on a comparison" viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg">
   <defs><marker id="rd5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
   <rect x="200" y="10" width="160" height="40" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
   <text x="280" y="35" text-anchor="middle" font-size="12" fill="#0f5cab" font-family="monospace">voltage &lt; 11.5 ?</text>
@@ -252,7 +286,7 @@ never neither.</figcaption>
 <div class="box try"><span class="box-tag">Try it yourself</span>
 Declare <code>double distanceMeters</code>. If it's less than <code>1.0</code>, print
 <code>"too close!"</code>; otherwise print <code>"clear"</code>. Change the value and
-re-simulate to see both branches run.</div>
+re-simulate with <code>0.9</code>, <code>1.0</code>, and <code>1.1</code>. Predict each result first. Explain why exactly <code>1.0</code> prints <code>clear</code>.</div>
 <div class="box next"><span class="box-tag">Why this matters for the robot</span>
 The pre-match health check you'll meet later (<code>SystemHealthCheck</code>) is a
 carefully-named pile of exactly these if-statements: "if battery voltage is below X,
@@ -265,13 +299,14 @@ raise an alert."</div>
 <h2 id="ch6"><span class="n">CH 6</span>Doing things over and over: loops</h2>
 <p>A <code>for</code> loop repeats a known number of times. A <code>while</code> loop
 repeats until a condition becomes false.</p>
+<p>Add this short loop inside <code>robotInit()</code>, after your earlier print statements.</p>
 <pre><code>for (int i = 1; i &lt;= 10; i++) {
     System.out.println(i);
 }</code></pre>
 <p>Read it as: <i>start with <code>i</code> at 1; keep going while <code>i &lt;= 10</code>
 is true; after each pass, increase <code>i</code> by one.</i></p>
 <figure>
-<svg viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+<svg role="img" aria-label="For loop checks a condition, runs its body, and updates its counter" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
   <defs><marker id="rd6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
   <rect x="130" y="12" width="140" height="36" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
   <text x="200" y="34" text-anchor="middle" font-size="11.5" fill="#0f5cab">i &lt;= 10 ?</text>
@@ -290,10 +325,11 @@ Forgetting to update the loop variable (leaving out <code>i++</code>) creates an
 <b>infinite loop</b> — the condition never becomes false. The simulator window will just
 hang. If that happens, stop the simulation and check your loop's update step.</div>
 <div class="box next"><span class="box-tag">Why this matters for the robot</span>
-The robot's entire running life <i>is</i> a loop. <code>robotPeriodic()</code> and every
-subsystem's <code>periodic()</code> run automatically about 50 times a second while the
-robot is on — you never write that outer loop yourself, WPILib runs it for you, but
-everything inside behaves exactly like the loop body you just wrote.</div>
+WPILib calls <code>robotPeriodic()</code> repeatedly; the command scheduler calls
+registered subsystems' <code>periodic()</code> methods. With the standard setup this is
+about 50 calls per second. Each call must finish so other work can run.
+<b>Do not put a loop that waits for a sensor inside one of these methods.</b>
+Check the sensor once per call and return; later activities use command completion and timeouts.</div>
 <div class="box read"><span class="box-tag">Companion reading</span>
 <a href="https://frcsoftware.org/learning-course/stage0/loops/" target="_blank" rel="noopener">Loops</a>
 (FRCSoftware.org) — more practice problems on for/while, same toolchain.</div>
@@ -302,20 +338,20 @@ everything inside behaves exactly like the loop body you just wrote.</div>
 <h2 id="ch7"><span class="n">CH 7</span>Organizing code: methods</h2>
 <p>A <b>method</b> is a named, reusable recipe. You give it ingredients
 (<b>parameters</b>), and it can hand back a result (a <b>return value</b>).</p>
-<pre><code>double average(double a, double b) {
+<p>In <code>Robot.java</code>, add this method <b>inside the class but outside
+<code>robotInit()</code></b>. A method declaration cannot go inside another method.</p>
+<pre><code>private double average(double a, double b) {
     return (a + b) / 2.0;
-}
-
-// used inside robotInit():
-System.out.println(average(4.0, 10.0));   // prints 7.0</code></pre>
+}</code></pre>
+<p>Then add this <b>call</b> inside <code>robotInit()</code>:</p>
+<pre><code>System.out.println(average(4.0, 10.0));   // prints 7.0</code></pre>
 <div class="box try"><span class="box-tag">Try it yourself</span>
 Write a method that takes two <code>double</code>s and returns their average (as above),
 then call it with two <i>different</i> pairs of numbers and print both results.</div>
 <div class="box next"><span class="box-tag">Why this matters for the robot</span>
-<code>execute()</code>, <code>isFinished()</code>, and <code>periodic()</code> are just
-methods with specific names WPILib expects and calls for you at the right moment. You're
-not learning new magic in the real codebase later — just new method <i>names</i> with a
-job already defined for them.</div>
+<code>execute()</code>, <code>isFinished()</code>, and <code>periodic()</code> are methods
+the robot framework calls at particular times. <code>@Override</code> tells Java that
+your class supplies its version of an inherited method. Later, you'll trace when each one runs.</div>
 <div class="box read"><span class="box-tag">Companion reading</span>
 <a href="https://frcsoftware.org/learning-course/stage0/classes-methods/" target="_blank" rel="noopener">Methods and Mutable State</a>
 (FRCSoftware.org) — more practice problems on methods, same toolchain.</div>
@@ -325,7 +361,13 @@ job already defined for them.</div>
 <p>A <b>class</b> is a blueprint. An <b>object</b> is one specific thing built from that
 blueprint. <code>Robot</code>, <code>RobotContainer</code>, every Subsystem and Command
 you'll ever see — all classes.</p>
-<pre><code>class Dog {
+<p>Create <code>Dog.java</code> beside <code>Robot.java</code> in
+<code>src/main/java/frc/robot/</code>. Put this complete class in the new file.
+<code>package</code> identifies its folder group; <code>this.name</code> means this
+object's field, while <code>name</code> on the right is the constructor's parameter.</p>
+<pre><code>package frc.robot;
+
+public class Dog {
     String name;
 
     Dog(String name) {       // constructor — runs when you build one
@@ -335,15 +377,15 @@ you'll ever see — all classes.</p>
     void bark() {
         System.out.println(name + " says woof!");
     }
-}
-
-// used inside robotInit():
-Dog rex = new Dog("Rex");
+}</code></pre>
+<p>Back in <code>Robot.java</code>, put these lines inside <code>robotInit()</code>.
+<code>new</code> constructs an object by calling its constructor.</p>
+<pre><code>Dog rex = new Dog("Rex");
 Dog belle = new Dog("Belle");
 rex.bark();     // "Rex says woof!"
 belle.bark();   // "Belle says woof!"</code></pre>
 <figure>
-<svg viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg">
+<svg role="img" aria-label="Two Dog objects share a class but have separate names" viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg">
   <defs><marker id="rd8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
   <rect x="10" y="42" width="150" height="60" rx="7" fill="#fdf3e0" stroke="#a86407"/>
   <text x="85" y="66" text-anchor="middle" font-size="12" fill="#a86407" font-weight="bold">class Dog</text>
@@ -366,12 +408,12 @@ methods and behavior.</figcaption>
 <div class="box try"><span class="box-tag">Try it yourself</span>
 Add a second field to <code>Dog</code> — <code>int age</code> — and a new method
 <code>printInfo()</code> that prints the name and age together. Update the constructor
-to accept and store the age too.</div>
+to accept and store the age too. Update both <code>new Dog(...)</code> calls to supply an age, for example <code>new Dog("Rex", 3)</code>. Call <code>printInfo()</code> on both objects. Explain why they can have different ages.</div>
 <div class="box next"><span class="box-tag">Why this matters for the robot</span>
-A <b>Subsystem</b> is just a class representing one physical part of the robot (the
+A <b>Subsystem</b> is a class representing one physical part of the robot (the
 drivetrain, an arm) — fields for its motors and sensors, methods like
-<code>drive()</code> or <code>stop()</code>. A <b>Command</b> is just a class
-representing one action. You already know how to read both.</div>
+<code>drive()</code> or <code>stop()</code>. A <b>Command</b> is a class
+representing one action. The same class and object ideas will help you read both.</div>
 <div class="box read"><span class="box-tag">Companion reading</span>
 <a href="https://frcsoftware.org/learning-course/stage0/classes-objects/" target="_blank" rel="noopener">Classes and Objects</a>
 (FRCSoftware.org) — more practice problems on classes, same toolchain.</div>
@@ -380,9 +422,8 @@ representing one action. You already know how to read both.</div>
 <h2 id="ch9"><span class="n">CH 9</span>From Java to robots: Subsystems and Commands</h2>
 <p>Here's the one big idea behind every FRC robot's code: <b>Subsystems are nouns</b> —
 what the robot <i>has</i> or <i>is</i>. <b>Commands are verbs</b> — what the robot
-<i>does</i>. A Command uses one or more Subsystems to do its job; a Subsystem never
-decides on its own to do something — it waits to be told.</p>
-<p>A made-up (not the team's real code) example — a light that can blink:</p>
+<i>does</i>. A Command uses one or more Subsystems to do its job; the subsystem owns its state and hardware access. Its methods and <code>periodic()</code> can maintain that state; commands request actions.</p>
+<p>This sketch shows the class relationships. It is a reading example with empty bodies, not a complete program. Next, use the linked activity to build a working simulated light:</p>
 <pre><code>class LightSubsystem extends SubsystemBase {
     void turnOn()  { /* tell the real hardware to turn on */ }
     void turnOff() { /* tell the real hardware to turn off */ }
@@ -404,7 +445,7 @@ class BlinkCommand extends Command {
 and wire up which Commands run when which buttons are pressed. That's exactly what
 you'll be reading (and eventually writing) in the real <code>RobotContainer.java</code>.</p>
 <figure>
-<svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg">
+<svg role="img" aria-label="A command uses a subsystem" viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg">
   <defs><marker id="rd9" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#182430"/></marker></defs>
   <rect x="20" y="30" width="170" height="60" rx="7" fill="#e5f3ea" stroke="#1e7e46"/>
   <text x="105" y="55" text-anchor="middle" font-size="12.5" fill="#1e7e46" font-weight="bold">BlinkCommand</text>
@@ -425,9 +466,8 @@ called AdvantageKit. You don't need it to understand what a Subsystem or Command
 <i>is</i>, so it waits until this pattern is second nature — you'll meet it in the
 teaching guide for the real codebase.</p>
 <div class="box next"><span class="box-tag">Why this matters for the robot</span>
-This is exactly the shape of <code>TemplateSubsystem</code> and <code>TemplateRequest</code>
-you'll meet in Exercises 2 through 4 of the real ladder — same idea, with a few extra
-safety patterns (request arbitration) the team learned the hard way in 2026.</div>
+These concepts help explain <code>TemplateSubsystem</code> and <code>TemplateRequest</code>
+you'll meet in Activities 2–4. The team's request pattern adds another layer; first practice starting and ending a single command.</div>
 <div class="box read"><span class="box-tag">Companion reading</span>
 FRCSoftware.org's Stage 1B — starting at
 <a href="https://frcsoftware.org/learning-course/stage1/stage1b/command-based-overview/" target="_blank" rel="noopener">The Concepts</a>
@@ -435,10 +475,14 @@ FRCSoftware.org's Stage 1B — starting at
 "spot the error" bonus round), on a simpler kit robot rather than swerve. Good next
 stop if this chapter went by fast.</div>
 
+<div class="box try"><span class="box-tag">Try a complete example</span>
+<a href="first-command.html">Your first command: a simulated light</a> provides full files,
+expected output, and a two-second action. No robot, gamepad, or vendor libraries are needed.
+Run it before moving to the team's larger project.</div>
 <!-- ============================================================ -->
 <h2 id="ch10"><span class="n">CH 10</span>Where this leads next</h2>
-<p>A quick recap of what you now know, and where each piece shows up in real robot code:</p>
-<table>
+<p>A quick recap of the ideas you have practiced, and where each piece shows up in real robot code:</p>
+<div class="table-scroll"><table>
 <tr><th>You learned</th><th>Shows up as</th></tr>
 <tr><td>Variables</td><td>Every constant in <code>Constants.java</code></td></tr>
 <tr><td>if / else</td><td>The pre-match health check's alerts</td></tr>
@@ -446,26 +490,27 @@ stop if this chapter went by fast.</div>
 <tr><td>Methods</td><td><code>execute()</code>, <code>isFinished()</code>, and every other method WPILib calls for you</td></tr>
 <tr><td>Classes &amp; objects</td><td><code>Robot</code>, <code>RobotContainer</code>, every Subsystem and Command</td></tr>
 <tr><td>Subsystems &amp; Commands</td><td>The whole shape of the 2027 baseline codebase</td></tr>
-</table>
+</table></div>
 <p>Three paths from here, and the last two run in parallel — take them together:</p>
 <div class="box read"><span class="box-tag">Optional, self-paced</span>
 Browse <a href="https://www.codewithkate.dev/intro-to-programming-for-frc-teams-2026" target="_blank" rel="noopener">Code with Kate's "Intro to Programming for FRC Teams"</a>
 course at your own speed for more practice problems on anything above. Not required —
 useful if one topic didn't quite stick.</div>
 <div class="box next"><span class="box-tag">The real thing</span>
-Open <a href="exercises.html"><code>exercises.html</code></a> and start at <b>Exercise 0</b>. Same team repo, same
-tools, same edit → build → simulate → observe loop you already used back in Chapter 3 —
-now on the actual 2027 baseline code.</div>
+Open <a href="exercises.html">Robot Programming Practice</a> and start at <b>Activity 0</b>.
+Your mentor will provide a separate training repository with the team's baseline code.
+Keep your learning sandbox too. You'll use the same edit → build → simulate → observe cycle.</div>
 <div class="box next"><span class="box-tag">Its companion</span>
-Keep <a href="teaching-guide.html"><code>teaching-guide.html</code></a> open alongside the
-ladder, not after it — it explains <em>why</em> the real codebase is shaped the way it
-is, and several exercises link straight to the section that explains what you're
-looking at.</div>
+Keep <a href="teaching-guide.html">Robot Architecture</a> open alongside the
+activities — it explains <em>why</em> the real codebase is shaped the way it
+is. Use its contents list to find the topic named by an activity.</div>
 <p style="margin-top:34px; padding-top:16px; border-top:2px solid var(--ink);
-font-family:var(--display); font-size:17px;">You've written variables, decisions,
-loops, methods, classes, and a Subsystem/Command pair. That's the entire toolkit the
-real codebase is built from — just organized more carefully. Go start Exercise 0.</p>
+font-family:var(--display); font-size:17px;">Before Activity 0, show a partner one example you changed and explain its output.
+If methods, fields, or command start/end still feel unclear, revisit a small example
+together. You can return to these chapters whenever you need them.</p>
 
+<footer class="page-footer">Revised September 23, 2026 · Student lessons use WPILib 2026.<br>
+<a href="team-examples.html">2026 team examples</a> · <a href="git-guide.html">Save and share</a> · <a href="mentor-notes.html">For mentors</a></footer>
 </div>
 </body>
 </html>

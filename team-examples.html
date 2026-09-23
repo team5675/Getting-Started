@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Examples from our 2026 robot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap">
+<nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Getting Started</a>
+<a href="exercises.html">Robot Programming Practice</a>
+<a href="teaching-guide.html">Robot Architecture</a>
+</nav>
+<header class="hero" id="main-content" tabindex="-1"><span class="hero-tag">Team 5675 · Learn, try, explain</span><h1>Examples from our 2026 robot</h1><p class="lede">Small pieces of team code you can read, predict, and explain.</p></header>
+<section class="start-card" aria-labelledby="historical"><h2 id="historical">Recognize the ideas in your team's code</h2>
+<p>These short excerpts come from last year's team and its final 2026 robot code. Read them after the
+matching beginner chapter. They are examples to trace, not complete files to paste into your sandbox.</p>
+<p><b>2026 reference:</b> the historical robot used a different stack from the planned teaching
+baseline. These snippets are not a SystemCore port. Keep student practice on WPILib 2026.</p></section>
+<h2>1. Give useful values names</h2><p>After the variables chapter, look at these entries from <code>DriveSpeeds</code>. An enum groups named choices; these entries each supply two numbers to a constructor.</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/DriveSpeeds.java</code>, lines 4–9. Exact excerpt; surrounding code is omitted.</p><pre><code>    // Defaults
+    FULL(1.0, 1.0),
+    HALF(0.5, 0.5),
+    SLOW(0.15, 0.15),
+    X_ONLY(1.0, 0.0),
+    Y_ONLY(0.0, 1.0),</code></pre>
+<p><code>FULL</code>, <code>HALF</code>, and <code>SLOW</code> communicate intent. Here the
+numbers are stored settings for X and Y limits; their eventual effect depends on the code
+that reads and applies them. The names alone do not prove the robot's actual speed.</p>
+<div class="checkpoint"><b>Explain it:</b> which entry has an X value of 1.0 and a Y value of 0.0? Why is a name easier to discuss with a teammate than an unexplained pair of numbers?</div>
+<h2>2. A method returns a stored value</h2><p>After the methods chapter, compare the field and its getter:</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/DriveSpeeds.java</code>, lines 27–33. Exact excerpt; surrounding code is omitted.</p><pre><code>    private final double xMax;
+    private final double yMax;
+    private final double rotationMax;
+
+    public double getXMax() {
+        return xMax;
+    }</code></pre>
+<p><code>private</code> keeps access to the field inside this class. The public method returns
+its value. The constructor, outside this excerpt, initializes the final field. A call to
+<code>DriveSpeeds.HALF.getXMax()</code> returns <code>0.5</code>.</p>
+<div class="checkpoint"><b>Try it:</b> trace which value <code>DriveSpeeds.SLOW.getXMax()</code> returns. Explain what <code>return</code> does; this method does not command a motor by itself.</div>
+<h2>3. Connect the scheduler to the robot loop</h2><p>After the command chapter, find the repeated scheduler call in the team's actual <code>Robot.java</code>:</p><p class="meta">2026 source: <code>src/main/java/frc/robot/Robot.java</code>, lines 22–25. Exact excerpt; surrounding code is omitted.</p><pre><code>  @Override
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run(); 
+  }</code></pre>
+<p>WPILib calls <code>robotPeriodic()</code>. This method then runs the command scheduler,
+which manages command lifecycles and subsystem periodic calls. It is the link between the
+repeated robot loop and the commands you have been reading.</p>
+<div class="checkpoint"><b>Explain it:</b> why does defining a command class alone not make its action happen?</div>
+<h2>4. Start a request, then clean it up</h2><p>After trying the simulated-light command, read how <code>SpinIntake</code> starts requests for three 2026 mechanisms:</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/Intake/SpinIntake.java</code>, lines 21–27. Exact excerpt; surrounding code is omitted.</p><pre><code>  @Override
+  public void initialize() {
+    // intake.isIntaking = true;
+    intake.addIntakeRequest(IntakeRequest.INTAKE);
+    indexer.addIndexerRequest(IndexerRequest.INTAKE);
+    shooter.addFeederRequest(FeederRequest.REVERSE);
+  }</code></pre><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/Intake/SpinIntake.java</code>, lines 32–39. Exact excerpt; surrounding code is omitted.</p><pre><code>  @Override
+  public void end(boolean interrupted) {
+    intake.removeIntakeRequest(IntakeRequest.INTAKE);
+    indexer.removeIndexerRequest(IndexerRequest.INTAKE);
+    // indexer.addRequest(IndexerRequest.IDLE_AGITATE);
+    shooter.removeFeederRequest(FeederRequest.REVERSE);
+    // intake.isIntaking = false;
+  }</code></pre>
+<p>Pair each <code>add...</code> call with its <code>remove...</code> call. Cleanup runs
+when the command ends, including interruption. The commented-out lines are historical notes,
+not statements Java executes. You do not need to understand all three mechanisms to trace
+the start/cleanup pairs.</p>
+<div class="checkpoint"><b>Explain it:</b> what request might remain active if one matching removal were missing?</div>
+<details><summary>Mentor note: what not to copy automatically</summary><p>The supplied
+<code>SpinIntake</code> constructor has <code>addRequirements(intake)</code> commented out.
+That is a historical ownership choice, not the beginner rule for new hardware commands.
+The intake selector in this archive walks enum declaration order rather than reading the
+stored numeric priority. Its <code>EnumSet</code> also records request types, not individual
+request owners. If two sources add the same type, removing one can clear it for both.
+Resolve ownership, duplicate requests, and cleanup before using this design as a new template.
+Keep that design review separate from these short reading exercises.</p></details>
+<p><a href="index.html">Return to Getting Started</a> · <a href="exercises.html">Robot Programming Practice</a></p>
+<footer class="page-footer">Student lessons use WPILib 2026. Revised September 23, 2026.<br>
+<a href="index.html">Getting Started</a> · <a href="git-guide.html">Save and share your work</a> · <a href="mentor-notes.html">For mentors</a></footer>
+</div></body></html>

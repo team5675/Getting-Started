@@ -9,26 +9,32 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <div class="wrap">
 
 <nav class="site-nav">
   <span class="brand">FRC 5675</span>
   <a href="index.html">Getting Started</a>
-  <a href="exercises.html">Exercise Ladder</a>
-  <a href="teaching-guide.html" class="current">Robot Architecture</a>
+  <a href="exercises.html">Robot Programming Practice</a>
+  <a href="teaching-guide.html" class="current" aria-current="page">Robot Architecture</a>
 </nav>
 
-<header class="hero">
+<header class="hero" id="main-content" tabindex="-1">
   <span class="hero-tag">FRC Team 5675 · 2027 Season Baseline · for new programmers</span>
-  <h1>It drives, and it knows where it is.</h1>
+  <h1>How the robot code fits together</h1>
   <p class="lede">This guide explains the code you'll build the 2027 robot on top of —
   not just <em>what</em> each file does, but <em>why</em> it's shaped the way it is.
   Most of the "why" comes from real things that went wrong in 2026. Those stories are
-  in the red boxes. Read them; they're the tuition someone already paid for you.</p>
-  <p class="sub" style="margin-top:10px">This isn't a step before or after the
-  <a href="exercises.html">Exercise Ladder</a> — read them side by side. Each exercise
-  that leans on an architecture idea links to the exact section here that explains it.</p>
+  in the red boxes. They explain why the team chose these patterns.</p>
+  <p class="sub" style="margin-top:10px">Read this alongside
+  <a href="exercises.html">Robot Programming Practice</a>. Use the contents list to find
+  the topic named by an activity; you can leave the other sections for later.</p>
 </header>
+<div class="box read"><span class="box-tag">Use this as a reference</span>
+Start with <a href="index.html">Getting Started</a> and <a href="first-command.html">your first command</a>.
+Return to a section here when an activity needs it. This page describes the planned teaching
+baseline; the <a href="team-examples.html">2026 team-code examples</a> are a separate historical reference.
+Mentors should match the supplied starter to the <a href="mentor-notes.html">preparation checks</a>.</div>
 
 <nav class="toc">
   <a href="#big-picture">1. The big picture</a>
@@ -49,7 +55,7 @@
 <p>This project is a <strong>chassis that runs</strong>: you can deploy it, pick up a
 controller, and drive a swerve robot that continuously knows its position on the
 field. There are deliberately <strong>no game mechanisms</strong> — no intake, no
-shooter — because the 2027 game doesn't exist yet. What exists is everything a game
+shooter — because the 2027 game has not been announced. What exists is everything a game
 mechanism will need to stand on.</p>
 
 <figure>
@@ -137,16 +143,14 @@ lives in exactly one place, changing it is one edit — and it can't disagree wi
 is worse than one that visibly breaks. That's why placeholder practice-bot calibration
 is <em>obviously</em> wrong (all zeros, giant banner) instead of subtly wrong, why every
 health problem raises a <em>named</em> alert, and why timeouts log a warning when they fire.</p>
-<p><strong>2026 already paid for these lessons.</strong> Twelve specific bugs from last
-season's code review are designed out of this baseline — not patched, but made
-structurally hard to reintroduce. Section 10 has the full scorecard.</p>
+<p><strong>2026 already paid for these lessons.</strong> Section 10 records design responses to twelve findings from the earlier review. Check each response against the starter code and a test; a design description alone is not proof that a bug is fixed.</p>
 
 <!-- ================================================================ -->
 <h2 id="command-based">2. Command-based in five minutes</h2>
 <p>WPILib's <strong>command-based</strong> framework has two main characters:</p>
 <p>A <strong>Subsystem</strong> is a chunk of hardware and the code that owns it — the
 drivetrain, a future intake. Each subsystem has a <code>periodic()</code> method that
-runs automatically every 20&nbsp;ms, always, no matter what else is happening. That's
+is called by the scheduler, normally every 20&nbsp;ms in the standard robot loop. That's
 where monitoring and logging live.</p>
 <p>A <strong>Command</strong> is a thing the robot does for a while — "drive with the
 sticks," "aim at that point," "run the auto." Commands have a tiny lifecycle:
@@ -155,15 +159,16 @@ sticks," "aim at that point," "run the auto." Commands have a tiny lifecycle:
 The <strong>scheduler</strong> (run from <code>Robot.robotPeriodic()</code>) is the
 referee: it watches buttons, starts and stops commands, and enforces one rule —</p>
 <div class="box note"><span class="box-tag">The requirements rule</span>
-Every command declares which subsystems it <em>requires</em>. Two commands that require
-the same subsystem can never run at once; scheduling the second interrupts the first.
-This is how "hold right bumper to aim" cleanly takes the drivetrain away from normal
-driving and hands it back on release. A command that forgets to declare a requirement
-opts out of this protection — that was 2026 bug 2.10, and you'll see
-<code>addRequirements(...)</code> called religiously in every command here.</div>
+A command that controls hardware declares the subsystem it requires. Two commands
+requiring the same subsystem cannot run together. Normally the second interrupts the first;
+a command can instead reject an incoming conflicting command. A default drive command can
+resume after an aim command releases the drivetrain. A button-bound command is different:
+<code>whileTrue</code> does not automatically restart it after interruption while the button stays held.
+<p>The request manager in section 6 is another ownership layer. Do not assume it bypasses
+these scheduler rules or remove requirements to make requests overlap.</p></div>
 <p>One more player: the <strong>default command</strong>. Each subsystem may have one
 command that runs whenever nothing else claims it. The drivetrain's default command is
-"drive with the joysticks" — which is why the robot is drivable the moment it boots.</p>
+"drive with the joysticks" — it can run when the robot is enabled in the appropriate mode and no other command owns the drivetrain.</p>
 
 <!-- ================================================================ -->
 <h2 id="driving">3. Driving: from stick to swerve module <span class="key">Drivetrain/*</span></h2>
@@ -231,8 +236,7 @@ negative input?"</strong></div>
 <div class="box try"><span class="box-tag">Try it</span>
 Deploy, then in AdvantageScope plot <code>Drivetrain/ModuleStates</code> on the Swerve
 tab while someone wiggles the sticks (robot on blocks!). You will literally watch the
-request pipeline think. Hold left bumper and watch every speed scale down — in both
-directions.</div>
+request pipeline think. Use the slow-mode binding identified in your starter’s controller map and check both directions.</div>
 
 <!-- ================================================================ -->
 <h2 id="vision">4. Vision: how the robot knows where it is <span class="key">Vision/*</span></h2>
@@ -240,18 +244,18 @@ directions.</div>
 tiny errors add up; two minutes into a match, pure odometry can be off by a meter. The
 fix: cameras that recognize <strong>AprilTags</strong> — barcodes bolted to the field at
 known coordinates — and calculate the robot's position from them. Fusing "wheels say
-we moved this much" with "camera says we're exactly here" is the whole game.</p>
+we moved this much" with a camera's position estimate is called sensor fusion.</p>
 
 <p>The Limelight offers two ways to get a pose, and the difference between them is the
 key to the entire design:</p>
 
-<table>
+<div class="table-scroll"><table>
 <tr><th></th><th>MegaTag1</th><th>MegaTag2</th></tr>
 <tr><td><strong>Needs to be told our heading?</strong></td><td>No — solves position <em>and</em> heading from tag geometry alone</td><td>Yes — you feed it the robot's heading every frame</td></tr>
 <tr><td><strong>Quality</strong></td><td>Trustworthy from a cold boot, but noisy at range</td><td>Very stable position — <em>if</em> the heading you fed it was right</td></tr>
 <tr><td><strong>Failure mode</strong></td><td>Jitter</td><td>Garbage in, confident garbage out</td></tr>
 <tr><td><strong>Our use</strong></td><td><strong>Seed</strong>: once, at startup</td><td><strong>Maintain</strong>: every frame after seeding</td></tr>
-</table>
+</table></div>
 
 <figure>
 <svg viewBox="0 0 860 330" role="img" aria-label="Vision pipeline: seed then maintain">
@@ -342,7 +346,7 @@ no filtering at all past one sideline, and legitimate poses <em>rejected</em> wh
 the robot legally hugged a wall (exactly where autos start!). The rewritten
 <code>isOnField()</code> bounds both ends of both axes symmetrically, with a small
 margin pointing <em>outward</em>, and reads field dimensions from WPILib's official tag
-layout so they update themselves at 2027 kickoff. The lesson generalizes: <strong>when
+layout. At migration, select and verify the new season’s layout and coordinate conventions. The lesson generalizes: <strong>when
 you write a boundary check, draw the rectangle on paper and check all four lines.</strong></div>
 
 <div class="box try"><span class="box-tag">Try it</span>
@@ -355,45 +359,36 @@ it back. That tug is the fusion working.</div>
 <!-- ================================================================ -->
 <h2 id="aiming">5. Aiming without the red-alliance bug <span class="key">Aim/*</span></h2>
 <div class="box read"><span class="box-tag">Also standalone</span>
-This section is also its own page — <a href="aiming.html">aiming.html</a> — for
-linking directly to it from elsewhere (that's what Exercise 7 does).</div>
+This section is also its own page — <a href="aiming.html">Aiming in field coordinates</a> — for
+linking directly to it from elsewhere (that's what Activity 7 does).</div>
 <p><code>FieldPointAim</code> does one generic thing: while the driver keeps
 translating, it continuously rotates the robot to face a chosen point on the field.
 When the 2027 game is revealed, "the point" becomes the goal / feeder / whatever —
 the pattern doesn't change.</p>
-<p>The interesting part is what's <em>missing</em>: there is no <code>if (alliance ==
-Red)</code> anywhere in the file. That absence is the design.</p>
-
-<div class="box lesson"><span class="box-tag">2026 lesson · the 180° aim bug</span>
-2026's aiming worked all season… until the first red-alliance match, where it pointed
-exactly backwards. Why: the swerve request layer already flips joystick translation for
-red (that's "operator perspective"), but the aiming code <em>also</em> did its own
-red/blue flip on the target heading. One value was in field-language, one in
-driver-language; comparing them was correct on blue and 180° wrong on red. Testing
-happened on blue. The categorical fix is a rule, not a patch: <strong>do all math in
-blue-alliance field coordinates, and let alliance enter in exactly one place.</strong></div>
-
-<p>Here, that one place is the request itself. Phoenix 6 (26.3.0+) lets a
-<code>FieldCentricFacingAngle</code> request be told its target direction is
-blue-frame:</p>
-<pre><span class="c">// The ONE place alliance is handled — CTRE flips for red internally.</span>
-new SwerveRequest.FieldCentricFacingAngle()
-    .withTargetDirectionPerspective(ForwardPerspectiveValue.<span class="h">BlueAlliance</span>);
-
-<span class="c">// Everything else is pure blue-frame geometry — no ifs:</span>
-Rotation2d headingToTarget = targetPoint.minus(robotPose.getTranslation()).getAngle();</pre>
-<p>Translation stays operator-perspective (the driver's stick feels normal), heading is
-closed-loop locked to a field-frame direction, and there is nothing for a future edit
-to get backwards. PathPlanner follows the same rule — its one flip point is the
-supplier passed to <code>AutoBuilder.configure</code>, and the health check reuses
-PathPlanner's own <code>FlippingUtil</code> instead of hand-rolling a mirror.</p>
+<p>Keep target points and heading calculations in the same blue-alliance field frame
+for this 2026 baseline. Driver-relative stick direction is a separate question.</p>
+<div class="box lesson"><span class="box-tag">A lesson from the 2026 review</span>
+Adding an alliance-dependent 180° offset to an already field-relative target mixes coordinate
+frames and can make aiming point backward. Select the request's <b>BlueAlliance target-direction
+perspective</b> so the heading remains a field heading. Do not hand-roll a red/blue heading flip.</div>
+<pre><code>// Geometry only: from the robot's estimated position to a field point.
+Rotation2d headingToTarget = targetPoint.minus(robotPose.getTranslation()).getAngle();</code></pre>
+<p>Use the exact request API supported by the starter's pinned Phoenix version. Keep
+operator-relative translation separate from field-relative target direction. Selecting a
+different target point for an alliance changes the data, not the heading formula.
+Test both alliances at known poses. See <a href="aiming.html">the illustrated explanation</a>.</p>
 
 <!-- ================================================================ -->
 <h2 id="requests">6. The request pattern <span class="key">Template/*</span></h2>
-<p>The <code>subsystems/template/</code> folder is a complete, working demonstration of
-the team's <strong>request-based state manager</strong> — the pattern every real 2027
-mechanism will copy. It "drives" a pretend motor so you can play with it today (hold A
-and B on the controller and watch <code>Template/CurrentRequest</code>).</p>
+<p>The teaching baseline uses a <strong>request-based state manager</strong> to choose
+an output for a pretend motor. The examples use <code>Template/Winner</code> for the
+selected request; check the starter's log keys before running the activity.</p>
+<div class="box note"><span class="box-tag">Two layers to distinguish</span>
+The scheduler decides which commands may run. A request manager chooses among requests
+that are still active. The diagram below assumes its request producers coexist and retain
+their requests. Two ordinary commands that both require the same subsystem cannot do this.
+In <a href="exercises.html">Activity 3</a>, use the log trace and the code to identify which
+model the starter implements. Your mentor must explain who owns hardware output.</div>
 <p><strong>The problem it solves:</strong> two commands both want the same mechanism.
 The driver holds a button to run an intake fast; an automation wants it slow in the
 background. If both write motor power directly, last-writer-wins, and when the driver's
@@ -411,10 +406,10 @@ the set of active requests and, whenever it changes, applies the highest-priorit
   </defs>
   <g class="svg-t">
   <rect x="14" y="20" width="180" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
-  <text x="104" y="40" text-anchor="middle" font-size="11.5" fill="#0b3f76">Command A (button held)</text>
+  <text x="104" y="40" text-anchor="middle" font-size="11.5" fill="#0b3f76">Request source A</text>
   <text x="104" y="56" text-anchor="middle" font-size="10.5" fill="#4a5a68">add NORMAL_ACTION (20)</text>
   <rect x="14" y="86" width="180" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab"/>
-  <text x="104" y="106" text-anchor="middle" font-size="11.5" fill="#0b3f76">Command B (button held)</text>
+  <text x="104" y="106" text-anchor="middle" font-size="11.5" fill="#0b3f76">Request source B</text>
   <text x="104" y="122" text-anchor="middle" font-size="10.5" fill="#4a5a68">add URGENT_ACTION (30)</text>
   <rect x="14" y="152" width="180" height="46" rx="7" fill="#e3edf8" stroke="#0f5cab" stroke-dasharray="4 3"/>
   <text x="104" y="172" text-anchor="middle" font-size="11.5" fill="#0b3f76">Auto routine</text>
@@ -424,11 +419,11 @@ the set of active requests and, whenever it changes, applies the highest-priorit
   <text x="400" y="86" text-anchor="middle" font-size="13" font-weight="600">Active request SET</text>
   <text x="400" y="110" text-anchor="middle" font-size="11.5" fill="#4a5a68">{ URGENT(30), NORMAL(20),</text>
   <text x="400" y="126" text-anchor="middle" font-size="11.5" fill="#4a5a68">BACKGROUND(10) }</text>
-  <text x="400" y="156" text-anchor="middle" font-size="11" fill="#c22b3d">requests come and go freely</text>
+  <text x="400" y="156" text-anchor="middle" font-size="11" fill="#c22b3d">only retained requests count</text>
 
   <rect x="580" y="76" width="150" height="88" rx="9" fill="#182430"/>
   <text x="655" y="102" text-anchor="middle" font-size="12.5" fill="#fff" font-weight="600">arbitrate()</text>
-  <text x="655" y="122" text-anchor="middle" font-size="10.5" fill="#ffd479">max by .priority field</text>
+  <text x="655" y="122" text-anchor="middle" font-size="10.5" fill="#ffd479">highest active priority</text>
   <text x="655" y="142" text-anchor="middle" font-size="10.5" fill="#cfe1f5">→ URGENT wins</text>
 
   <rect x="766" y="94" width="80" height="52" rx="7" fill="#1e7e46"/>
@@ -440,22 +435,21 @@ the set of active requests and, whenever it changes, applies the highest-priorit
   <line x1="194" y1="175" x2="280" y2="150" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr4)"/>
   <line x1="520" y1="120" x2="580" y2="120" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr4)"/>
   <line x1="730" y1="120" x2="766" y2="120" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr4)"/>
-  <text x="430" y="228" text-anchor="middle" font-size="11.5" fill="#4a5a68">Release B → URGENT leaves the set → arbitration falls back to NORMAL automatically. Nobody "turns it back on."</text>
+  <text x="430" y="228" text-anchor="middle" font-size="11.5" fill="#4a5a68">If NORMAL is still active when URGENT is removed, NORMAL becomes the selected request.</text>
   </g>
 </svg>
-<figcaption><strong>Arbitration, not arguments.</strong> Any number of commands can
-want the subsystem at once; behavior is always deterministic — highest active priority
-wins — and releasing a high-priority request <em>falls back</em> instead of falling off.</figcaption>
+<figcaption><strong>Choosing among active requests.</strong> In this model,
+URGENT takes priority while NORMAL remains in the set. Removing URGENT exposes NORMAL
+again. That fallback depends on NORMAL still being active.</figcaption>
 </figure>
 
 <div class="box lesson"><span class="box-tag">2026 lesson · the priority field nobody read</span>
-2026's request enums carried priority numbers — and the arbitration loop never looked
-at them. It walked declaration order, which merely <em>happened</em> to agree. Any
-student rearranging the enum for readability would have silently changed robot
-behavior. Now <code>arbitrate()</code> explicitly sorts by the field:
-<code>max(Comparator.comparingInt(r -&gt; r.priority))</code> — one source of truth, and
-the comparator line <em>is</em> the policy, readable in plain sight. If a codebase
-carries two ways to express the same rule, delete one.</div>
+The supplied final 2026 intake code stores a numeric priority, but its selector walks
+the enum values in declaration order and returns the first active entry. The number is
+not consulted by that selector. See <a href="team-examples.html">the historical examples</a>.
+For the teaching starter, inspect the actual selection method: it may compare numeric
+priority or use declaration order with validation. Explain one implemented rule consistently.
+Activity 4 asks you to test the rule rather than infer behavior from a field's name.</div>
 
 <p><code>TemplateActionCommand</code> demonstrates two more habits in twenty lines:
 the request is removed in <code>end()</code> <em>even when interrupted</em> (so requests
@@ -488,7 +482,7 @@ value)</code> — and AdvantageKit fans it out to two destinations at once:</p>
   <text x="99" y="80" text-anchor="middle" font-size="10.5" fill="#4a5a68">Drivetrain/Pose</text>
   <text x="99" y="98" text-anchor="middle" font-size="10.5" fill="#4a5a68">Vision/OdometryOnlyPose</text>
   <text x="99" y="116" text-anchor="middle" font-size="10.5" fill="#4a5a68">Power/ChannelPeaks</text>
-  <text x="99" y="134" text-anchor="middle" font-size="10.5" fill="#4a5a68">Template/CurrentRequest</text>
+  <text x="99" y="134" text-anchor="middle" font-size="10.5" fill="#4a5a68">Template/Winner</text>
   <text x="99" y="152" text-anchor="middle" font-size="10.5" fill="#4a5a68">Health/AutoStartAligned…</text>
 
   <rect x="250" y="75" width="170" height="60" rx="9" fill="#182430"/>
@@ -594,39 +588,34 @@ names the auto and the error size. Setup stops being a guess:</p>
 <span class="s">✓ Vision seeded (MT1)     ✓ Battery 12.7 V</span>
 <span class="h">⚠ Robot 0.82 m from 'CenterTwoPiece' start position</span>
 <span class="c">→ slide the robot until the warning clears. Then play.</span></pre>
-<p>Notice the quiet bonus: this check can only pass if the <em>entire vision
-pipeline</em> — cameras, seeding, filtering, fusion — is alive. Green light on
-positioning is a green light on localization.</p>
+<p>A small pose difference is one useful check, but it does not prove the entire vision
+pipeline is healthy. Check camera heartbeat, measurement freshness, seed status, and
+the selected field layout independently.</p>
 
 <!-- ================================================================ -->
 <h2 id="systemcore">9. The SystemCore seams (2027 migration map) <span class="key">★ SEAM ★</span></h2>
-<p>In January 2027, FRC replaces the roboRIO with <strong>SystemCore</strong> — the
-biggest control-system change in the program's history. This baseline is built on the
-<em>current stable</em> toolchain so it deploys to real hardware today, and every place
-the migration will touch is fenced behind one access point with a
-<code>★ SYSTEMCORE MIGRATION SEAM ★</code> banner comment. The migration plan is:
-<strong>practice bot first</strong>, and only the seams change.</p>
+<p><b>Mentor / advanced reference.</b> Keep student work on the stable 2026 toolchain.
+The SystemCore bench explores migration separately. The table lists areas to check, not
+a promise that every change is already known. Mark migration points with
+<code>SYSTEMCORE-2027:</code> and the existing <code>SYSTEMCORE MIGRATION SEAM</code> banner.</p>
+<!-- SYSTEMCORE-2027: Recheck the entire toolchain and vendor stack together before migration. -->
 <div class="box read"><span class="box-tag">The bench that validates this</span>
 Every belief in the table below is being tested for real, ahead of kickoff, on a
 Raspberry Pi 5 SystemCore stand-in — see
 <a href="systemcore-bench-guide.html">the SystemCore Clone Bench guide</a> (or the
 raw <a href="SystemCore-Clone-Setup-Guide.md">markdown source</a>) for the
 build, the open questions, and a running findings log (including whether Commands v2
-or v3 wins, and what actually broke when the analyzer met real 2027 timestamps).</div>
-<table>
+or v3 is appropriate, and what actually broke when the analyzer met real 2027 timestamps).</div>
+<div class="table-scroll"><table>
 <tr><th>Seam</th><th>File</th><th>What changes when 2027 stable ships</th></tr>
 <tr><td>CAN bus construction</td><td><code>util/CanSeam.java</code></td>
-<td>SystemCore has multiple onboard CAN buses; Phoenix 6 moves to a
-<code>CANBus.systemCore(busId)</code>-style factory and constructing devices from bare
-name strings is removed. Change the body of <code>driveBus()</code>; nothing else in
-the codebase touches bus names.</td></tr>
+<td>Use the supported bus object and port identifiers from the pinned SystemCore vendor
+release. Keep construction behind <code>CanSeam</code>. Do not guess a future factory name.</td></tr>
 <tr><td>Vision timestamps</td><td><code>drivetrain/CommandSwerveDrivetrain.java</code>
 (<code>addVisionMeasurement</code> overrides)</td>
-<td>Today the roboRIO and Phoenix run different clocks, so
-<code>Utils.fpgaToCurrentTime()</code> converts Limelight timestamps — skip it and the
-pose quietly corrupts. On SystemCore the clocks are shared; CTRE deletes the
-converter and their generator removes these overrides. Re-run the generator, match its
-output. VisionSubsystem doesn't change — that's the point of the seam.</td></tr>
+<td>Confirm the time base expected by the pinned Phoenix release and camera helper.
+Compare the regenerated drivetrain's vision timestamp handling before adding or removing
+any conversion. Validate with live, timestamped measurements.</td></tr>
 <tr><td>Swerve calibration</td><td><code>generated/TunerConstants*.java</code></td>
 <td>Regenerated by the CTRE tool against the 2027 toolchain (practice file first).
 Re-apply the two ★-marked 5675 edits after any regeneration.</td></tr>
@@ -641,19 +630,17 @@ consider swapping to it. Concepts transfer 1:1.</td></tr>
 SmartDashboard, and the chooser goes through AdvantageKit's
 <code>LoggedDashboardChooser</code>, which tracks the 2027 API internally. Verify its
 class name against the stable 2027 AdvantageKit release.</td></tr>
-</table>
+</table></div>
 <div class="box seam"><span class="box-tag">The rule that makes this work</span>
 Nothing in this repo guesses at unreleased 2027 API names — alpha names shift, and code
 written against them breaks twice. Each seam comment describes the <em>destination</em>
 in words; the <em>diff</em> gets written when the stable release exists to compile
-against. Until then, everything here builds and drives on the hardware the team
-actually owns. Grep for <code>SYSTEMCORE MIGRATION SEAM</code> to see every site.</div>
+against. Before classroom use, verify that the supplied starter builds and runs with the pinned stable 2026 tools. Grep for <code>SYSTEMCORE MIGRATION SEAM</code> to see every site.</div>
 
 <!-- ================================================================ -->
 <h2 id="lessons">10. Twelve 2026 lessons, designed out</h2>
-<p>The 2026 code review found these. Each one is not merely fixed but made structurally
-hard to reintroduce — and each fix's home file explains its story in a comment.</p>
-<table>
+<p>These are design responses from the earlier 2026 review. Verify them against the teaching starter; the historical repository and the planned baseline are different codebases.</p>
+<div class="table-scroll"><table>
 <tr><th>#</th><th>2026 bug</th><th>2027 design answer</th><th>Where</th></tr>
 <tr><td>2.1</td><td>Named commands registered as shared instances — state leaked between auto uses</td><td>Every registration uses <code>Commands.defer(...)</code> (a factory), from the very first placeholder</td><td><code>RobotContainer.registerNamedCommands</code></td></tr>
 <tr><td>2.2</td><td>Hand-rolled red/blue flip fought operator perspective → aimed 180° wrong on red</td><td>All math blue-frame; alliance enters only via <code>TargetDirectionPerspective</code> / AutoBuilder's flip supplier</td><td><code>FieldPointAim</code></td></tr>
@@ -663,11 +650,11 @@ hard to reintroduce — and each fix's home file explains its story in a comment
 <tr><td>2.7</td><td>Auto chooser default was a string lookup that could silently match nothing</td><td>Default is the DriveOffLine command <em>object</em>; PathPlanner autos enumerated from files actually deployed; health check nags until a real auto is picked</td><td><code>RobotContainer.buildAutoChooser</code></td></tr>
 <tr><td>2.8</td><td>Field-bounds filter checked 3 of 4 edges, margins pointed inward</td><td>Symmetric bounds, both axes, 0.25 m <em>outward</em> margin, dimensions from the official tag layout</td><td><code>VisionSubsystem.isOnField</code></td></tr>
 <tr><td>2.9</td><td><code>.schedule()</code> fired inside a command — ran outside parent's lifecycle</td><td>Compose, don't schedule: sequences/deadlines only</td><td><code>DriveOffLine</code></td></tr>
-<tr><td>2.10</td><td>Command skipped <code>addRequirements</code> — conflicts invisible to scheduler</td><td>Requirements declared in every command constructor, demonstrated in the template</td><td><code>TemplateActionCommand</code>, <code>FieldPointAim</code></td></tr>
+<tr><td>2.10</td><td>Command skipped <code>addRequirements</code> — conflicts invisible to scheduler</td><td>Hardware-controlling commands declare requirements; explicitly document ownership for retained-request producers</td><td><code>TemplateActionCommand</code>, <code>FieldPointAim</code></td></tr>
 <tr><td>2.11</td><td>(auto breadcrumbs missing — failures undiagnosable)</td><td>Placeholder named command prints checkpoints; pattern ready for real ones</td><td><code>RobotContainer</code></td></tr>
 <tr><td>2.12</td><td>PDH "detected" because its constructor didn't throw</td><td>Liveness state machine: proof-of-life voltage for N cycles before trusting</td><td><code>PowerMonitor</code></td></tr>
-<tr><td>—</td><td>Priority field on requests that arbitration never read</td><td>Arbitration explicitly sorts by the field; the comparator is the policy</td><td><code>TemplateSubsystem.arbitrate</code></td></tr>
-</table>
+<tr><td>—</td><td>Priority field on requests that arbitration never read</td><td>One verified ordering contract; test the selection method and any validation together</td><td><code>TemplateSubsystem.arbitrate</code></td></tr>
+</table></div>
 
 <!-- ================================================================ -->
 <h2 id="kickoff">11. Kickoff day: how to extend this</h2>
@@ -678,24 +665,22 @@ constructor (via <code>CanSeam</code>, never a raw bus string), real sensor read
 command's <code>isFinished()</code> — keeping the timeout. Delete the template's demo
 bindings from RobotContainer once real ones exist.</p>
 <p><strong>2. Field points.</strong> Add the game's aim-worthy coordinates to
-<code>FieldConstants</code> (blue-frame, always). <code>FieldPointAim</code> works
-immediately; bind buttons that call <code>setTargetPoint</code>.</p>
+<code>FieldConstants</code> (blue-frame, always). <code>FieldPointAim</code> provides the aiming structure; use the helper method supplied by the starter and test the selected points.</p>
 <p><strong>3. Cameras.</strong> Re-measure mounts on the 2027 chassis, update the one
-array in <code>Constants</code>. Done.</p>
+array in <code>Constants</code>, then verify the pose measurements.</p>
 <p><strong>4. Autos.</strong> Draw paths in the PathPlanner GUI (enable Reset Odometry
 on every start pose), register real named commands — deferred, like the placeholder
 shows. New autos appear in the chooser by themselves, and the pre-auto positioning
 check starts verifying your lineup automatically.</p>
-<p><strong>5. Field dimensions.</strong> Install 2027 WPILib; the tag layout — and with
-it the vision bounds and field constants — updates itself. Verify once.</p>
+<p><strong>5. Field dimensions.</strong> After the team approves the complete migration stack, select the official season layout. Verify dimensions, origin, axis directions, camera configuration, and autonomous paths together. Installing WPILib alone is not this validation.</p>
 <p><strong>6. SystemCore.</strong> When (and only when) the stable 2027 toolchain
-ships: practice bot first, seams only. Section 9 is the map.</p>
+and the required vendor libraries are compatible: practice bot first. Section 9 is a starting checklist, not a complete list of changes.</p>
 
 <p style="margin-top:40px; padding-top:18px; border-top:2px solid var(--ink);
-font-family:var(--display); font-size:18px;">The chassis runs. It knows where it is.
-Everything else is January's problem — and now you know exactly where January's code
-will go.</p>
+font-family:var(--display); font-size:18px;">Use this reference to find where a change belongs. Then make a small change, observe its result, and explain the evidence to a teammate.</p>
 
+<footer class="page-footer">Revised September 23, 2026 · Student lessons use WPILib 2026.<br>
+<a href="team-examples.html">2026 team examples</a> · <a href="git-guide.html">Save and share</a> · <a href="mentor-notes.html">For mentors</a></footer>
 </div>
 </body>
 </html>

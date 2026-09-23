@@ -14,19 +14,20 @@
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <div class="wrap">
 
 <nav class="site-nav">
   <span class="brand">FRC 5675</span>
   <a href="index.html">Getting Started</a>
-  <a href="exercises.html">Exercise Ladder</a>
+  <a href="exercises.html">Robot Programming Practice</a>
   <a href="teaching-guide.html">Robot Architecture</a>
 </nav>
 
 <p class="sub" style="margin:10px 0 0"><a href="teaching-guide.html">← Robot Architecture guide</a>
 · referenced from section 9 · prefer the raw source? <a href="SystemCore-Clone-Setup-Guide.md">SystemCore-Clone-Setup-Guide.md</a></p>
 
-<header class="hero">
+<header class="hero" id="main-content" tabindex="-1">
   <span class="hero-tag">FRC Team 5675 · SystemCore Clone Bench · pre-release, read the caveats</span>
   <h1>SystemCore Clone Bench — Setup Guide</h1>
   <p class="lede"><strong>Purpose:</strong> build a Raspberry Pi 5 stand-in for the
@@ -86,25 +87,25 @@ change, we left a greppable marker:</p>
 bench is how we find out whether we're right, using real 2027 alpha tooling, without
 needing SystemCore hardware that isn't purchasable yet.</p>
 <p><strong>The three questions we most need answered:</strong></p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Priority</th><th>Question</th><th>Why it matters to us</th></tr>
 <tr><td>1</td><td><strong>Commands v2 vs. v3</strong></td><td>Our entire 10-exercise teaching ladder is written v2-style. If v3 is the 2027 default, that's a teaching-guide rewrite, not a code seam — and rewrites take longer than code fixes.</td></tr>
 <tr><td>2</td><td>Does our <strong>WPILOG Analyzer</strong> still parse a 2027-generated <code>.wpilog</code>?</td><td>The analyzer parses the WPILOG binary format by hand. A format version bump, new record types, or changed struct encoding breaks our entire post-match workflow. Cheap to test, high consequence.</td></tr>
 <tr><td>3</td><td>Does the <strong>Phoenix 6 swerve generator</strong> output change shape?</td><td>Our whole drivetrain is generator-shaped. If <code>TunerConstants</code> changes, both <code>TunerConstants</code> and <code>TunerConstantsPractice</code> change.</td></tr>
 <tr><td>4</td><td><span class="done">Does <strong>AdvantageKit</strong> have a working 2027 alpha path?</span></td><td><strong>Answered 3 Sep 2026 — see §16-F.</strong> Yes, but it is pinned a full WPILib alpha and three SystemCore images behind current. You can have AdvantageKit <em>or</em> current WPILib/SystemCore, not both. Still lower priority; see the note below.</td></tr>
-</table>
+</table></div>
 
 <h3>A note on AdvantageKit vs. our own logging stack</h3>
 <p><strong>WPILOG is a WPILib format, not an AdvantageKit format.</strong> WPILib's
 built-in <code>DataLogManager</code> writes <code>.wpilog</code> files with no
 third-party dependency, and our Unified WPILOG Analyzer reads that binary format
 directly. AdvantageKit is doing three separate jobs in the baseline:</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Job</th><th>Requires AdvantageKit?</th><th>Fallback</th></tr>
 <tr><td>Write <code>.wpilog</code> files for post-match analysis</td><td>No</td><td><code>DataLogManager</code> (WPILib core)</td></tr>
 <tr><td>Publish live telemetry to the dashboard</td><td>No</td><td>NT4 struct publishers → Elastic</td></tr>
 <tr><td>Deterministic replay through the IO layers</td><td><strong>Yes</strong></td><td>None</td></tr>
-</table>
+</table></div>
 <p>So if AdvantageKit lags the 2027 alpha, we lose <strong>replay</strong> and we gain
 some duplicated call sites — we do <em>not</em> lose logging or the dashboard. That's a
 real cost but a survivable one.</p>
@@ -215,26 +216,26 @@ balenaEtcher both do this. It completely erases the card.</p>
 <!-- ============================================================ -->
 <h2 id="hardware">3. Hardware we purchased</h2>
 <p>All from PiShop.us:</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Item</th><th>Notes</th></tr>
 <tr><td><strong>Raspberry Pi 5, 4GB</strong></td><td>4GB specifically — closest match to SystemCore's spec. Don't spend up to 8GB.</td></tr>
 <tr><td><strong>Waveshare 2-CH CAN FD HAT</strong> (part <strong>17075</strong>)</td><td>Must be the <strong>MCP2518FD</strong> version. The near-identically-named MCP2515 board is classic CAN only.</td></tr>
 <tr><td><strong>Active Cooler</strong></td><td>The Pi 5 throttles without it.</td></tr>
 <tr><td><strong>Case</strong></td><td>See clearance warning in §5.</td></tr>
 <tr><td><strong>Official 27W USB-C power supply</strong></td><td>Do not substitute a phone charger. The Pi 5 will brown out.</td></tr>
-</table>
+</table></div>
 <p><strong>Still needed:</strong></p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Item</th><th>Notes</th></tr>
 <tr><td><strong>microSD card, 32GB+ — buy TWO</strong></td><td>Class 10 / A2 recommended. The second card is not optional; see §4.1.</td></tr>
 <tr><td><strong>CAN wire + a spare Kraken X60</strong></td><td>Pulled from inventory.</td></tr>
 <tr><td><strong>A 12V supply for the motor</strong></td><td>A spare battery on a breaker, or a bench supply. The Pi's USB-C supply does <strong>not</strong> power motors.</td></tr>
 <tr><td><strong>USB CANivore</strong> <em>(optional, already owned)</em></td><td>See §8.</td></tr>
-</table>
+</table></div>
 
 <!-- ============================================================ -->
 <h2 id="software">4. Software you need to download</h2>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Software</th><th>Where</th></tr>
 <tr><td><strong>Raspberry Pi Imager</strong></td><td><a href="https://www.raspberrypi.com/software/" target="_blank" rel="noopener">raspberrypi.com/software</a></td></tr>
 <tr><td><strong>WPILib 2027 alpha</strong> — <em>pin deliberately, see §4.1</em></td><td><a href="https://github.com/wpilibsuite/allwpilib/releases" target="_blank" rel="noopener">github.com/wpilibsuite/allwpilib/releases</a></td></tr>
@@ -243,7 +244,7 @@ balenaEtcher both do this. It completely erases the card.</p>
 <tr><td><strong>CANivore drivers</strong> <em>(optional)</em></td><td><code>ctre.download/files/systemcore/canivore-usb-kernel_1.18_aarch64.ipk</code> and <code>canivore-usb_1.16_aarch64.ipk</code></td></tr>
 <tr><td><strong>Phoenix Tuner X</strong></td><td>From CTRE, as usual</td></tr>
 <tr><td><strong>FRC Driver Station</strong></td><td>The 2026 install is fine for bench testing</td></tr>
-</table>
+</table></div>
 <div class="box oops"><span class="box-tag">Don't install over your 2026 toolchain</span>
 Install WPILib 2027 alpha <strong>alongside</strong> your 2026 install, not over it. The
 alpha installs to its own year-versioned folder (<code>~/wpilib/2027</code>). Our actual
@@ -269,14 +270,14 @@ be re-imported. SystemCore image 14 landed the same week with its release title
 literally reading <em>"REQUIRES WPILIB ALPHA 7 — CHECK VENDORDEP AVAILABILITY FOR ALL OF
 YOUR DEVICES BEFORE UPGRADING."</em></p>
 <p>Compatibility as of this writing:</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Library</th><th>2026 stable</th><th>2027 alpha 7</th></tr>
 <tr><td>WPILib</td><td>✅</td><td>✅</td></tr>
 <tr><td>Phoenix 6</td><td>✅</td><td>⚠️ alpha build exists, pinned to alpha-6</td></tr>
 <tr><td>PathPlannerLib</td><td>✅</td><td>❌ no compatible release</td></tr>
 <tr><td>AdvantageKit</td><td>✅</td><td>❌ no compatible release (pinned to alpha-6 + image 11)</td></tr>
 <tr><td>REVLib</td><td>✅</td><td>⚠️ alpha build exists</td></tr>
-</table>
+</table></div>
 <p>Three of the four libraries our baseline depends on have <strong>no build</strong>
 that works with current WPILib. There is no combination of vendordep URLs that compiles
 the full stack on alpha 7 today.</p>
@@ -284,13 +285,13 @@ the full stack on alpha 7 today.</p>
 <h3>The two-card strategy</h3>
 <p>Because of the above, run <strong>two SD cards</strong>, not one. They cost about
 eight dollars each and this is the whole answer.</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th></th><th>Card A — known good</th><th>Card B — bleeding edge</th></tr>
 <tr><td>WPILib</td><td>alpha-6</td><td>alpha-7 (current)</td></tr>
 <tr><td>SystemCore image</td><td>11-era (whatever Bobcat's prebuilt uses)</td><td>14</td></tr>
 <tr><td>Vendordeps</td><td>Phoenix 6 + AdvantageKit resolve</td><td>bare WPILib only</td></tr>
 <tr><td>What it's for</td><td>Full-stack tests. The complete telemetry chain end to end.</td><td>What's coming. Format and API changes only.</td></tr>
-</table>
+</table></div>
 <p>Card A never changes once it works. Swapping cards swaps benches, and you never risk
 the one that boots.</p>
 
@@ -436,13 +437,13 @@ Team 177 noted the correct install order between these two isn't fully clear. If
 fails, try the other order.</div>
 
 <h3>CANivore vs. HAT — what each one tests</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th></th><th>USB CANivore</th><th>CAN FD HAT (native bus)</th></tr>
 <tr><td>CTRE devices (Kraken, Pigeon, CANcoder)</td><td>✅</td><td>✅</td></tr>
 <tr><td>Non-CTRE devices (REV, Thrifty, <strong>PDH</strong>)</td><td>❌</td><td>✅ (expected)</td></tr>
 <tr><td>Setup difficulty</td><td>Easy — plug in, install two packages</td><td>Harder — image/overlay config</td></tr>
 <tr><td>What it proves for 2027</td><td>The CTRE USB path still works</td><td><strong>The native SPI CAN FD bus works — this is the new thing</strong></td></tr>
-</table>
+</table></div>
 <p>The CANivore is the fast path to a spinning motor. The HAT is the path that actually
 answers our seam questions. <strong>Do both.</strong></p>
 
@@ -578,7 +579,7 @@ open question about integrating an IMU to match SystemCore's built-in one
 
 <!-- ============================================================ -->
 <h2 id="gotchas">13. Known gotchas and troubleshooting</h2>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Symptom</th><th>Likely cause / fix</th></tr>
 <tr><td>No <code>can0</code>/<code>can1</code> interfaces</td><td>SPI overlay not loading. Recheck <code>config.txt</code> (§7.4); confirm you used the <strong>FD</strong> version. Reseat the HAT.</td></tr>
 <tr><td>CAN interfaces appear but no devices enumerate</td><td>Termination jumper off, CANH/CANL swapped, or device unpowered. Motors need 12V — the Pi doesn't power them.</td></tr>
@@ -594,7 +595,7 @@ open question about integrating an IMU to match SystemCore's built-in one
 <tr><td>Analyzer opens a bench log but every chart is empty</td><td>Epoch timestamps. Use analyzer <strong>v10</strong>, which detects them. See §16-D.</td></tr>
 <tr><td>Analyzer opens a bench log and the data looks fine but the duration is absurd, or the log looks truncated</td><td>Nanosecond timestamps read as microseconds. v9 silently clips at its 86400 s filter and hands you partial data that looks real. v10 detects and reports this. See §16-D.</td></tr>
 <tr><td>Everything worked yesterday and nothing works today</td><td>Did someone upgrade one piece of the stack? Read §4.1.</td></tr>
-</table>
+</table></div>
 
 <!-- ============================================================ -->
 <h2 id="safety">14. Safety notes</h2>
@@ -693,7 +694,7 @@ matrix, not the WPILib version number.</strong> See §4.1.</p>
 
 <h3>🔬 16-C. Alpha 7 breaking changes that hit our baseline directly</h3>
 <p>Not a general changelog — just the ones that touch files we've written:</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Alpha 7 change</th><th>What it breaks in our code</th></tr>
 <tr><td>SmartDashboard / SendableChooser / Sendable replaced by <strong>Telemetry</strong> and <strong>Tunables</strong> APIs; <code>SendableChooser</code> → <strong><code>Selectable</code></strong></td><td>The auto chooser in <code>RobotContainer</code></td></tr>
 <tr><td><code>Alert</code> moved to <strong>wpiutil</strong>, with added functionality</td><td><code>SystemHealthCheck</code> is built entirely on <code>Alert</code></td></tr>
@@ -702,7 +703,7 @@ matrix, not the WPILib version number.</strong> See §4.1.</p>
 <tr><td><code>Preferences</code> moved to its own package; some geometry classes moved to <code>shape</code></td><td><code>RobotIdentity</code> (Preferences-backed)</td></tr>
 <tr><td><strong>Integer raw timestamps are now nanoseconds, not microseconds</strong></td><td>The WPILOG analyzer — see 16-D</td></tr>
 <tr><td><code>AprilTagFields</code> folded into an integrated <code>Fields</code> class</td><td>Vision constants</td></tr>
-</table>
+</table></div>
 <p>Separately, from CTRE's own changelog: the Phoenix 6 SystemCore alpha still uses the
 <strong>2026 field coordinate system</strong>, and WPILib intends to change the field
 origin and orientation for 2027. That's a landmine for anything pose-related. Watch for
@@ -715,14 +716,14 @@ AdvantageScope had to be patched for this; their symptom was logs opening wildly
 out.</p>
 <p>Ours was worse. v9 hard-coded "relative microseconds" and then filtered out anything
 past 86400 seconds. Tested against synthetic logs in all four flavors:</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Log flavor</th><th>v9 behavior</th></tr>
 <tr><td>relative µs (2026 roboRIO)</td><td>correct</td></tr>
 <tr><td>relative ns</td><td><strong>4,321 of 9,000 points</strong> — silently truncated at the filter boundary</td></tr>
 <tr><td>epoch µs (SystemCore)</td><td><strong>empty</strong> — every record silently discarded</td></tr>
 <tr><td>epoch ns (both changes)</td><td><strong>empty</strong></td></tr>
 <tr><td>short relative-ns log (60 s)</td><td>3,000 points, <strong>silently 1000× too long</strong> — passes the filter</td></tr>
-</table>
+</table></div>
 <p><strong>The truncation case is the dangerous one.</strong> We'd predicted an
 empty-chart failure and would have recognized it. Partial data that looks plausible is
 much harder to catch.</p>
@@ -750,13 +751,13 @@ a working bench.</p>
 <h3>🔬 16-F. AdvantageKit 2027 status, read properly <em>(3 Sep 2026)</em></h3>
 <p>The compatibility line in each release note is the whole story, and it's easy to skim
 past:</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>AdvantageKit</th><th>WPILib</th><th>SystemCore image</th></tr>
 <tr><td>v27.0.0-alpha-1</td><td>alpha-1</td><td>157</td></tr>
 <tr><td>v27.0.0-alpha-2</td><td>alpha-1</td><td>161–162</td></tr>
 <tr><td>v27.0.0-alpha-3</td><td>alpha-2</td><td>163 &amp; 166</td></tr>
 <tr><td><strong>v27.0.0-alpha-4</strong> (current)</td><td><strong>alpha-6</strong></td><td><strong>11</strong></td></tr>
-</table>
+</table></div>
 <p>Pinned to both. So AdvantageKit and current WPILib/SystemCore are mutually exclusive
 — that's the whole reason card A exists.</p>
 <p>Other things worth knowing from their known-issues page:</p>
@@ -802,13 +803,15 @@ spring.</p>
 
 <!-- ============================================================ -->
 <h2 id="revision-log">Revision log</h2>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Date</th><th>Change</th><th>By</th></tr>
 <tr><td>2026-08-10</td><td>Initial version, written from Bobcat Robotics guide v1.0</td><td>—</td></tr>
 <tr><td>2026-09-03</td><td>Added §4.1 (version pinning, two-card strategy, no-OTA rule) and §16 (findings log). Recorded the importer trap (16-A), alpha-7 breaking changes (16-C), the analyzer timestamp bug and v10 fix (16-D), and resolved the AdvantageKit question (16-F). Updated §11, §12, §13, §15 and Sources to match.</td><td>Ed</td></tr>
 <tr><td colspan="3"><em>Add a row every time you learn something on the bench.</em></td></tr>
-</table>
+</table></div>
 
+<footer class="page-footer">Revised September 23, 2026 · Student lessons use WPILib 2026.<br>
+<a href="team-examples.html">2026 team examples</a> · <a href="git-guide.html">Save and share</a> · <a href="mentor-notes.html">For mentors</a></footer>
 </div>
 </body>
 </html>
