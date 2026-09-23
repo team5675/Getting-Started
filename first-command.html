@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team 5675 — Your first command: a simulated light</title>
+<title>Team 5675 — Start and stop one action</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"></head><body>
-<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap">
-<nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Getting Started</a>
-<a href="exercises.html">Robot Programming Practice</a>
-<a href="teaching-guide.html">Robot Architecture</a>
-</nav>
-<header class="hero" id="main-content" tabindex="-1"><span class="hero-tag">Team 5675 · Learn, try, explain</span><h1>Your first command: a simulated light</h1><p class="lede">Start an action, observe its result, and see what happens when it ends.</p></header>
-<p><a href="index.html">← Getting Started</a> · Practice after chapter 9</p>
-<section class="start-card" aria-labelledby="light-goal"><h2 id="light-goal">What you'll learn</h2><p>Build a subsystem that remembers a light's state and a command that turns it on, then cleans up when it ends. The “light” is a boolean printed to the console. You do not need a robot, gamepad, or dashboard.</p><p><b>Before you start:</b> open your <code>learning-sandbox</code> Command Robot project in WPILib VS Code 2026. Use the package <code>frc.robot</code> created by that template. Keep its generated <code>Robot.java</code> and scheduler call.</p></section>
-<h2>1. Make a subsystem</h2><p>Create <code>src/main/java/frc/robot/subsystems/PracticeLight.java</code> and paste this complete file. The filename and public class name must match.</p><pre><code>package frc.robot.subsystems;
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 8 of 8 · Begin at your own pace</span><h1>Start and stop one action</h1><p class="lede">Let the robot framework start a small action and clean up when it ends.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Turn a pretend light on for about two seconds, then off. Trace which method runs at each stage.</p>
+<p><b>Before you start:</b> Complete Lesson 7 and work with a mentor for this transition. Keep your original Command Robot template. No physical light or gamepad is required.</p><p class="meta">Allow 45–75 minutes with a mentor. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="lesson-7-objects.html">← Build two objects</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. Two jobs, two classes</h2><p>A <b>subsystem</b> groups the state and operations for one part of a robot.
+A <b>command</b> describes an action using a subsystem. In this practice example, the subsystem stores a boolean called
+<code>on</code>. The command changes it at the start and end of an action.</p>
+<p>The <b>scheduler</b> is framework code that starts and stops commands. You will give it an action to run;
+you do not write a loop that waits two seconds.</p>
+<h2>2. Add the light subsystem</h2><ol><li>In Explorer, expand <code>src/main/java/frc/robot</code>.</li>
+<li>Open its <code>subsystems</code> folder, or create that folder if missing. Create <code>PracticeLight.java</code> inside it.</li>
+<li>Paste this complete file. Save and run <b>WPILib: Build Robot Code</b>. At this stage, it should build but will not print light messages yet.</li></ol>
+<p class="code-label">Complete file: subsystems/PracticeLight.java</p><pre><code>package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// A pretend light: no physical hardware or vendor libraries needed.
 public class PracticeLight extends SubsystemBase {
     private boolean on = false;
 
@@ -25,8 +29,13 @@ public class PracticeLight extends SubsystemBase {
         System.out.println(&quot;Light on: &quot; + on);
     }
 }</code></pre>
-<p><code>extends SubsystemBase</code> gives the class WPILib's subsystem behavior. The field <code>on</code> remembers state between method calls. <code>private</code> means other classes use our method to change it.</p>
-<h2>2. Make a command</h2><p>Create <code>src/main/java/frc/robot/commands/KeepLightOn.java</code> and paste this complete file.</p><pre><code>package frc.robot.commands;
+<p><code>import</code> makes another class’s name available in this file. <code>extends SubsystemBase</code>
+means our class builds on WPILib’s subsystem class. The field and method inside should look familiar from PracticeCounter.</p>
+<p>Calling <code>setOn(true)</code> stores true and prints it; <code>setOn(false)</code> stores false and prints it.
+The state stays in the field between calls. Nothing in this class drives real hardware.</p>
+<h2>3. Add the action</h2><ol><li>Create <code>KeepLightOn.java</code> in the existing <code>commands</code> folder under <code>frc/robot</code>. Create the folder if necessary.</li>
+<li>Paste this complete file and save. Build again before changing anything else.</li></ol>
+<p class="code-label">Complete file: commands/KeepLightOn.java</p><pre><code>package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.PracticeLight;
@@ -35,42 +44,56 @@ public class KeepLightOn extends Command {
     private final PracticeLight light;
 
     public KeepLightOn(PracticeLight light) {
-        this.light = light;       // Remember the object passed to us.
-        addRequirements(light);  // This command owns the light while running.
+        this.light = light;
+        addRequirements(light);
     }
 
     @Override
     public void initialize() {
-        light.setOn(true);       // Called once each time this command starts.
+        light.setOn(true);
     }
 
     @Override
     public void end(boolean interrupted) {
-        light.setOn(false);      // Always clean up, including on cancellation.
+        light.setOn(false);
     }
-
-    // No execute() is needed: the boolean keeps its value between calls.
-    // The inherited isFinished() returns false. Our caller adds a timeout.
-}</code></pre>
-<p><code>final</code> means this field keeps referring to the same light object. <code>@Override</code> lets Java check that we are supplying a method the parent class defines. Requirements prevent two commands from owning this light at once.</p>
-<h2>3. Connect it in RobotContainer</h2><p>Open <code>src/main/java/frc/robot/RobotContainer.java</code>. Keep the class and existing setup. Add these imports below its package line, skipping any import already present:</p><pre><code>import edu.wpi.first.wpilibj2.command.Command;
+}</code></pre><div class="table-scroll"><table><thead><tr><th scope="col">Piece</th><th scope="col">What it means here</th></tr></thead><tbody><tr><td><code>private final PracticeLight light;</code></td><td>This field keeps a reference to the light object. Final means we do not replace that reference; the light’s own state can still change.</td></tr><tr><td><code>KeepLightOn(PracticeLight light)</code></td><td>The constructor receives the light object the command will use. It does not create a second light.</td></tr><tr><td><code>this.light = light;</code></td><td>The left side is this command object’s field; the right side is the constructor parameter. Store the received reference.</td></tr><tr><td><code>addRequirements(light);</code></td><td>Tell the scheduler this command needs exclusive use of the light subsystem while it runs.</td></tr><tr><td><code>initialize()</code></td><td>The scheduler calls this once when the action starts. It turns on the pretend light.</td></tr><tr><td><code>end(boolean interrupted)</code></td><td>The scheduler calls this when the action ends. This example turns off the light whether it finished or was canceled.</td></tr></tbody></table></div>
+<p>You do not need <code>execute()</code> here: there is no changing output to recompute each cycle.
+The inherited <code>isFinished()</code> returns false, so this command will keep running until something ends it.
+We will add a timeout at the place that creates the action.</p>
+<h2>4. Connect one light in RobotContainer</h2><p>Open <code>RobotContainer.java</code>, beside Robot.java.
+This class connects subsystems and commands in the generated template. Do not replace the entire file.</p>
+<ol><li>Add these imports below the package line, skipping any already present:</li></ol>
+<p class="code-label">Code to use</p><pre><code>import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.KeepLightOn;
 import frc.robot.subsystems.PracticeLight;</code></pre>
-<p>Add this field inside the class, outside its methods:</p><pre><code>private final PracticeLight practiceLight = new PracticeLight();</code></pre>
-<p>Replace the existing <code>getAutonomousCommand()</code> method with this one. Do not add a second copy:</p><pre><code>public Command getAutonomousCommand() {
-    // Start the light command, then interrupt it after about two seconds.
+<ol start="2"><li>Inside the RobotContainer class, add this field beside the existing fields, above the constructor. It creates one light object:</li></ol>
+<p class="code-label">Code to use</p><pre><code>private final PracticeLight practiceLight = new PracticeLight();</code></pre>
+<ol start="3"><li>Find the existing <code>getAutonomousCommand()</code> method using <code>Ctrl+F</code>. Replace only that complete method with the one below. Keep all other template code.</li></ol>
+<p class="code-label">Code to use</p><pre><code>public Command getAutonomousCommand() {
     return new KeepLightOn(practiceLight).withTimeout(2.0);
 }</code></pre>
-<p>The generated <code>Robot.autonomousInit()</code> schedules the returned command. Its scheduler runs from <code>robotPeriodic()</code>. The timeout ends the inner command, so <code>end()</code> turns the light off. No busy waiting is needed.</p>
-<h2>4. Predict, run, and explain</h2><ol><li>Predict which messages will print and how far apart they will be.</li><li>Save all files, then run <b>WPILib: Simulate Robot Code</b> and select the Simulation GUI.</li><li>In the <b>Robot State</b> panel select <b>Autonomous</b> so the simulator is enabled in autonomous mode. Watch the VS Code Terminal.</li><li>After the two messages, choose <b>Disabled</b>. To repeat, switch from Disabled back to Autonomous.</li></ol>
-<div class="checkpoint"><b>What you should see</b><pre><code>Light on: true
-Light on: false</code></pre><p>The second line appears about two seconds after the first. There is no field animation or physical light in this example.</p></div>
-<div class="box try"><span class="box-tag">Try one change</span>Change <code>2.0</code> to <code>4.0</code>, restart the simulation, and repeat. Next, disable after about one second: cleanup should turn the light off early.</div>
-<div class="checkpoint"><b>Explain it</b><ul><li>Which class remembers whether the light is on?</li><li>What calls <code>initialize()</code> and <code>end()</code>?</li><li>Why does the light stay on without an <code>execute()</code> method?</li><li>Why must cleanup happen when you disable early too?</li></ul></div>
-<details><summary>If nothing prints</summary><p>Check that the build succeeded, that you replaced the existing <code>getAutonomousCommand()</code>, and that <code>Robot.java</code> still schedules it in <code>autonomousInit()</code>. Starting the simulator leaves it disabled; select Autonomous to run this action. Check the Terminal panel for the messages.</p></details>
-<p><b>Save your work:</b> keep the files in your learning sandbox. Show a partner your timing change before starting <a href="exercises.html">Activity 0</a>.</p>
-<p class="meta">Framework reference: <a href="https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html">WPILib command lifecycle</a>.</p>
-
-<footer class="page-footer">Student lessons use WPILib 2026. Revised September 23, 2026.<br>
-<a href="index.html">Getting Started</a> · <a href="git-guide.html">Save and share your work</a> · <a href="mentor-notes.html">For mentors</a></footer>
+<p>Read the return line in two parts: <code>new KeepLightOn(practiceLight)</code> creates an action using our
+existing light; <code>.withTimeout(2.0)</code> wraps it so it is ended after about two seconds.
+The returned command is scheduled by the template when Autonomous starts.</p>
+<h2>5. Run one action</h2><ol><li>Save all changed files with <b>File → Save All</b>. Stop any previous simulation and launch <b>WPILib: Simulate Robot Code</b>.</li>
+<li>At startup, your earlier Lesson 7 messages may print. That is expected; they are separate from the light action.</li>
+<li>In the Simulation GUI, find <b>Robot State</b>. Select <b>Autonomous</b>. That mode runs the command returned by getAutonomousCommand. In versions with a separate enable control, enable Autonomous too.</li>
+<li>Watch the VS Code Terminal. Look for these two messages about two seconds apart:</li></ol>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Light on: true
+Light on: false</code></pre>
+<p>Autonomous means the robot program performs a scheduled action without a driver holding a button.
+Our action changes a boolean only. No robot shape, real lamp, or moving motor should appear.</p>
+<figure><div class="learning-cycle"><div><b>Enable Autonomous</b><p>The template schedules our timed action.</p></div><div><b>initialize()</b><p>Store true and print it.</p></div><div><b>Timeout expires</b><p>end() stores false and prints it.</p></div></div><figcaption>A timeout is a limit on how long the action can run; it does not freeze the rest of the program.</figcaption></figure>
+<h2>6. Repeat, then change one thing</h2><ol><li>Select <b>Disabled</b>, then Autonomous again. Each transition starts the action again.</li>
+<li>Change 2.0 to 4.0 in RobotContainer. Save, restart the simulation, then enable Autonomous. Predict how the gap between messages changes.</li>
+<li>On another run, select Disabled after about one second. The action should clean up early and print false.</li></ol>
+<p>The timeout interrupts the inner command when time runs out. Disabling also cancels the action. Our cleanup
+does not depend on which of those happened; both need the light turned off.</p>
+<details><summary>Nothing prints for the light</summary><ol><li>Check the build succeeded and you restarted after saving.</li><li>Check you selected Autonomous, not only launched the disabled simulator.</li><li>Check you replaced the existing getAutonomousCommand, rather than adding an unrelated method.</li><li>Ask a mentor to confirm the template’s Robot.autonomousInit schedules that returned command and robotPeriodic still runs the scheduler.</li></ol></details><details><summary>A package or class cannot be found</summary><p>Check each file’s package against its folder: PracticeLight is in frc.robot.subsystems; KeepLightOn is in frc.robot.commands. Compare both imports in RobotContainer and save all files. Do not solve this by adding hardware vendor libraries; this example only uses WPILib.</p></details><div class="checkpoint"><b>Pause and check</b><p>Trace the action with your finger: RobotContainer creates one light; the command remembers it; initialize turns it on; end turns it off. Explain why creating the Java files alone did not start the action.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>This is a substantial new idea. Repeat it before moving to a larger project. When you can explain start and cleanup, try the last-year command reading with a mentor. The full swerve/vision project can wait.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened,
+and one question. Note the lesson number so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation"><a href="lesson-7-objects.html">← Build two objects</a><a href="team-examples.html">When you’re ready: Read team examples →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
 </div></body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Use a method</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 5 of 8 · Begin at your own pace</span><h1>Use a method</h1><p class="lede">Give a small task a name so you can use it without writing its instructions again.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Tell the difference between defining a method and calling it, then trace one input and one returned result.</p>
+<p><b>Before you start:</b> Lessons 2–4 feel familiar. You can find the braces belonging to robotInit().</p><p class="meta">Allow 35–50 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="lesson-4-decisions.html">← Make a decision</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. You have already called a method</h2><p><code>System.out.println("Hello");</code> calls Java’s print method.
+You supply text between parentheses; the method prints it. Now you’ll write a short method of your own.</p>
+<p>A <b>method definition</b> gives the method a name and a body of instructions. A <b>method call</b>
+asks it to do that work. Defining a method does not automatically run it.</p>
+<h2>2. Define a method beside robotInit()</h2><ol><li>Open <code>Robot.java</code>. Find the closing brace of your <code>robotInit()</code>.</li>
+<li>Below that brace, on a blank line before the next existing method, add this new method. It stays inside the Robot class.</li>
+<li>Keep your existing <code>robotPeriodic()</code> and the rest of the template.</li></ol>
+<p class="code-label">Code to use</p><pre><code>private void printWelcome() {
+    System.out.println(&quot;Welcome to programming practice.&quot;);
+}</code></pre>
+<p><code>private</code> means we will call this helper from within this class. <code>void</code> means it does not
+hand back a result value. <code>printWelcome</code> is our chosen name. Empty parentheses mean it needs no input values.</p>
+<h2>3. Call it from your startup method</h2><p class="placement"><b>Where this goes:</b> open <code>src/main/java/frc/robot/Robot.java</code>. Replace only the <code>robotInit()</code> method you added earlier, from its <code>@Override</code> line through that method’s matching closing brace. Keep the rest of the file. Do not add a second <code>robotInit()</code>.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    printWelcome();
+    printWelcome();
+}</code></pre><p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Welcome to programming practice.
+Welcome to programming practice.</code></pre>
+<p>Follow the first call: Java enters <code>printWelcome</code>, executes its print statement, then returns to
+the next line in <code>robotInit</code>. The second call repeats that work. There is one definition and two calls.</p>
+<details><summary>I see nothing, or the method name is underlined</summary><p>If nothing prints, check that you actually put the calls inside robotInit. If the name is underlined, compare spelling and capitalization with the definition. If Java reports an illegal start, you may have put the entire definition inside robotInit. Move the helper outside that method’s closing brace.</p></details>
+<h2>4. Let a method receive a value</h2><p>Replace the <code>printWelcome</code> definition with this version. Its
+<b>parameter</b> is the named input <code>name</code>, whose type is String.</p>
+<p class="code-label">Code to use</p><pre><code>private void printWelcome(String name) {
+    System.out.println(&quot;Welcome, &quot; + name + &quot;!&quot;);
+}</code></pre>
+<p>Now replace the calls in <code>robotInit()</code>. Each quoted value you pass in is an <b>argument</b>.</p>
+<p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    printWelcome(&quot;Morgan&quot;);
+    printWelcome(&quot;Casey&quot;);
+}</code></pre><p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Welcome, Morgan!
+Welcome, Casey!</code></pre>
+<p>During the first call, the parameter <code>name</code> holds “Morgan.” During the second, it holds “Casey.”
+Changing the method to need an input means the old empty call <code>printWelcome();</code> is no longer sufficient.</p>
+<h2>5. Return a result you can use</h2><p>When you are ready for another small step, add this second helper method
+beside <code>printWelcome</code>. It calculates a result instead of printing.</p>
+<p class="code-label">Code to use</p><pre><code>private double doubleDistance(double meters) {
+    return meters * 2.0;
+}</code></pre>
+<p>The first <code>double</code> says what type of value comes back. The parameter <code>meters</code> is the
+input. <code>*</code> means multiplication. <code>return</code> hands the result to the caller and ends this method call.</p>
+<p class="placement"><b>Where this goes:</b> open <code>src/main/java/frc/robot/Robot.java</code>. Replace only the <code>robotInit()</code> method you added earlier, from its <code>@Override</code> line through that method’s matching closing brace. Keep the rest of the file. Do not add a second <code>robotInit()</code>.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    double result = doubleDistance(1.5);
+    System.out.println(&quot;Result: &quot; + result);
+}</code></pre><p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Result: 3.0</code></pre>
+<ol><li>The argument 1.5 becomes the parameter’s value.</li><li>The method computes 1.5 × 2.0 = 3.0.</li>
+<li>That returned value is stored in <code>result</code>.</li><li>The next statement prints the stored value.</li></ol>
+<p>A returned number is not automatically printed. If you removed the print statement, the calculation would still happen, but you would not see its result in the Terminal.</p>
+<h2>6. Your turn</h2><p>Call <code>doubleDistance</code> with 2.0 and 0.5, storing each result in a different variable.
+Print both. Predict the values before you run.</p>
+<details><summary>One possible answer</summary><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    double firstResult = doubleDistance(2.0);
+    double secondResult = doubleDistance(0.5);
+    System.out.println(firstResult);
+    System.out.println(secondResult);
+}</code></pre><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>4.0
+1.0</code></pre></details><div class="checkpoint"><b>Pause and check</b><p>Point to one definition and one call. Explain which word names a parameter, which value is an argument, and where the returned number goes.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>It is fine to use the examples while explaining. Save both helper methods. In later lessons, they can remain in the file even when robotInit does not call them.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened,
+and one question. Note the lesson number so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation"><a href="lesson-4-decisions.html">← Make a decision</a><a href="lesson-6-loops.html">When you’re ready: Repeat a small task →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

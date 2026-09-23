@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Make a decision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 4 of 8 · Begin at your own pace</span><h1>Make a decision</h1><p class="lede">Use a true-or-false question to choose which instructions run.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Predict and test what happens below, at, and above a boundary.</p>
+<p><b>Before you start:</b> You can declare a variable, print it, and restart a saved program from Lesson 3.</p><p class="meta">Allow 30–45 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="lesson-3-values.html">← Give information a name</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. Start with a question you can answer</h2><p>Suppose a practice activity uses the message “Too close” when a made-up distance is less than 1 meter.
+We will type that distance ourselves. No sensor is connected, and this is not a real robot safety threshold.</p>
+<p>The question is <code>distanceMeters &lt; 1.0</code>. The <code>&lt;</code> symbol means “less than.”
+If the distance is 0.5, the answer is true. If it is 2.0, the answer is false.</p>
+<h2>2. Write both outcomes</h2><p class="placement"><b>Where this goes:</b> open <code>src/main/java/frc/robot/Robot.java</code>. Replace only the <code>robotInit()</code> method you added earlier, from its <code>@Override</code> line through that method’s matching closing brace. Keep the rest of the file. Do not add a second <code>robotInit()</code>.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    double distanceMeters = 0.5;
+
+    if (distanceMeters &lt; 1.0) {
+        System.out.println(&quot;Too close&quot;);
+    } else {
+        System.out.println(&quot;Clear&quot;);
+    }
+
+    System.out.println(&quot;Check complete&quot;);
+}</code></pre>
+<p>Read the method one step at a time:</p><ol><li>Store 0.5 in <code>distanceMeters</code>.</li>
+<li><code>if (...)</code> asks the question in parentheses.</li><li>If the answer is true, run the first braced block.</li>
+<li><code>else</code> supplies the other block, used when the answer is false. For this if/else pair, only one of those blocks runs.</li>
+<li>After that pair, continue with <code>Check complete</code>, which is outside both branches but still inside the method.</li></ol>
+<figure><div class="decision-map"><div class="question">Is distanceMeters less than 1.0?</div><div class="branches"><div><b>True →</b><p>Print “Too close”</p></div><div><b>False →</b><p>Print “Clear”</p></div></div><div class="question">Either path continues: print “Check complete”</div></div><figcaption>The braces group instructions. Indentation helps you see which block owns each line.</figcaption></figure>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Too close
+Check complete</code></pre>
+<h2>3. Test the boundary, not only easy examples</h2><p>Change only the first value for each run. Write a prediction before restarting the simulation.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">distanceMeters</th><th scope="col">Question: less than 1.0?</th><th scope="col">First printed message</th></tr></thead><tbody><tr><td>0.9</td><td>True</td><td>Too close</td></tr><tr><td>1.0</td><td>False — equal is not less</td><td>Clear</td></tr><tr><td>1.1</td><td>False</td><td>Clear</td></tr></tbody></table></div>
+<p>In all three runs, <code>Check complete</code> still prints second. If your output differs, check whether you saved and restarted,
+and compare the braces with the example.</p>
+<h2>4. A one-character change matters</h2><p>Change <code>&lt;</code> to <code>&lt;=</code>, which means “less than or equal to.”
+Keep the distance at 1.0. Predict, then test: it should now print <code>Too close</code>.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Symbol</th><th scope="col">Meaning</th><th scope="col">Example question</th></tr></thead><tbody><tr><td><code>&lt;</code></td><td>Less than</td><td>Is 0.9 less than 1.0?</td></tr><tr><td><code>&gt;</code></td><td>Greater than</td><td>Is 3 greater than 2?</td></tr><tr><td><code>&lt;=</code></td><td>Less than or equal to</td><td>Is 1.0 at most 1.0?</td></tr><tr><td><code>&gt;=</code></td><td>Greater than or equal to</td><td>Is 3 at least 3?</td></tr><tr><td><code>==</code></td><td>Equal, for the primitive values used here</td><td>Is a whole-number count equal to 3?</td></tr><tr><td><code>!=</code></td><td>Not equal</td><td>Is a whole-number count different from 3?</td></tr></tbody></table></div>
+<p><code>=</code> assigns a value; <code>==</code> compares values. They have different jobs. Comparing text Strings has its own rule; we are not doing that in this lesson.</p>
+<h2>5. Make your own small check</h2><p>Use <code>int practiceRuns = 2;</code>. If the count is at least 3, print <code>Ready for a review</code>.
+Otherwise, print <code>Try another practice run</code>. Keep a second message outside the branches: <code>Decision finished</code>.</p>
+<details><summary>Hint: choose the comparison first</summary><p>“At least 3” means <code>practiceRuns &gt;= 3</code>. Put that question in the if parentheses. Each message belongs inside one branch; the final message belongs after the entire if/else.</p></details><details><summary>One possible answer</summary><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    int practiceRuns = 2;
+    if (practiceRuns &gt;= 3) {
+        System.out.println(&quot;Ready for a review&quot;);
+    } else {
+        System.out.println(&quot;Try another practice run&quot;);
+    }
+    System.out.println(&quot;Decision finished&quot;);
+}</code></pre><p>Test counts 2, 3, and 4. The number is a coding example, not a score or a rule about when a real person is ready.</p></details>
+<h2>If the wrong branch runs</h2><ol><li>Read the exact value you assigned for this run.</li><li>Translate the symbol into words: less than, at least, or equal?</li><li>Check there is no semicolon immediately after <code>if (...)</code>. The opening brace should follow the condition.</li><li>Check that the print statements are inside the intended braces.</li></ol>
+<div class="checkpoint"><b>Pause and check</b><p>Without running first, explain what the original distance example does at exactly 1.0. Then describe what changes when you use &lt;= instead of &lt;.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>You can now edit, run, store information, and choose between two outcomes. That is a useful first-hours milestone. Take a break or try one independent variation before starting Lesson 5 in another session.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened,
+and one question. Note the lesson number so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation"><a href="lesson-3-values.html">← Give information a name</a><a href="lesson-5-methods.html">When you’re ready: Use a method →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

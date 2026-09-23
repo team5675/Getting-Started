@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Run your first program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 2 of 8 · Begin at your own pace</span><h1>Run your first program</h1><p class="lede">Make the computer print a message, change that message, and learn how to recover from a small error.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>See your own message in the Terminal and explain which line produced it.</p>
+<p><b>Before you start:</b> Your learning-sandbox project from Lesson 1, open in WPILib VS Code 2026.</p><p class="meta">Allow 35–60 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="lesson-1-setup.html">← Get comfortable with the tools</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. Read before editing</h2><p>Open <code>Robot.java</code> with <code>Ctrl+P</code>. There is already a lot of code. Leave it in place.
+For now, you need two ideas: a <b>class</b> groups related code, and a <b>method</b> is a named block of instructions.
+The outer <code>Robot</code> class contains several methods. Curly braces <code>{ }</code> mark where each block begins and ends.</p>
+<p>Find <code>public void robotPeriodic()</code> using <code>Ctrl+F</code> to search this file. This method already exists in the template.
+We will add a <em>different</em> method above it. Its name, <code>robotInit</code>, tells WPILib where our one-time startup instructions go.</p>
+<h2>2. Add one small method</h2><ol><li>Place the cursor on the blank line immediately above the existing <code>@Override</code> that belongs to <code>robotPeriodic()</code>.</li>
+<li>Paste the complete block below onto that blank line. Keep the existing method below it. The new block must be inside the outer Robot class, not inside another method.</li>
+<li>If your prepared project already contains <code>robotInit()</code>, ask your mentor which existing startup lines to keep; add the print line inside that method rather than creating another copy.</li></ol>
+<p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    System.out.println(&quot;Hello, robot!&quot;);
+}</code></pre>
+<figure><div class="brace-map"><b>Robot class — outer braces</b><div>Existing constructor — keep it</div><div class="added-block"><b>New robotInit() method</b><p>Your print line goes between this method’s braces.</p></div><div>Existing robotPeriodic() and other methods — keep them</div></div><figcaption>Blocks sit beside one another inside the class. You are adding one method, not replacing the whole file.</figcaption></figure>
+<p><code>@Override</code> lets Java check that we are providing a method the framework recognizes. You do not need to memorize that word today.
+Keep its spelling and capitalization. The same is true of <code>public void</code>; we will explain methods more fully in Lesson 5.</p>
+<h2>3. Understand the message line</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Piece</th><th scope="col">Read it as</th></tr></thead><tbody><tr><td><code>System.out.println</code></td><td>Print a line of text to the program’s output. Use this exact spelling.</td></tr><tr><td><code>( ... )</code></td><td>The parentheses contain what we want to print.</td></tr><tr><td><code>"Hello, robot!"</code></td><td>Text between straight double quotes. Java calls text a String. The quotes mark the text; they are not printed.</td></tr><tr><td><code>;</code></td><td>The semicolon ends this Java statement, an instruction.</td></tr><tr><td><code>{</code> and <code>}</code></td><td>These surround the instructions belonging to the method. Do not replace them with parentheses.</td></tr></tbody></table></div>
+<p>Spaces inside the quotes are part of the message. Indentation outside the quotes makes the code easier for people to read.
+Java distinguishes uppercase and lowercase: <code>System</code> and <code>system</code> are different names.</p>
+<h2>4. Save, build, and run</h2><ol><li>Press <code>Ctrl+S</code>. The unsaved-change dot on the file tab should disappear.</li>
+<li>Open the Command Palette with <code>Ctrl+Shift+P</code>. Choose <b>WPILib: Build Robot Code</b>. The Terminal fills with messages; the first build may take a while.</li>
+<li>Look for a successful build result. If it fails, stop here and read the first relevant error rather than launching simulation.</li>
+<li>Open the Command Palette again and choose <b>WPILib: Simulate Robot Code</b>. Select the Simulation GUI if prompted. Use this WPILib action rather than an ordinary Run triangle.</li>
+<li>Look in VS Code’s Terminal for the line below. You may also see many startup messages. Use the Terminal’s Find command if needed to locate <code>Hello, robot!</code>.</li></ol>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Hello, robot!</code></pre>
+<p>The simulation window can remain <b>Disabled</b>. This lesson only prints during startup; no motor or field animation is expected.
+The program will stay running even after the message appears. A single print line does not mean the whole robot program exits.</p>
+<h2>5. Change it, then run the new version</h2><ol><li>Change only the text inside the quotes to <code>Hello from Team 5675!</code>. Keep both quotes, the parentheses, and the semicolon.</li>
+<li>Save the file.</li><li>Stop the old simulation: focus its running Terminal and press <code>Ctrl+C</code>. If it remains active, use the Terminal’s trash/kill control for that simulation task. Ask a mentor if you are unsure which terminal is running it.</li>
+<li>Use <b>WPILib: Simulate Robot Code</b> again. It builds the saved change and starts a new program. The old running program does not automatically change when you type.</li></ol>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Hello from Team 5675!</code></pre>
+<h2>6. Predict two lines</h2><p>Inside <code>robotInit()</code>, add the second statement shown below, after the first. Predict which message appears first.</p>
+<p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    System.out.println(&quot;Hello from Team 5675!&quot;);
+    System.out.println(&quot;I changed my program.&quot;);
+}</code></pre><p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Hello from Team 5675!
+I changed my program.</code></pre>
+<p>In this method, these instructions run in order from top to bottom. Printing twice does not require two methods.</p>
+<h2>7. Practice fixing one error</h2><ol><li>Remove the semicolon from the end of the second print statement.</li><li>Save and build. This time, expect the build to fail. The computer has not been damaged.</li>
+<li>Find the first error about your Java file. It may say a semicolon is expected. The reported location is where Java noticed trouble; sometimes the cause is on the line above.</li>
+<li>Put the semicolon back, save, and build again. Run only after it builds.</li></ol>
+<details><summary>My message is missing or still has the old words</summary><p>Confirm the tab is Robot.java in learning-sandbox, save it, and stop the previous simulation. Start a fresh simulation with the WPILib command. Look in the Terminal for that new run, not an earlier build tab. A failed build never runs your new code.</p></details><details><summary>Java reports braces, duplicate methods, or illegal start</summary><p>Check that you added one robotInit method above the existing robotPeriodic method, not inside it. There should be one opening and one closing brace for your added method. Use Ctrl+Z to undo the last edit if you cannot identify it. Show your file to a mentor rather than deleting braces at random.</p></details><div class="checkpoint"><b>Pause and check</b><p>Point to the exact text you changed. Explain why saving alone did not change the message from an already-running program. Show how you repaired the missing semicolon.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>If you can change a message, run the new version, and find its output, you have enough for today. Leave the corrected code saved. Next time, you’ll give a value a name.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened,
+and one question. Note the lesson number so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation"><a href="lesson-1-setup.html">← Get comfortable with the tools</a><a href="lesson-3-values.html">When you’re ready: Give information a name →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

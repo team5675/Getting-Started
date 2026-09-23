@@ -132,6 +132,7 @@ summary { cursor:pointer; font-weight:600; color:var(--blue); }
 .box.read { border-radius:8px; padding:13px 18px; }
 .table-scroll { overflow-x:auto; }
 .table-scroll table { min-width:520px; }
+.table-scroll td code { white-space:nowrap; }
 pre { max-width:100%; }
 p, li, td, .meta { overflow-wrap:anywhere; }
 pre code { overflow-wrap:normal; font-size:inherit; }
@@ -150,4 +151,45 @@ pre code { overflow-wrap:normal; font-size:inherit; }
   .ex { page-break-after:auto; page-break-inside:auto; }
   figure { break-inside:avoid; }
   pre { white-space:pre-wrap; }
+}
+
+/* Beginner lessons: clear steps, small diagrams, and visible stopping points. */
+.lesson-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:24px 0; }
+.lesson-card { min-width:0; padding:20px; border:1px solid var(--line); border-radius:10px; background:var(--card); }
+.lesson-card h3 { margin:6px 0; font-size:21px; }
+.lesson-card p:last-child { margin-bottom:0; }
+.button-link { display:inline-block; background:var(--blue); color:white; border-radius:6px; padding:10px 16px; font-weight:700; text-decoration:none; }
+.button-link:hover { text-decoration:underline; }
+.lesson-trail { font-size:14px; margin:18px 0; }
+.lesson-next { display:flex; justify-content:space-between; gap:20px; margin:28px 0; padding:18px 0; border-top:1px solid var(--line); }
+.lesson-next a { max-width:48%; }
+.code-label { font-weight:700; font-size:14px; margin:22px 0 4px; color:var(--ink-soft); }
+.code-label + pre { margin-top:4px; }
+.placement, .run-reminder { background:var(--blue-soft); border-left:4px solid var(--blue); padding:14px 18px; border-radius:0 8px 8px 0; }
+.run-reminder { background:var(--card); border-color:var(--line); font-size:15px; }
+.learning-cycle { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; padding:0; }
+ol.learning-cycle { list-style-position:inside; }
+.learning-cycle > * { min-width:0; margin:0; background:var(--blue-soft); border-radius:7px; padding:15px; }
+.learning-cycle p { margin-bottom:0; }
+.editor-map-grid { display:grid; grid-template-columns:1fr 2fr; gap:12px; }
+.editor-map-grid > div { padding:16px; border:1px solid var(--line); background:var(--paper); border-radius:7px; }
+.editor-map-grid > div:last-child { grid-column:2; background:var(--blue-soft); }
+.brace-map { border:2px solid var(--ink-soft); padding:16px; border-radius:8px; }
+.brace-map > div { margin:12px 0 0 14px; padding:12px; background:var(--paper); border:1px solid var(--line); border-radius:6px; }
+.brace-map > .added-block { background:var(--green-soft); border-color:var(--green); }
+.decision-map .question { padding:14px; background:var(--blue-soft); border:1px solid var(--blue); border-radius:7px; text-align:center; }
+.branches, .object-map { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:12px 0; }
+.branches > div, .object-map > div { padding:16px; border:1px solid var(--line); border-radius:7px; background:var(--paper); }
+.branches > div:first-child { background:var(--green-soft); }
+.object-map > div:first-child { grid-column:1 / -1; background:var(--blue-soft); }
+.object-map > .branches { grid-column:1 / -1; margin:0; padding:0; border:0; background:transparent; }
+.glossary dt { margin-top:18px; font-weight:700; color:var(--blue); }
+.glossary dd { margin:4px 0 0; }
+@media (max-width:640px) {
+  .lesson-cards, .editor-map-grid, .learning-cycle, .branches, .object-map { grid-template-columns:1fr; }
+  .editor-map-grid > div:last-child { grid-column:1; }
+  .lesson-next { flex-direction:column; }
+  .lesson-next a { max-width:100%; }
+  .brace-map { padding:10px; }
+  .brace-map > div { margin-left:4px; }
 }

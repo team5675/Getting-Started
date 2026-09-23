@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Get comfortable with the tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 1 of 8 · Begin at your own pace</span><h1>Get comfortable with the tools</h1><p class="lede">Learn what the tools are for before you start changing code.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Open a practice project and find the file you will edit. You are not writing a robot program from scratch today.</p>
+<p><b>Before you start:</b> A Windows laptop, internet for installation, and a mentor who can help with permissions or downloads.</p><p class="meta">Allow 30–60 minutes, plus downloads. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="index.html">← Start here</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. Meet the four things you’ll use</h2><p>A <b>program</b> is a set of instructions a computer can run.
+We write those instructions in <b>Java</b>, a programming language. We save Java text in files ending in <code>.java</code>.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Name</th><th scope="col">What it does</th><th scope="col">What you do with it</th></tr></thead><tbody><tr><td>VS Code</td><td>An editor: a place to read and change text files.</td><td>Open a file, type a change, and save.</td></tr><tr><td>WPILib</td><td>Tools and code provided for FRC robot programming.</td><td>Use its project creator, build command, and simulator.</td></tr><tr><td>Build / compiler</td><td>Checks Java and turns source code into a runnable form.</td><td>Read whether the build succeeded; fix a reported error if it did not.</td></tr><tr><td>Simulator</td><td>Runs the robot program on your laptop.</td><td>Try beginner examples without a physical robot.</td></tr></tbody></table></div>
+<p>A <b>project</b> is a folder containing your code and its setup files. Opening that folder lets the tools work together.
+You will use a <b>template</b>: a project with the framework code already in place. Think of it as starting with a labeled notebook instead of loose pages.</p>
+<h2>2. Install the team’s tools</h2><p>If a mentor already installed WPILib 2026, skip to step 3 below. Installation can take longer than a lesson; that does not mean you are behind.</p>
+<ol><li>Ask your mentor which stable <b>WPILib 2026</b> version the class uses. These instructions follow the 2026.2.1 template. Use the
+<a href="https://github.com/wpilibsuite/allwpilib/releases/tag/v2026.2.1">official installer</a> or the specific 2026 release they provide.</li>
+<li>Follow the installer’s Java/tools setup. Include the WPILib copy of VS Code. If it offers to download VS Code, let it obtain that copy.</li>
+<li>When setup is complete, open <b>WPILib VS Code 2026</b> from the Windows Start menu. Keep the guide open beside it.</li>
+<li>Hold <code>Ctrl</code> and <code>Shift</code>, tap <code>P</code>, then release the keys. This opens the <b>Command Palette</b>, a search box for editor actions. Type <code>WPILib</code>.</li>
+<li>Look for commands such as <b>WPILib: Create a new project</b>. Press <code>Esc</code> to close the palette.</li></ol>
+<details><summary>I cannot find the WPILib commands</summary><p>Check the editor you opened: a regular VS Code window may not have the FRC tools. Close the palette and open the 2026 WPILib shortcut. If commands are still absent, ask a mentor to check installation. Do not switch to a 2027 alpha install to get past the problem.</p></details>
+<p>The team also has experimental SystemCore work. It uses separate tools; it is not part of these first lessons.</p>
+<h2>3. Create a practice project</h2><ol><li>In File Explorer, create a folder such as <code>C:\dev</code> if it does not exist. If your school laptop prevents that, ask a mentor for a writable local folder outside OneDrive.</li>
+<li>In WPILib VS Code, open the Command Palette again. Choose <b>WPILib: Create a new project</b>.</li>
+<li>Choose <b>Template</b>, language <b>Java</b>, and template <b>Command Robot</b>. These lessons use that template, even though we will leave commands until later.</li>
+<li>Choose <code>C:\dev</code> as the base folder, enter <code>learning-sandbox</code> as the project name, and enter team number <code>5675</code>. Let the creator make the named project folder. If there is a desktop-support option, enable it for simulation.</li>
+<li>Generate the project and open it when prompted. The folder you open should contain <code>build.gradle</code> and <code>src</code>. Do not open only the Java file.</li>
+<li>If a trust prompt appears for the folder you just generated, confirm with your mentor that this is your new local project, then trust it. Wait for the editor to finish loading the Java project.</li></ol>
+<p>If your mentor gave you an already-prepared learning sandbox, use <b>File → Open Folder</b> to open its project folder instead. Do not overwrite someone else’s project.</p>
+<h2>4. Find your way around the editor</h2><figure class="editor-map" aria-label="Illustration of the three editor areas">
+<div class="editor-map-grid"><div><b>Explorer — left</b><p>Your project’s folders and files.</p></div><div><b>Editor — middle</b><p>The open file. This is where you type.</p></div><div><b>Terminal — bottom</b><p>Build messages and the text your program prints.</p></div></div>
+<figcaption>This is a layout guide, not a screenshot. Panel sizes and themes can differ.</figcaption></figure>
+<ol><li>Choose the <b>Explorer</b> icon on the left (overlapping file shapes). Open the folders <code>src → main → java → frc → robot</code>. Some may appear combined as one row.</li>
+<li>Click <code>Robot.java</code>. Look for its filename on the editor tab.</li><li>Try the shortcut <code>Ctrl+P</code>, type <code>Robot.java</code>, and press Enter. This finds a file; <code>Ctrl+Shift+P</code> finds an action.</li>
+<li>Choose <b>Terminal → New Terminal</b> to see the bottom panel. You do not need to type a terminal command now.</li></ol>
+<p class="code-label">Folder map — do not paste this into a file</p><pre><code>learning-sandbox/
+  build.gradle         ← project setup; leave this alone
+  src/main/java/frc/robot/
+    Robot.java         ← our starting file
+    RobotContainer.java
+    Main.java</code></pre>
+<h2>5. Keep a short learning note</h2><p>In the Explorer, select the project’s top folder and use <b>New File</b> to create <code>learning-notes.txt</code>. This is plain text, not Java. Write your project’s location and “Next: Lesson 2.” Press <code>Ctrl+S</code> to save.</p>
+<p>Saving writes your edit to disk. It does not run the program. When you return another day, open the same project folder and your notes.</p>
+<div class="checkpoint"><b>Pause and check</b><p>Without a partner pointing, find <code>Robot.java</code>, the Command Palette, and the Terminal panel. Explain which one you would use to edit a message and which one you would use to read the result.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>You have a place to practice. If installation or opening the project is still failing, stop here and get help with that setup; the next lesson depends on it. You do not need to learn the rest of the folder tree yet.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened,
+and one question. Note the lesson number so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation"><a href="index.html">← Start here</a><a href="lesson-2-first-program.html">When you’re ready: Run your first program →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

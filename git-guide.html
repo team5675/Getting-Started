@@ -4,25 +4,54 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"></head><body>
-<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap">
-<nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Getting Started</a>
-<a href="exercises.html">Robot Programming Practice</a>
-<a href="teaching-guide.html">Robot Architecture</a>
-</nav>
-<header class="hero" id="main-content" tabindex="-1"><span class="hero-tag">Team 5675 · Learn, try, explain</span><h1>Save and share your work</h1><p class="lede">Use Git to keep useful checkpoints and let a teammate review what changed.</p></header>
-<h2>One practice branch, small checkpoints</h2><p>Activities 0–9 build on each other. Use <code>yourname/programming-practice</code> throughout. Ask your mentor for a training repository and starting version; do not use the competition repository unless directed.</p>
-<ol><li>Before editing, check the branch name at the bottom-left of VS Code.</li><li>Make one small change and run the relevant simulation check.</li><li>Open Source Control and click each changed file to read the diff. Stage only the files you intended to change.</li><li>Commit with a message explaining the change, then push. Check that the commit appears on your branch on GitHub.</li></ol>
-<p>A <b>commit</b> saves a local checkpoint. A <b>push</b> shares commits. A <b>pull request</b> lets someone review proposed changes. A <b>merge</b> brings reviewed changes into another branch.</p>
-<h2>First-time setup</h2><p>If Git asks for your name or email, work with your mentor to set your chosen commit identity. A GitHub-provided private commit email can be used. If pushing asks you to sign in, follow VS Code's GitHub sign-in flow; do not put passwords or access tokens into project files.</p>
-<h2>Keep the learning evidence</h2><p>For an observation-only activity, update <code>learning-notes.md</code> and commit it:</p><pre><code>Activity:
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">A beginner’s guide · Team 5675</span><h1>Save and share your work</h1><p class="lede">A first walkthrough of Git, with a mentor nearby and one small change to follow.</p></header>
+<section class="start-card"><h2>This can wait until after your first lessons</h2>
+<p>Git helps a team keep a history of changes. You can complete the first eight lessons without a GitHub account.
+Use this page with a mentor when you are ready to join the training repository.</p>
+<p><b>Before you begin:</b> get the training repository URL, permission to access it, and the starting branch or version from your mentor.
+You also need Git installed and, for sharing, a GitHub account with access. Do not guess which repository to use.</p></section>
+<h2>1. Understand the four different actions</h2><div class="table-scroll"><table><thead><tr><th scope="col">Action</th><th scope="col">What it does</th><th scope="col">Where it happens</th></tr></thead><tbody><tr><td>Save</td><td>Writes the text you edited into a file.</td><td>Your computer.</td></tr><tr><td>Commit</td><td>Records selected file changes as a named checkpoint in Git history.</td><td>Your local repository.</td></tr><tr><td>Push</td><td>Uploads your commits to the shared repository.</td><td>From your computer to GitHub.</td></tr><tr><td>Pull request</td><td>Proposes your branch’s changes for someone to review.</td><td>On GitHub; opening one does not merge it.</td></tr></tbody></table></div>
+<p>A <b>repository</b> is a project tracked by Git. A <b>branch</b> is a named line of work within it.
+For these cumulative activities, keep one practice branch rather than starting over for every activity.</p>
+<h2>2. Get a local copy</h2><ol><li>Open WPILib VS Code 2026 and press <code>Ctrl+Shift+P</code>.</li>
+<li>Choose <b>Git: Clone</b>. Paste the training URL your mentor provided.</li><li>Choose a local parent folder such as <code>C:\dev</code>.
+Cloning downloads a copy into a project folder.</li><li>Choose <b>Open</b> when prompted. Confirm you see the expected project files.
+If a trust prompt appears, check with your mentor that this is the intended team repository.</li>
+<li>Confirm the starting branch/version with your mentor before making changes. Build and run the unmodified starter once using its instructions.</li></ol>
+<p>If you already cloned this training repository, use <b>File → Open Folder</b> to open that existing copy instead.</p>
+<h2>3. Create your practice branch</h2><ol><li>Find the current branch name in the lower-left status bar. Click it.</li>
+<li>Choose <b>Create new branch</b> and enter a name such as <code>alex/programming-practice</code>, using your own name.</li>
+<li>Confirm that the status bar now shows that new branch name.</li></ol>
+<p>A branch does not create a new folder. You keep editing in the same project folder. Check the branch name before each session.</p>
+<h2>4. Make one small checkpoint</h2><ol><li>Make one intended lesson change, or write an observation in <code>learning-notes.md</code>. Save the file.</li>
+<li>Run the relevant simulation check if you changed code. Write the actual result, including an unresolved problem if there is one.</li>
+<li>Open <b>Source Control</b> from the left activity bar (or press <code>Ctrl+Shift+G</code>).</li>
+<li>Click a changed file. The <b>diff</b> shows what changed. Read the added and removed lines; confirm they are yours.</li>
+<li>Click the <b>+</b> beside each intended file to <b>stage</b> it. Staging selects changes for the next commit.
+Review only those files under <b>Staged Changes</b>.</li>
+<li>Enter a short message such as <code>Explain the counter prediction and result</code>, then click <b>Commit</b>.</li>
+<li>Confirm the intended changes no longer appear as uncommitted changes. The checkpoint now exists locally.</li></ol>
+<p>If Git asks for your name or email, ask a mentor to help set your chosen commit identity. A GitHub-provided private commit email can be used.</p>
+<h3>A note you can start with</h3><p class="code-label">Text for learning-notes.md — not Java</p><pre><code>Lesson or activity:
 I expected:
 I observed:
 My explanation:
-One question I still have:</code></pre>
-<h2>Review together</h2><p>At Activity 4, open one draft PR from your practice branch. Continue pushing later activities to that branch; the PR updates with them. Ask for feedback along the way. At Activity 9, mark it ready for review. The mentor decides whether to merge, keep it as a learning record, or move selected work elsewhere.</p>
-<p>Suggested PR description: what changed, how you checked it, and one question for the reviewer. Review the code and explanation; nobody needs to invent a correction just to make a review count.</p>
-<h2>If something goes wrong</h2><ul><li><b>Unexpected changes:</b> read the diff before staging. Use Undo for a recent edit. Ask for help before discarding files.</li><li><b>Push rejected or merge conflict:</b> stop and ask a mentor to help reconcile the histories. Do not force-push to make the message disappear.</li><li><b>Hundreds of generated files:</b> check the project's ignore rules. Do not commit <code>build/</code>, <code>.gradle/</code>, secrets, or robot log files.</li></ul>
-<p><a href="exercises.html">Return to Robot Programming Practice</a></p>
-<footer class="page-footer">Student lessons use WPILib 2026. Revised September 23, 2026.<br>
-<a href="index.html">Getting Started</a> · <a href="git-guide.html">Save and share your work</a> · <a href="mentor-notes.html">For mentors</a></footer>
+One question I still have:
+Next small step:</code></pre>
+<h2>5. Share and verify</h2><ol><li>For the first push, choose <b>Publish Branch</b> if shown. For later commits, use <b>Git: Push</b> from the command palette.</li>
+<li>If prompted, follow the GitHub sign-in flow. Ask for access help if needed; do not put a password or token in a project file.</li>
+<li>Open the training repository on GitHub. Use its branch selector to choose your practice branch.</li>
+<li>Find your commit message and open the changed file. Confirm you can see the new text online.</li></ol>
+<p><b>Pause and explain:</b> if you saved and committed but did not push, where is your new checkpoint? It is still on your computer.</p>
+<h2>6. Ask for review when the activity calls for it</h2><p>For the later team-project activities, open one draft pull request at Activity 4.
+Continue pushing to that same branch; the pull request updates. At Activity 9, mark it ready for review.</p>
+<ol><li>On GitHub, open <b>Pull requests → New pull request</b>.</li><li>Choose the mentor’s destination branch as the base
+and your practice branch as the compare branch. Read the file changes.</li><li>Use the dropdown beside Create pull request to choose
+<b>Create draft pull request</b>. Explain what changed, how you checked it, and one question you have.</li>
+<li>Share the review link with your mentor using the team’s usual process. Let the mentor decide when and whether to merge the practice work.</li></ol>
+<h2>When the screen does not match</h2><details><summary>I do not see Git commands or a branch</summary><p>Check that Git is installed and that you opened the cloned repository folder. A folder with Java files is not automatically a Git repository. Ask a mentor before initializing or publishing a new repository.</p></details><details><summary>There are hundreds of changed files</summary><p>Pause before staging. The project may need its ignore rules checked. Build output, .gradle, robot logs, passwords, and tokens do not belong in your commit.</p></details><details><summary>Push was rejected, or Git reports a conflict</summary><p>Keep your work and ask a mentor to help reconcile the changes. Do not force-push or discard files to make the error disappear.</p></details><details><summary>I staged the wrong file</summary><p>Use the minus control beside that file under Staged Changes to unstage it. Unstaging keeps your edits; it only removes them from the next commit’s selection.</p></details>
+<p><a href="lessons.html">Return to lessons</a> · <a href="exercises.html">Later team-project activities</a></p></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
 </div></body></html>

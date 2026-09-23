@@ -1,77 +1,108 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team 5675 — Examples from our 2026 robot</title>
+<title>Team 5675 — Read a little of last year’s code</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"></head><body>
-<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap">
-<nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Getting Started</a>
-<a href="exercises.html">Robot Programming Practice</a>
-<a href="teaching-guide.html">Robot Architecture</a>
-</nav>
-<header class="hero" id="main-content" tabindex="-1"><span class="hero-tag">Team 5675 · Learn, try, explain</span><h1>Examples from our 2026 robot</h1><p class="lede">Small pieces of team code you can read, predict, and explain.</p></header>
-<section class="start-card" aria-labelledby="historical"><h2 id="historical">Recognize the ideas in your team's code</h2>
-<p>These short excerpts come from last year's team and its final 2026 robot code. Read them after the
-matching beginner chapter. They are examples to trace, not complete files to paste into your sandbox.</p>
-<p><b>2026 reference:</b> the historical robot used a different stack from the planned teaching
-baseline. These snippets are not a SystemCore port. Keep student practice on WPILib 2026.</p></section>
-<h2>1. Give useful values names</h2><p>After the variables chapter, look at these entries from <code>DriveSpeeds</code>. An enum groups named choices; these entries each supply two numbers to a constructor.</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/DriveSpeeds.java</code>, lines 4–9. Exact excerpt; surrounding code is omitted.</p><pre><code>    // Defaults
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html" class="current" aria-current="page">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">A beginner’s guide · Team 5675</span><h1>Read a little of last year’s code</h1><p class="lede">Guided readings from last year’s team, with each new piece explained before you trace a result.</p></header>
+<section class="start-card"><h2>Read one small piece at a time</h2>
+<p>These excerpts are from <b>last year’s team and its final 2026 robot code</b>. Each reading connects one idea
+from the lessons to something the team actually used. You do not need to understand the whole robot program.</p>
+<p>Set aside 15–25 minutes for one reading. Follow its walkthrough, predict one result, then open the answer.
+These are incomplete excerpts for reading, not files to paste into your practice project.</p>
+<p><b>Begin with the lessons.</b> Readings 1–2 make more sense after <a href="lesson-7-objects.html">Lesson 7</a>;
+readings 3–4 follow <a href="first-command.html">Lesson 8</a>. It is fine to leave this page for another day.</p>
+<p>This is historical 2026 code, not the future 2027 baseline or a SystemCore port.</p></section>
+<h2 id="named-choices">1. Give useful choices names</h2>
+<p><b>Before this reading:</b> variables, methods, and objects (Lessons 3, 5, and 7).</p>
+<p>Imagine telling a teammate to use a slower driving setting. Saying “use SLOW” is easier to remember
+than saying “use 0.15 for both numbers.” The team grouped these choices in an <b>enum</b> named
+<code>DriveSpeeds</code>. An enum defines a fixed set of named choices. This one also stores values with each choice.</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/DriveSpeeds.java</code>, lines 4–9. Exact excerpt; surrounding code is omitted.</p><p class="code-label">Reading example — do not paste into your sandbox</p><pre><code>    // Defaults
     FULL(1.0, 1.0),
     HALF(0.5, 0.5),
     SLOW(0.15, 0.15),
     X_ONLY(1.0, 0.0),
     Y_ONLY(0.0, 1.0),</code></pre>
-<p><code>FULL</code>, <code>HALF</code>, and <code>SLOW</code> communicate intent. Here the
-numbers are stored settings for X and Y limits; their eventual effect depends on the code
-that reads and applies them. The names alone do not prove the robot's actual speed.</p>
-<div class="checkpoint"><b>Explain it:</b> which entry has an X value of 1.0 and a Y value of 0.0? Why is a name easier to discuss with a teammate than an unexplained pair of numbers?</div>
-<h2>2. A method returns a stored value</h2><p>After the methods chapter, compare the field and its getter:</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/DriveSpeeds.java</code>, lines 27–33. Exact excerpt; surrounding code is omitted.</p><pre><code>    private final double xMax;
+<h3>Walk through HALF</h3><ol><li><code>// Defaults</code> is a comment. Java ignores the text after <code>//</code> on that line.</li>
+<li><code>HALF</code> is one choice’s name. Capital letters help distinguish these named constants.</li>
+<li><code>(0.5, 0.5)</code> passes two decimal values to the enum’s constructor: its setup code.
+The first becomes <code>xMax</code>; the second becomes <code>yMax</code>.</li>
+<li>The comma between the numbers separates the two inputs. The comma after the closing parenthesis separates this entry from the next entry.</li>
+<li>The surrounding enum declaration and constructor are outside this short excerpt. This is why pasting just these lines into Robot.java would not make a complete program.</li></ol>
+<p>For this reading, think of X and Y as two directions of driving. The numbers are stored settings for limits;
+the code that uses them determines their effect. <code>0.5</code> is one half, or 50%, but this excerpt alone
+does not tell you a measured speed in meters per second.</p><div class="table-scroll"><table><thead><tr><th scope="col">Choice</th><th scope="col">Stored X limit</th><th scope="col">Stored Y limit</th></tr></thead><tbody><tr><td>FULL</td><td>1.0</td><td>1.0</td></tr><tr><td>HALF</td><td>0.5</td><td>0.5</td></tr><tr><td>SLOW</td><td>0.15</td><td>0.15</td></tr><tr><td>X_ONLY</td><td>1.0</td><td>0.0</td></tr><tr><td>Y_ONLY</td><td>0.0</td><td>1.0</td></tr></tbody></table></div>
+<h3>Your turn: read a different row</h3><p>Which choice stores zero for X and 1.0 for Y? Point to both numbers before checking.</p><details><summary>Hint: read the first number first</summary><p>The first input is X. Look for a pair beginning with <code>0.0</code>.</p></details><details><summary>Check your explanation</summary><p><code>Y_ONLY(0.0, 1.0)</code>. Its X setting is zero and its Y setting is 1.0. You identified stored values; determining the actual robot motion would require reading the code that uses them.</p></details>
+<h2 id="getter">2. Ask an object for one stored value</h2><p><b>Before this reading:</b> the previous reading and the two objects in Lesson 7.</p>
+<p>The practice counter’s <code>getCount()</code> returned a stored number. The real drive-speed choices have a similar
+method, <code>getXMax()</code>. A method whose main job is to return a value is often called a <b>getter</b>.</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/DriveSpeeds.java</code>, lines 27–33. Exact excerpt; surrounding code is omitted.</p><p class="code-label">Reading example — do not paste into your sandbox</p><pre><code>    private final double xMax;
     private final double yMax;
     private final double rotationMax;
 
     public double getXMax() {
         return xMax;
-    }</code></pre>
-<p><code>private</code> keeps access to the field inside this class. The public method returns
-its value. The constructor, outside this excerpt, initializes the final field. A call to
-<code>DriveSpeeds.HALF.getXMax()</code> returns <code>0.5</code>.</p>
-<div class="checkpoint"><b>Try it:</b> trace which value <code>DriveSpeeds.SLOW.getXMax()</code> returns. Explain what <code>return</code> does; this method does not command a motor by itself.</div>
-<h2>3. Connect the scheduler to the robot loop</h2><p>After the command chapter, find the repeated scheduler call in the team's actual <code>Robot.java</code>:</p><p class="meta">2026 source: <code>src/main/java/frc/robot/Robot.java</code>, lines 22–25. Exact excerpt; surrounding code is omitted.</p><pre><code>  @Override
+    }</code></pre><div class="table-scroll"><table><thead><tr><th scope="col">Piece</th><th scope="col">What it means here</th></tr></thead><tbody><tr><td><code>private</code></td><td>The field is accessed directly inside this enum’s class, not directly by unrelated classes.</td></tr><tr><td><code>final</code></td><td>The field is assigned once. Here the constructor supplies its value.</td></tr><tr><td><code>double xMax</code></td><td>A field named xMax holding a decimal-capable number.</td></tr><tr><td><code>public double getXMax()</code></td><td>Other code can call this method. It takes no inputs and returns a double.</td></tr><tr><td><code>return xMax;</code></td><td>Give the caller the value stored in this object’s xMax field, then leave the method.</td></tr></tbody></table></div>
+<h3>Follow one call from left to right</h3><p>Consider <code>DriveSpeeds.HALF.getXMax()</code>:</p>
+<ol><li><code>DriveSpeeds</code> identifies the enum.</li><li><code>.HALF</code> selects its HALF choice. Its constructor stored <code>0.5</code> as xMax.</li>
+<li><code>.getXMax()</code> calls the getter on that choice. The empty parentheses mean no argument is needed.</li>
+<li><code>return xMax;</code> hands <code>0.5</code> back to the caller. It does not change the stored value.</li></ol>
+<p><b>Returning is different from printing.</b> This getter does not display anything. The caller could print its result,
+store it in a variable, or use it in a calculation. It also does not command a motor by itself.</p>
+<h3>Your turn: predict two results</h3><p>What would <code>DriveSpeeds.SLOW.getXMax()</code> return?
+What would <code>DriveSpeeds.Y_ONLY.getXMax()</code> return?</p><details><summary>Hint: connect the field to the constructor input</summary><p>Both calls ask for X, so read the first number in each entry from reading 1.</p></details><details><summary>Check the two results</summary><p><code>SLOW</code> returns <code>0.15</code>. <code>Y_ONLY</code> returns <code>0.0</code>. Selecting a different choice changes which object supplies the value; the getter’s instructions are the same.</p></details>
+<h2 id="scheduler">3. Give the scheduler its next turn</h2><p><b>Before this reading:</b> Lesson 8, including starting and stopping the pretend light.</p>
+<p>A command class describes an action. Something still has to arrange when that action starts, runs, and ends.
+WPILib’s <b>scheduler</b> does that coordinating work. This short method in last year’s Robot.java gives it a turn during each robot loop.</p><p class="meta">2026 source: <code>src/main/java/frc/robot/Robot.java</code>, lines 22–25. Exact excerpt; surrounding code is omitted.</p><p class="code-label">Reading example — do not paste into your sandbox</p><pre><code>  @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
   }</code></pre>
-<p>WPILib calls <code>robotPeriodic()</code>. This method then runs the command scheduler,
-which manages command lifecycles and subsystem periodic calls. It is the link between the
-repeated robot loop and the commands you have been reading.</p>
-<div class="checkpoint"><b>Explain it:</b> why does defining a command class alone not make its action happen?</div>
-<h2>4. Start a request, then clean it up</h2><p>After trying the simulated-light command, read how <code>SpinIntake</code> starts requests for three 2026 mechanisms:</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/Intake/SpinIntake.java</code>, lines 21–27. Exact excerpt; surrounding code is omitted.</p><pre><code>  @Override
+<h3>Unpack the two layers</h3><ol><li><code>@Override</code> says this method supplies the behavior for a method defined by the parent class.</li>
+<li><code>public void robotPeriodic()</code> defines a method called robotPeriodic. It takes no arguments and returns no result value.</li>
+<li>WPILib calls that method repeatedly. It is different from the <code>robotInit()</code> examples that run once at startup.</li>
+<li><code>CommandScheduler.getInstance()</code> gets the shared scheduler object. You do not create another scheduler with <code>new</code>.</li>
+<li><code>.run()</code> calls that object’s run method. It handles scheduled commands and subsystem periodic work.</li></ol>
+<figure><div class="learning-cycle"><div>WPILib calls<br><b>robotPeriodic()</b></div><div>This method calls<br><b>the scheduler</b></div><div>The scheduler manages<br><b>active commands</b></div></div><figcaption>Read left to right, or top to bottom on a phone. The framework repeats this sequence; it is not a loop you write yourself.</figcaption></figure>
+<h3>Your turn: connect this to the light</h3><p>If you only create a file containing a command class, should its action automatically start? Explain what is still needed.</p><details><summary>Hint: remember the Autonomous step</summary><p>In Lesson 8, the container supplied a command and the template scheduled it when Autonomous began.</p></details><details><summary>Check your explanation</summary><p>No. The class describes an action; a command object must be created and scheduled for it to run. The scheduler then manages its lifecycle. Keeping the scheduler call in Robot.java is part of making that framework work.</p></details>
+<h2 id="cleanup">4. Start requests, then remove them</h2><p><b>Before this reading:</b> Lesson 8’s initialize/end pair and the scheduler reading above.</p>
+<p>The pretend light turned on at the beginning and off at the end. Last year’s <code>SpinIntake</code> command
+followed a related pattern: ask three mechanisms to do something, then remove those requests when the command ends.</p>
+<p>A <b>request</b> here is a named desired behavior stored by a subsystem. Adding it asks the subsystem to consider that behavior;
+it does not necessarily set a motor output on this line. Other code chooses among active requests.</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/Intake/SpinIntake.java</code>, lines 21–27. Exact excerpt; surrounding code is omitted.</p><p class="code-label">Reading example — do not paste into your sandbox</p><pre><code>  @Override
   public void initialize() {
     // intake.isIntaking = true;
     intake.addIntakeRequest(IntakeRequest.INTAKE);
     indexer.addIndexerRequest(IndexerRequest.INTAKE);
     shooter.addFeederRequest(FeederRequest.REVERSE);
-  }</code></pre><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/Intake/SpinIntake.java</code>, lines 32–39. Exact excerpt; surrounding code is omitted.</p><pre><code>  @Override
+  }</code></pre>
+<h3>Read the first active instruction</h3><p><code>intake.addIntakeRequest(IntakeRequest.INTAKE);</code></p>
+<ol><li><code>intake</code> refers to an object representing one mechanism.</li><li>The dot selects a method on that object: <code>addIntakeRequest</code>.</li>
+<li>The parentheses contain the input: <code>IntakeRequest.INTAKE</code>, a named choice from an enum.</li>
+<li>The semicolon finishes the statement. This line asks the intake subsystem to add the INTAKE request.</li>
+<li>The next two lines make similar requests on <code>indexer</code> and <code>shooter</code>. You can recognize the pattern without knowing their internal motor code.</li></ol>
+<p><code>initialize()</code> runs once when this command starts. The commented line beginning <code>//</code>
+is a historical note; it does not run. Now look for the matching cleanup:</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/Intake/SpinIntake.java</code>, lines 32–39. Exact excerpt; surrounding code is omitted.</p><p class="code-label">Reading example — do not paste into your sandbox</p><pre><code>  @Override
   public void end(boolean interrupted) {
     intake.removeIntakeRequest(IntakeRequest.INTAKE);
     indexer.removeIndexerRequest(IndexerRequest.INTAKE);
     // indexer.addRequest(IndexerRequest.IDLE_AGITATE);
     shooter.removeFeederRequest(FeederRequest.REVERSE);
     // intake.isIntaking = false;
-  }</code></pre>
-<p>Pair each <code>add...</code> call with its <code>remove...</code> call. Cleanup runs
-when the command ends, including interruption. The commented-out lines are historical notes,
-not statements Java executes. You do not need to understand all three mechanisms to trace
-the start/cleanup pairs.</p>
-<div class="checkpoint"><b>Explain it:</b> what request might remain active if one matching removal were missing?</div>
-<details><summary>Mentor note: what not to copy automatically</summary><p>The supplied
-<code>SpinIntake</code> constructor has <code>addRequirements(intake)</code> commented out.
-That is a historical ownership choice, not the beginner rule for new hardware commands.
-The intake selector in this archive walks enum declaration order rather than reading the
-stored numeric priority. Its <code>EnumSet</code> also records request types, not individual
-request owners. If two sources add the same type, removing one can clear it for both.
-Resolve ownership, duplicate requests, and cleanup before using this design as a new template.
-Keep that design review separate from these short reading exercises.</p></details>
-<p><a href="index.html">Return to Getting Started</a> · <a href="exercises.html">Robot Programming Practice</a></p>
-<footer class="page-footer">Student lessons use WPILib 2026. Revised September 23, 2026.<br>
-<a href="index.html">Getting Started</a> · <a href="git-guide.html">Save and share your work</a> · <a href="mentor-notes.html">For mentors</a></footer>
+  }</code></pre><div class="table-scroll"><table><thead><tr><th scope="col">When the command starts</th><th scope="col">When the command ends</th><th scope="col">Same request to match</th></tr></thead><tbody><tr><td>intake.addIntakeRequest</td><td>intake.removeIntakeRequest</td><td>IntakeRequest.INTAKE</td></tr><tr><td>indexer.addIndexerRequest</td><td>indexer.removeIndexerRequest</td><td>IndexerRequest.INTAKE</td></tr><tr><td>shooter.addFeederRequest</td><td>shooter.removeFeederRequest</td><td>FeederRequest.REVERSE</td></tr></tbody></table></div>
+<p><code>end(boolean interrupted)</code> receives a true-or-false value telling whether the command was interrupted.
+This method removes all three requests regardless of that value. Both the object and the request must match the addition.</p>
+<h3>Trace a start and a stop</h3><ol><li>The command starts: its initialize method adds three requests.</li>
+<li>Subsystem code considers those active requests as the robot loop repeats.</li><li>The command ends or is canceled: end removes those requests.</li>
+<li>Each subsystem’s remaining requests and fallback behavior determine what it does next. Removal alone does not prove its motor is stopped.</li></ol>
+<h3>Your turn: find a missing cleanup</h3><p>If the <code>shooter.removeFeederRequest(...)</code> line were missing,
+which request would this command fail to remove? Would deleting a line beginning <code>//</code> have the same effect?</p><details><summary>Hint: match the third row</summary><p>Find the request inside the parentheses of the shooter addition. Comments are ignored by Java.</p></details><details><summary>Check your explanation</summary><p>The command would fail to remove <code>FeederRequest.REVERSE</code> from shooter. That request could remain active. Deleting a commented-out line changes no executed instruction, so it would not have the same effect.</p></details>
+<details><summary>For mentors: design details outside this beginner reading</summary>
+<p>The historical SpinIntake constructor has <code>addRequirements(intake)</code> commented out. Do not treat that as the beginner rule for new hardware commands.
+The intake selector walks enum declaration order, rather than reading stored numeric priority. Its EnumSet records request types, not individual owners;
+two sources adding the same request type can interfere when one removes it. Review ownership, arbitration, duplicate requests, and cleanup before reusing this design.</p></details>
+<div class="checkpoint"><b>A useful stopping point</b><p>Choose one excerpt and explain it in your own words using
+“first… then…”. Write one thing you recognize from your practice code and one question you still have.
+That is enough for this reading session.</p></div><p><a href="lessons.html">Return to the lesson list</a></p></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
 </div></body></html>

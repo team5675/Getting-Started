@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Repeat a small task</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 6 of 8 · Begin at your own pace</span><h1>Repeat a small task</h1><p class="lede">Repeat a few instructions and follow exactly how many times they run.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Trace a short for loop without confusing it with the repeating robot framework.</p>
+<p><b>Before you start:</b> You can read a variable, comparison, and assignment. Keep using the learning sandbox.</p><p class="meta">Allow 30–45 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="lesson-5-methods.html">← Use a method</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. Start with repetition you can see</h2><p>Three separate statements can print three numbers:</p>
+<p class="code-label">Reading example — three separate instructions</p><pre><code>System.out.println(1);
+System.out.println(2);
+System.out.println(3);</code></pre>
+<p>A <b>loop</b> repeats a block. We will use a <code>for</code> loop with a small, known range.
+This is about repetition, not robot movement.</p>
+<h2>2. Replace the startup method</h2><p class="placement"><b>Where this goes:</b> open <code>src/main/java/frc/robot/Robot.java</code>. Replace only the <code>robotInit()</code> method you added earlier, from its <code>@Override</code> line through that method’s matching closing brace. Keep the rest of the file. Do not add a second <code>robotInit()</code>.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    for (int count = 1; count &lt;= 3; count++) {
+        System.out.println(&quot;Count: &quot; + count);
+    }
+    System.out.println(&quot;Finished counting&quot;);
+}</code></pre>
+<p>There are three parts between the for parentheses, separated by semicolons:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Part</th><th scope="col">When it happens</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td><code>int count = 1</code></td><td>Once, before the first check</td><td>Create a local counter starting at 1.</td></tr><tr><td><code>count &lt;= 3</code></td><td>Before each pass</td><td>Continue only while the count is at most 3.</td></tr><tr><td><code>count++</code></td><td>After each completed pass</td><td>Add 1 to count. Here this has the same effect as count = count + 1.</td></tr></tbody></table></div>
+<h2>3. Trace the loop on paper</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Value at the check</th><th scope="col">Is it at most 3?</th><th scope="col">What happens</th></tr></thead><tbody><tr><td>1</td><td>Yes</td><td>Print Count: 1, then increase to 2.</td></tr><tr><td>2</td><td>Yes</td><td>Print Count: 2, then increase to 3.</td></tr><tr><td>3</td><td>Yes</td><td>Print Count: 3, then increase to 4.</td></tr><tr><td>4</td><td>No</td><td>Skip the loop body and continue after it.</td></tr></tbody></table></div><p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Count: 1
+Count: 2
+Count: 3
+Finished counting</code></pre>
+<p>The final message is outside the loop body, so it prints once. The loop variable <code>count</code> is local
+to the loop; do not try to print that name after the loop’s closing brace in this example.</p>
+<h2>4. Change one part</h2><ol><li>Change <code>count &lt;= 3</code> to <code>count &lt; 3</code>.</li>
+<li>Predict the last count that will print. Restart and compare.</li><li>Restore <code>&lt;=</code>. Change the starting value to 4 while keeping the limit at 3.</li>
+<li>Predict whether the body runs at all, then test.</li></ol>
+<details><summary>Check your predictions</summary><p>With <code>count &lt; 3</code>, the body prints counts 1 and 2. Starting at 4 with <code>count &lt;= 3</code>, the first check is already false, so only <code>Finished counting</code> prints.</p></details>
+<h2>5. Try a small variation</h2><p>Print <code>Practice 1</code> through <code>Practice 4</code>, then print <code>Ready to stop</code> once.</p>
+<details><summary>One possible answer</summary><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    for (int count = 1; count &lt;= 4; count++) {
+        System.out.println(&quot;Practice &quot; + count);
+    }
+    System.out.println(&quot;Ready to stop&quot;);
+}</code></pre></details>
+<h2>6. A loop must be able to finish</h2><p>If the counter never changes, a condition can stay true forever.
+That is an <b>infinite loop</b>. Do not deliberately run one for this exercise. If you accidentally do,
+stop the simulation from its Terminal and check the update part.</p>
+<p>Robot code has another kind of repetition: WPILib calls <code>robotPeriodic()</code> repeatedly, normally
+about every 20 milliseconds. That is about 50 times per second. Each call needs to return so the framework can do other work.
+Later, check a sensor once per call rather than putting a waiting loop inside that callback.</p>
+<div class="checkpoint"><b>Pause and check</b><p>Explain which part sets the starting value, which part asks whether to continue, and which part changes the value. Say why “Finished counting” prints once.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>Short bounded loops are enough for now. You do not need while loops or complex robot timing to continue. Next session introduces objects: two separate things created from one class.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened,
+and one question. Note the lesson number so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation"><a href="lesson-5-methods.html">← Use a method</a><a href="lesson-7-objects.html">When you’re ready: Build two objects →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

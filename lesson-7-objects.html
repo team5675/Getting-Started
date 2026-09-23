@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Build two objects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 7 of 8 · Begin at your own pace</span><h1>Build two objects</h1><p class="lede">Make two counters and see how each keeps its own information.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Explain a class, an object, and a field using values you have observed.</p>
+<p><b>Before you start:</b> You have practiced methods and can distinguish a definition from a call. Allow a fresh session for this lesson.</p><p class="meta">Allow 45–60 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="lesson-6-loops.html">← Repeat a small task</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. Why another file?</h2><p>So far, most examples ran inside one startup method. A robot program needs groups of related
+information and actions. A <b>class</b> describes one kind of thing. An <b>object</b> is one particular instance made from that description.</p>
+<p>Our class describes a counter. Each counter object will hold its own number, increase it, and tell us its current value.
+This uses the variables and methods you already practiced.</p>
+<h2>2. Create the class file</h2><ol><li>In VS Code Explorer, find the folder containing <code>Robot.java</code>:
+<code>src/main/java/frc/robot</code>.</li><li>Right-click that folder and choose <b>New File</b>. Name it <code>PracticeCounter.java</code>, matching the capitalization below.</li>
+<li>Paste the entire file below and save. If the editor generated any content first, replace it; do not duplicate the package or class declaration.</li></ol>
+<p class="code-label">Complete file: PracticeCounter.java</p><pre><code>package frc.robot;
+
+public class PracticeCounter {
+    private int count;
+
+    public PracticeCounter(int startingCount) {
+        count = startingCount;
+    }
+
+    public void addOne() {
+        count = count + 1;
+    }
+
+    public int getCount() {
+        return count;
+    }
+}</code></pre>
+<h2>3. Read it in small pieces</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Piece</th><th scope="col">What it contributes</th></tr></thead><tbody><tr><td><code>package frc.robot;</code></td><td>Names the group this class belongs to. It matches our folder and the package of Robot.java.</td></tr><tr><td><code>public class PracticeCounter</code></td><td>Defines the class; its name matches the filename.</td></tr><tr><td><code>private int count;</code></td><td>A field: stored information belonging to each object. It is outside the methods.</td></tr><tr><td><code>public PracticeCounter(int startingCount)</code></td><td>The constructor: setup performed when an object is created. Its name matches the class and has no return type.</td></tr><tr><td><code>count = startingCount;</code></td><td>Copies the input into that object’s field.</td></tr><tr><td><code>public void addOne()</code></td><td>A method that changes the field but returns no value.</td></tr><tr><td><code>public int getCount()</code></td><td>A method that returns the current whole-number count.</td></tr></tbody></table></div>
+<p><code>private</code> means other classes cannot reach directly into this field. Our public methods are the
+intended way to use the object. That gives us a clear place to explain and manage changes.</p>
+<h2>4. Create and use two objects</h2><p>Return to <code>Robot.java</code>. Keep PracticeCounter.java in its own tab/file.</p>
+<p class="placement"><b>Where this goes:</b> open <code>src/main/java/frc/robot/Robot.java</code>. Replace only the <code>robotInit()</code> method you added earlier, from its <code>@Override</code> line through that method’s matching closing brace. Keep the rest of the file. Do not add a second <code>robotInit()</code>.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    PracticeCounter first = new PracticeCounter(0);
+    PracticeCounter second = new PracticeCounter(10);
+
+    first.addOne();
+    first.addOne();
+    second.addOne();
+
+    System.out.println(&quot;First: &quot; + first.getCount());
+    System.out.println(&quot;Second: &quot; + second.getCount());
+}</code></pre>
+<p><code>new PracticeCounter(0)</code> constructs an object, passing 0 to its constructor.
+The variable <code>first</code> refers to that object. The next line creates a <em>separate</em> object starting at 10.</p>
+<p>In <code>first.addOne()</code>, the dot means “call this method on the object named first.” The empty parentheses
+mean that call supplies no inputs. It changes first’s field; it does not change second’s field.</p>
+<figure><div class="object-map"><div><b>One class: PracticeCounter</b><p>The same fields and method definitions describe both objects.</p></div>
+<div class="branches"><div><b>first</b><p>starts at 0<br>addOne twice<br>ends at 2</p></div><div><b>second</b><p>starts at 10<br>addOne once<br>ends at 11</p></div></div></div><figcaption>Objects share the class definition, but each has its own count field.</figcaption></figure>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>First: 2
+Second: 11</code></pre>
+<h2>5. Field or local variable?</h2><p>A <b>local variable</b> declared inside a method exists for that call’s work.
+A <b>field</b> belongs to the object and can retain its value between method calls.</p>
+<p>Our count field is declared once per counter object. If you put <code>int count = 0;</code> inside
+<code>addOne()</code>, you would create a new local variable on every call. It would hide the field there,
+so the field read by <code>getCount()</code> would not increase.</p>
+<details><summary>Optional experiment: see that difference</summary><p>In the sandbox only, add <code>int count = 0;</code> as the first line inside addOne. Predict the output and run. It should print First: 0 and Second: 10 because the local count changed but the fields did not. Remove that local declaration, run again, and restore First: 2 and Second: 11 before continuing.</p></details>
+<h2>6. Try one variation</h2><p>Create a third object named <code>third</code>, starting at 5. Increase only third once and print its value.
+Keep the first and second objects too. Predict all three results.</p>
+<details><summary>Hint and expected result</summary><p class="code-label">Add these statements inside robotInit(), after the other print statements</p><pre><code>PracticeCounter third = new PracticeCounter(5);
+third.addOne();
+System.out.println(&quot;Third: &quot; + third.getCount());</code></pre><p>The additional output is <code>Third: 6</code>; the earlier outputs remain 2 and 11.</p></details>
+<h2>If Java cannot find the class</h2><p>Check the filename, class name, and capitalization: all say <code>PracticeCounter</code>.
+Check that the file is beside Robot.java, its first line says <code>package frc.robot;</code>, and both files are saved.
+Do not paste the complete class definition into robotInit.</p>
+<div class="checkpoint"><b>Pause and check</b><p>Point to the class definition, a constructor call, a field, and a method call. Explain why increasing first does not increase second.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>Objects often take more than one session to feel familiar. Repeat with different starting values if useful. The command lesson uses these ideas with two files and framework callbacks; start it with a mentor when you can explain this smaller example.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened,
+and one question. Note the lesson number so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation"><a href="lesson-6-loops.html">← Repeat a small task</a><a href="first-command.html">When you’re ready: Start and stop one action →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

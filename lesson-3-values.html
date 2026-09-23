@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Give information a name</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Lesson 3 of 8 · Begin at your own pace</span><h1>Give information a name</h1><p class="lede">Store a value under a name, then use that name in an instruction.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Change a number and predict the printed result before running it.</p>
+<p><b>Before you start:</b> Lesson 2 working. Keep using the same learning-sandbox and Robot.java.</p><p class="meta">Allow 30–45 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="lesson-2-first-program.html">← Run your first program</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. A variable gives a value a name</h2><p>Imagine tracking how many practice runs you have completed. You could print a sentence with a number already written into it.
+A <b>variable</b> gives the number a name, so code can use and change it. We’ll call ours <code>practiceRuns</code>.</p>
+<p class="placement"><b>Where this goes:</b> open <code>src/main/java/frc/robot/Robot.java</code>. Replace only the <code>robotInit()</code> method you added earlier, from its <code>@Override</code> line through that method’s matching closing brace. Keep the rest of the file. Do not add a second <code>robotInit()</code>.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    int practiceRuns = 3;
+    System.out.println(practiceRuns);
+}</code></pre>
+<p>Read the first line from left to right:</p><div class="table-scroll"><table><thead><tr><th scope="col">Piece</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td><code>int</code></td><td>The type: this variable stores a whole number.</td></tr><tr><td><code>practiceRuns</code></td><td>The name we chose. Type this exact spelling whenever you use it.</td></tr><tr><td><code>= 3</code></td><td>Put the value 3 into the variable. Here = means assignment, not a math question.</td></tr><tr><td><code>;</code></td><td>End the statement.</td></tr></tbody></table></div><p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>3</code></pre>
+<p>The print line has no quotes around <code>practiceRuns</code>, so Java looks up the variable’s value.
+Try changing only 3 to 7. Save, restart simulation, and check that 7 prints.</p>
+<h2>2. A name and quoted text are different</h2><p>Replace your method with this version. Predict each line separately.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    int practiceRuns = 3;
+    System.out.println(practiceRuns);
+    System.out.println(&quot;practiceRuns&quot;);
+    System.out.println(&quot;Runs: &quot; + practiceRuns);
+}</code></pre><p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>3
+practiceRuns
+Runs: 3</code></pre>
+<p>The first print uses a value; the second prints the letters inside the quotes. In the third,
+<code>+</code> joins text with the value to make one message. The space after the colon is inside the quotes.</p>
+<h2>3. Change the stored value</h2><p>Replace the method with the version below. <code>//</code> begins a comment: a note for people that Java does not execute.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    int practiceRuns = 3;
+    practiceRuns = practiceRuns + 1; // Read the old value, add one, store the result.
+    System.out.println(&quot;Runs: &quot; + practiceRuns);
+}</code></pre>
+<ol><li>At the declaration, the stored value is 3.</li><li>On the next line, Java evaluates the right side: 3 + 1 gives 4.</li><li>Assignment stores 4 under the same name. It replaces the previous value.</li><li>The print statement reads 4.</li></ol><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Runs: 4</code></pre>
+<p>Use <code>int</code> when you first declare the variable. Do not write <code>int</code> again when changing that same variable in this method.
+Each new program run starts this method again, so this example begins at 3 every time; it is not a permanent record of your runs.</p>
+<h2>4. Meet three more types</h2><p>Different values need different types. Replace your method with this example and inspect the output.</p><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    int practiceRuns = 3;
+    double distanceMeters = 1.5;
+    boolean ready = true;
+    String teamName = &quot;WiredCats&quot;;
+
+    System.out.println(&quot;Team: &quot; + teamName);
+    System.out.println(&quot;Runs: &quot; + practiceRuns);
+    System.out.println(&quot;Distance: &quot; + distanceMeters);
+    System.out.println(&quot;Ready: &quot; + ready);
+}</code></pre><p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. <a href="help.html">Need the full steps?</a></p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Team: WiredCats
+Runs: 3
+Distance: 1.5
+Ready: true</code></pre>
+<ul><li><code>double</code> stores a number that can have a fractional part. Use a decimal point, not a comma.</li><li><code>boolean</code> stores <code>true</code> or <code>false</code>. Those values do not have quotes.</li><li><code>String</code> stores text. Its type name begins with a capital S.</li></ul>
+<p>Units are our responsibility. <code>distanceMeters</code> tells a person that 1.5 means meters. Java sees a number; it does not infer meters from the name.</p>
+<h2>5. Your turn, with a hint if needed</h2><p>Replace only the contents of your method to store a whole number called <code>startingCount</code> with value 4, add 2 to it, and print <code>Count: 6</code>.</p>
+<details><summary>Hint: three statements</summary><p>First declare the variable with <code>int</code>. Then assign <code>startingCount + 2</code> back to the same name. Finally print a quoted label joined to the variable.</p></details><details><summary>One possible answer</summary><p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    int startingCount = 4;
+    startingCount = startingCount + 2;
+    System.out.println(&quot;Count: &quot; + startingCount);
+}</code></pre><p>Change the starting value to 8. Before running, predict the new result. That small variation checks your understanding.</p></details>
+<h2>Common problems</h2><ul><li><b>Cannot find symbol:</b> check spelling and capitalization. A local variable must be declared before you use it, inside the block where it is available.</li><li><b>Variable already defined:</b> you may have pasted a second declaration into the same method. Replace the earlier example instead of stacking every example together.</li><li><b>A decimal will not fit in int:</b> use <code>double</code> when the value needs a fractional part.</li></ul>
+<div class="checkpoint"><b>Pause and check</b><p>Explain the difference between <code>"practiceRuns"</code> and <code>practiceRuns</code>. Trace the value before and after an assignment. Change one value and predict its output.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>Keep one working example. You do not need to memorize all four types yet; you can use this page as a reference. Next, we’ll ask a question about a value.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened,
+and one question. Note the lesson number so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation"><a href="lesson-2-first-program.html">← Run your first program</a><a href="lesson-4-decisions.html">When you’re ready: Make a decision →</a></nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

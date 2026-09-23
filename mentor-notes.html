@@ -1,32 +1,60 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team 5675 — Preparing a programming session</title>
+<title>Team 5675 — Help a new programmer find their footing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"></head><body>
-<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap">
-<nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Getting Started</a>
-<a href="exercises.html">Robot Programming Practice</a>
-<a href="teaching-guide.html">Robot Architecture</a>
-</nav>
-<header class="hero" id="main-content" tabindex="-1"><span class="hero-tag">Team 5675 · Learn, try, explain</span><h1>Preparing a programming session</h1><p class="lede">A small, working starting point gives beginners room to learn one thing at a time.</p></header>
-<h2>Prepare the student starting point</h2><p>The website archive contains teaching pages, not the team's baseline Java project. Supply the robot training repository and check it against these instructions before using Activities 0–9. The Java introduction and simulated-light activity use a normal WPILib 2026 Command Robot project.</p>
-<ul><li>Provide the approved 2026 installer, repository URL, exact starter tag/commit, controller map, and a known working AdvantageScope layout. Keep 2027 alpha/bench work separate.</li><li>On a student machine, build and launch the sandbox and training project once before class. Verify vendor libraries and simulation support. Use a local project folder outside cloud sync.</li><li>Check the simulator joystick port and a keyboard mapping for students without a gamepad. Demonstrate mode selection, enable, disable, and how to stop simulation.</li><li>Check the complete live log paths, including <code>Template/Winner</code>, <code>Template/ActiveRequests</code>, <code>Template/OutputPercent</code>, <code>Template/TimeoutFired</code>, and <code>Drivetrain/Pose</code>. Match the code and pages if they differ.</li><li>Use a training repository with one cumulative branch per student/pair. Keep the learning PR open across activities. Decide what belongs in the training main branch before merging duplicate exercise changes.</li></ul>
-<h2>Resolve these starter-dependent details</h2><p>The older lessons described different implementations. The supplied final 2026 repository confirms commented-out requirements in request commands and declaration-order intake arbitration; it is historical code, not the missing teaching baseline. These revisions make the distinction explicit; they do not claim the absent robot source has been repaired.</p>
-<ol><li><b>Requests and requirements:</b> run A → A+B → A. Two commands requiring the same subsystem cannot run together. A retained-request manager needs an explicit ownership design distinct from ordinary competing commands. Keep requirements for commands that control hardware; do not remove them as a shortcut. Document the actual path before teaching simultaneous requests.</li><li><b>Priority:</b> inspect whether arbitration compares numeric priority or walks declaration order, and whether <code>validateOrdering()</code> exists. Activity 4 now asks students to observe the implemented contract rather than promising one specific crash.</li><li><b>Bindings:</b> identify actual slow-mode and aiming buttons; the original pages disagreed. Check that new Y, POV-up, and right-stick bindings do not replace existing actions.</li><li><b>Later activities:</b> identify the field-layout field and load it once; provide the existing aim helper and named-command registration location. Supply a working DriveOffLine auto and a way to toggle the simulated goal sensor.</li></ol>
-<h2>A suggested first four meetings</h2><div class="table-scroll"><table><tr><th>Meeting</th><th>Practice</th><th>Individual checkpoint</th></tr>
-<tr><td>1</td><td>Hello Robot, one changed message, one repaired syntax error</td><td>Predict two printed lines and find the first useful error</td></tr>
-<tr><td>2</td><td>Variables, threshold checks, short loops, methods</td><td>Explain below/equal/above a boundary and where a method goes</td></tr>
-<tr><td>3</td><td>Objects and the simulated-light command</td><td>Explain the field, command start, timeout, and cleanup</td></tr>
-<tr><td>4</td><td>Activities 0–2: Git, simulation, dashboard, counter</td><td>Find the shared commit and explain the graph</td></tr></table></div>
-<p>Use 60–90 minutes as a planning estimate, not a deadline. Swap driver/navigator roles every 10–15 minutes. Ask each student to explain or change something; do not let the more experienced partner do all the typing.</p>
-<h2>Use the reference when it helps</h2><p>Read logging alongside Activity 1, requests alongside Activities 3–4, and field geometry alongside Activities 6–7. Vision tuning, PID, and SystemCore migration are later topics. Ask students to predict, run, explain, and change one thing. Normalize asking for help after a short focused attempt.</p>
-<p><a href="team-examples.html">Examples from our 2026 robot</a> provides four short readings. Keep the full historical architecture out of the first lessons.</p><h2>Technical references</h2><ul>
-<li><a href="https://raw.githubusercontent.com/wpilibsuite/allwpilib/v2026.2.1/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/templates/commandbased/Robot.java">Versioned 2026.2.1 Command Robot template</a> — uses a constructor; the introductory lesson explicitly adds robotInit.</li>
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">A beginner’s guide · Team 5675</span><h1>Help a new programmer find their footing</h1><p class="lede">Prepare a small working project, teach one idea at a time, and leave room to repeat it.</p></header>
+<section class="start-card"><h2>Make the first result easy to reach</h2>
+<p>Assume every student is new to programming. Lessons 1–7 use a plain WPILib 2026 Command Robot sandbox;
+they do not need the full competition repository, vendor libraries, a gamepad, or a robot.
+Lesson 8 adds a pretend light and one command in the same sandbox.</p>
+<p>The website ZIP contains teaching pages, not a ready-to-run Java project. Before class, follow the lessons
+on a student machine and record the exact approved stable-2026 version. The content was reviewed against the 2026.2.1 template;
+the Java examples have not been compiled or simulated on this editing machine.</p></section>
+<h2>Before the first session</h2><ol><li>Provide the approved WPILib <b>2026</b> installer and help with installation permissions.
+Keep the 2027 alpha tools and SystemCore bench separate.</li><li>Create the lesson sandbox outside cloud sync, build it, and launch its simulation once.
+Verify that the lesson’s robotInit message appears in the VS Code Terminal while disabled.</li>
+<li>Check that students can find Explorer, the editor, the command palette, and Terminal. Demonstrate saving and stopping a simulation.</li>
+<li>Walk through all eight lessons before using them in class. For Lesson 8, confirm Autonomous starts the light,
+the timeout turns it off, and early Disable also turns it off.</li><li>Have a known working copy for comparison. Help students identify a small difference before replacing whole files.</li></ol>
+<h2>Plan for repetition and breaks</h2><p>Use 45–75-minute meetings as a planning range, not a deadline.
+Installation may need its own session. If a student can copy code but cannot predict a change yet, repeat that idea before introducing the next one.</p><div class="table-scroll"><table><thead><tr><th scope="col">Session</th><th scope="col">Focus</th><th scope="col">Individual check before moving on</th></tr></thead><tbody><tr><td>1</td><td>Tools and first message (Lessons 1–2); split if setup takes time.</td><td>Find the file, change the message, save, run, and find the output.</td></tr><tr><td>2</td><td>Variables (Lesson 3), plus a short recap of running code.</td><td>Predict a value before and after an assignment.</td></tr><tr><td>3</td><td>Decisions (Lesson 4).</td><td>Test below, equal to, and above a boundary; explain which branch ran.</td></tr><tr><td>4</td><td>Methods (Lesson 5).</td><td>Show the definition and a call; explain an argument and a returned result.</td></tr><tr><td>5</td><td>Bounded loops (Lesson 6).</td><td>Trace three passes and the final condition check on paper.</td></tr><tr><td>6–7</td><td>Objects (Lesson 7); repeat with different starting counts.</td><td>Explain why two objects can hold different counts.</td></tr><tr><td>8 or later</td><td>One simulated command (Lesson 8).</td><td>Explain what starts the action and what cleans it up.</td></tr></tbody></table></div>
+<p>These are suggestions, not eight mandatory deadlines. A confident student can combine sessions; another may need more time.
+Give everyone their own turn to predict, type, and explain. Two beginners can pair successfully: one reads and predicts while the other types,
+then they swap after 10–15 minutes.</p>
+<h2>Use a short teaching routine</h2><ol><li><b>Recall:</b> ask the student to run their last working example and explain one line.</li>
+<li><b>Model:</b> read the next small block aloud. Point at the exact place it goes.</li><li><b>Predict:</b> have the student write the output they expect.</li>
+<li><b>Try:</b> let the student run it and compare. A different result is evidence to investigate.</li>
+<li><b>Change:</b> ask for one new value or message without copying a full solution.</li>
+<li><b>Close:</b> record the lesson, last working result, and next question in learning-notes.txt.</li></ol>
+<p>After about five focused minutes stuck, help narrow the problem. Ask “What did you expect?” and “What was the last change?”
+before taking the keyboard. Read the first useful build error together. Avoid introducing extra libraries to solve a basic syntax mistake.</p>
+<h2>Use last year’s code as a reading exercise</h2><p>The <a href="team-examples.html">four guided readings</a>
+explain new terms, trace a result, and provide hints and answers. Readings 1–2 follow objects; 3–4 follow commands.
+Do one at a time. Students do not need to infer a complete design from an excerpt or copy it into their sandbox.</p>
+<h2>When students are ready for the team project</h2><p>The <a href="exercises.html">older team-project activities</a>
+and <a href="teaching-guide.html">architecture reference</a> are later material. The teaching baseline source is absent from this website archive;
+the final 2026 competition code is a separate historical reference. Supply a tested training repository before using those activities.</p>
+<ul><li>Provide the repository URL, starter commit/tag, controller map, simulator joystick port, keyboard alternative, and AdvantageScope layout.</li>
+<li>Verify the actual log paths, including Template/Winner, Template/ActiveRequests, Template/OutputPercent,
+Template/TimeoutFired, and Drivetrain/Pose; align the pages with the starter where they differ.</li>
+<li>Check A → A+B → A behavior. Two ordinary commands requiring the same subsystem cannot run together.
+A retained-request manager needs an explicit ownership design; removing requirements is not a shortcut.</li>
+<li>Inspect whether priority uses a numeric comparison or declaration order. Match Activity 4 to the implementation.</li>
+<li>Confirm actual aiming/slow-mode buttons, field-layout loading, aim helper, named-command registration,
+DriveOffLine auto, and the simulated goal-sensor control before assigning their later activities.</li>
+<li>Use the <a href="git-guide.html">Git walkthrough</a> with one cumulative branch per learner/pair and small commits.
+Decide how practice work should be reviewed before merging anything.</li></ul>
+<p>Vision tuning, PID, retained-request arbitration, field geometry, and SystemCore migration can wait until students have a reason to use them.</p>
+<h2>References used for the lessons</h2><ul>
+<li><a href="https://raw.githubusercontent.com/wpilibsuite/allwpilib/v2026.2.1/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/templates/commandbased/Robot.java">WPILib 2026.2.1 Command Robot template</a>: uses a constructor; Lesson 2 explicitly adds robotInit.</li>
+<li><a href="https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/simulation-gui.html">WPILib simulation GUI</a></li>
 <li><a href="https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html">Command lifecycle and requirements</a></li>
-<li><a href="https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html">Trigger behavior, including whileTrue</a></li>
-<li><a href="https://docs.wpilib.org/en/stable/docs/romi-robot/programming-romi.html">Romi programming workflow</a></li></ul>
-<p>Content revision: September 23, 2026. Record the actual classroom validation date and starter commit in the training repository after the walkthrough. A content revision date is not a claim that the robot project has been tested.</p>
-<footer class="page-footer">Student lessons use WPILib 2026. Revised September 23, 2026.<br>
-<a href="index.html">Getting Started</a> · <a href="git-guide.html">Save and share your work</a> · <a href="mentor-notes.html">For mentors</a></footer>
+<li><a href="https://docs.wpilib.org/en/stable/docs/romi-robot/programming-romi.html">Romi workflow</a>: runs configured code on the laptop.</li></ul>
+<p>Record the actual classroom validation date and starter commit in the training repository.
+A page’s revision date is not a claim that the Java program has run successfully.</p></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
 </div></body></html>
