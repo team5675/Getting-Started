@@ -9,6 +9,15 @@
 <section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Trace a short for loop without confusing it with the repeating robot framework.</p>
 <p><b>Before you start:</b> You can read a variable, comparison, and assignment. Keep using the learning sandbox.</p><p class="meta">Allow 30–45 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
 <p class="lesson-trail"><a href="lesson-5-methods.html">← Use a method</a> · <a href="lessons.html">All lessons</a></p>
+<details><summary>Programmed before? Try a two-minute check</summary><p>Predict exactly what this prints. Write it down first, then open the answer.</p><p class="code-label">Check yourself — predict, don’t run</p><pre><code>int total = 0;
+for (int i = 0; i &lt; 4; i++) {
+    total = total + i;
+}
+System.out.println(total);
+for (int i = 10; i &gt; 0; i = i / 2) {
+    System.out.print(i + &quot; &quot;);
+}</code></pre><details><summary>Answer and what to do next</summary><pre><code>6
+10 5 2 1 </code></pre><p>The first loop adds 0 + 1 + 2 + 3. It stops before 4 because the test is <code>&lt;</code>. In the second loop, whole-number division makes <code>1 / 2</code> equal 0, which ends it.</p><p><b>Right, and you can explain why?</b> Skim this lesson, then do the ★ challenge in <code>Practice06Loops.java</code>. <b>Not quite?</b> Follow the lesson step by step; the surprise is exactly what it teaches.</p></details></details>
 <h2>1. Start with repetition you can see</h2><p>Three separate statements can print three numbers:</p>
 <p class="code-label">Reading example — three separate instructions</p><pre><code>System.out.println(1);
 System.out.println(2);
@@ -49,6 +58,11 @@ stop the simulation from its Terminal and check the update part.</p>
 <p>Robot code has another kind of repetition: WPILib calls <code>robotPeriodic()</code> repeatedly, normally
 about every 20 milliseconds. That is about 50 times per second. Each call needs to return so the framework can do other work.
 Later, check a sensor once per call rather than putting a waiting loop inside that callback.</p>
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>A robot can have one camera or several. Instead of copying the same check for each one, the code loops over all of them. This loop asks “is ANY camera connected?”:</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/monitor/SystemHealthCheck.java</code> — do not paste</p><pre><code>boolean anyCamera = false;
+for (int i = 0; i &lt; vision.getCameraCount(); i++) {
+  anyCamera |= vision.isCameraConnected(i);
+}</code></pre><p>Same three parts as your counting loop: start at 0, keep going while <code>i</code> is less than the number of cameras, and add 1 each pass. Counting from 0 is normal in Java, as Part 2 explains. <code>anyCamera |= …</code> is short for <code>anyCamera = anyCamera || …</code>: once one camera answers, it stays true.</p><p>The robot runs loops like this many times a second, every 20 milliseconds. Adding a second camera needs no new checking code.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box try"><span class="box-tag">Practice at home</span><p>Open <code>Practice06Loops.java</code> in your practice workbook. Count down, build text in a loop, and use a <code>while</code> loop to count battery drain. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
 <div class="checkpoint"><b>Pause and check</b><p>Explain which part sets the starting value, which part asks whether to continue, and which part changes the value. Say why “Finished counting” prints once.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>Short bounded loops are enough for now. You do not need while loops or complex robot timing to continue. Next session introduces objects: two separate things created from one class.</p>
 <p>Save your files. In your learning notes, write one thing you changed, what happened,
 and one question. Note the lesson number so you can resume here next time.</p></section>

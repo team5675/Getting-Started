@@ -9,6 +9,18 @@
 <section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Predict and test what happens below, at, and above a boundary.</p>
 <p><b>Before you start:</b> You can declare a variable, print it, and restart a saved program from Lesson 3.</p><p class="meta">Allow 30–45 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
 <p class="lesson-trail"><a href="lesson-3-values.html">← Give information a name</a> · <a href="lessons.html">All lessons</a></p>
+<details><summary>Programmed before? Try a two-minute check</summary><p>Predict exactly what this prints. Write it down first, then open the answer.</p><p class="code-label">Check yourself — predict, don’t run</p><pre><code>double volts = 12.3;
+if (volts &lt; 11.5) {
+    System.out.println(&quot;Low&quot;);
+} else if (volts &lt; 12.3) {
+    System.out.println(&quot;OK&quot;);
+} else {
+    System.out.println(&quot;Full&quot;);
+}
+if (volts &gt;= 12.3 &amp;&amp; volts &lt; 12.5) {
+    System.out.println(&quot;Just full&quot;);
+}</code></pre><details><summary>Answer and what to do next</summary><pre><code>Full
+Just full</code></pre><p>12.3 is not below 12.3, so the chain reaches <code>else</code>. The second <code>if</code> is separate, not part of the chain, so it is checked too. <code>&amp;&amp;</code> needs both sides to be true, and here they are.</p><p><b>Right, and you can explain why?</b> Skim this lesson, then do the ★ challenge in <code>Practice04Decisions.java</code>. <b>Not quite?</b> Follow the lesson step by step; the surprise is exactly what it teaches.</p></details></details>
 <h2>1. Start with a question you can answer</h2><p>Suppose a practice activity uses the message “Too close” when a made-up distance is less than 1 meter.
 We will type that distance ourselves. No sensor is connected, and this is not a real robot safety threshold.</p>
 <p>The question is <code>distanceMeters &lt; 1.0</code>. The <code>&lt;</code> symbol means “less than.”
@@ -53,6 +65,21 @@ public void robotInit() {
     System.out.println(&quot;Decision finished&quot;);
 }</code></pre><p>Test counts 2, 3, and 4. The number is a coding example, not a score or a rule about when a real person is ready.</p></details>
 <h2>If the wrong branch runs</h2><ol><li>Read the exact value you assigned for this run.</li><li>Translate the symbol into words: less than, at least, or equal?</li><li>Check there is no semicolon immediately after <code>if (...)</code>. The opening brace should follow the condition.</li><li>Check that the print statements are inside the intended braces.</li></ol>
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>The pre-match checklist on the driver dashboard decides what to tell the team about each camera. It uses a chain of questions, worst problem first:</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/monitor/SystemHealthCheck.java</code> — do not paste</p><pre><code>if (!vision.isCameraConnected(i)) {
+  light = light.worse(Light.RED);
+  parts.add(name + &quot;: no heartbeat, check its power and Ethernet&quot;);
+} else if (!vision.isOnAprilTagPipeline(i)) {
+  light = light.worse(Light.YELLOW);
+  parts.add(name + &quot;: not on its AprilTag pipeline&quot;);
+} else if (vision.hasTimestampProblem(i)) {
+  light = light.worse(Light.RED);
+  parts.add(
+      name + &quot;: picture times don&#x27;t match the robot clock\n(see the vision.timestamp alert)&quot;);
+} else {
+  int tags = vision.getVisibleTagCount(i);
+  parts.add(name + &quot; sees &quot; + tags + (tags == 1 ? &quot; tag&quot; : &quot; tags&quot;));
+}</code></pre><p>Read it like your distance check, with more branches. <code>!</code> means “not”, so the first question is “is this camera NOT connected?” Only one branch runs. <b>The order matters:</b> if a camera has no power, there’s no point asking which setting it is on. So that question comes first, and its message tells someone exactly what to check.</p><p>The colors work like a traffic light: red means stop and fix it, yellow means look at it. <code>light = light.worse(Light.RED)</code> keeps the worse of the current color and red. If every question is false, the final <code>else</code> reports how many tags the camera can see. The <code>? :</code> at the very end is a one-line <code>if</code> that picks “tag” or “tags”.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box try"><span class="box-tag">Practice at home</span><p>Open <code>Practice04Decisions.java</code> in your practice workbook. Write a three-way battery decision with <code>else if</code>; the self-check tests it exactly on its boundaries. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
 <div class="checkpoint"><b>Pause and check</b><p>Without running first, explain what the original distance example does at exactly 1.0. Then describe what changes when you use &lt;= instead of &lt;.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>You can now edit, run, store information, and choose between two outcomes. That is a useful first-hours milestone. Take a break or try one independent variation before starting Lesson 5 in another session.</p>
 <p>Save your files. In your learning notes, write one thing you changed, what happened,
 and one question. Note the lesson number so you can resume here next time.</p></section>

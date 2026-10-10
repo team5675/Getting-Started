@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Pose lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20260923-nav"></head><body>
+<!-- Pose lab (in-browser), October 2026. Reading order and maintenance notes: README.md. -->
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Pose lab · Drive and know where you are</span><h1>Pose lab</h1><p class="lede">Move sliders to see what a camera mistake, a trust setting or a late picture does to the robot’s idea of where it is.</p></header>
+<style>
+.lab { border:1px solid var(--line); border-radius:10px; background:var(--card); padding:16px; margin:18px 0; }
+.lab svg { width:100%; height:auto; display:block; background:var(--paper); border-radius:8px; }
+.lab-controls { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px 18px; margin:14px 0 6px; }
+.lab-controls label { display:block; font-size:14px; font-weight:600; }
+.lab-controls input[type=range] { width:100%; }
+.lab-controls output { font-family:var(--mono); font-weight:600; color:var(--blue); }
+.lab-modes { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:14px; margin:8px 0; }
+.lab-readout { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:8px; margin-top:10px; }
+.lab-readout div { background:var(--blue-soft); border-radius:7px; padding:10px 12px; font-size:14px; }
+.lab-readout b { display:block; font-family:var(--mono); font-size:18px; color:var(--ink); }
+.lab-key { font-size:13px; color:var(--ink-soft); margin:6px 0 0; }
+</style>
+
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">What this page is for</h2><p>Try the ideas from Advanced 4–6 with sliders, and see the result immediately: a camera mount mistake, how much to trust the camera, and what a late picture does. Nothing to install; it runs in this page.</p>
+<p><b>Before you start:</b> Read Advanced 4, 5 and 6, or keep them open. Each panel says which page it goes with.</p><p class="meta">Allow 30–45 minutes. Try a prediction before each slider move.</p></section>
+<p class="lesson-trail"><a href="advanced-8-camera-check.html">← Check the camera with a tape measure</a> · <a href="lessons.html">All lessons</a></p>
+<div class="box note"><span class="box-tag">A simplified, made-up world</span><p>This lab uses 2D math and invented numbers. It follows the same rules as the lessons (WPILib’s pose math and blending rule), but it is not the Limelight’s solver or the robot’s code. Use it to build intuition, then check real behavior on the robot and in its logs.</p></div>
+
+<h2>1. A camera mount mistake <span class="key">Advanced 4</span></h2><p>A camera 0.30 m in front of the robot’s center looks at a tag. The code believes the camera points straight ahead. Turn it a little and see what each way of using the camera does.</p>
+<div class="lab"><svg id="a-svg" viewBox="0 0 760 290" role="img" aria-label="Top view of the robot, its camera and the tag, with the estimated robot drawn as a red dashed outline"></svg>
+<div class="lab-modes" role="radiogroup" aria-label="How the camera is used">
+<label><input type="radio" name="a-mode" value="mt1" checked> MegaTag1 (tags give x, y, heading)</label>
+<label><input type="radio" name="a-mode" value="mt2"> MegaTag2 (gyro gives heading)</label>
+<label><input type="radio" name="a-mode" value="seeded"> MegaTag2 after a MegaTag1 seed</label>
+<label><input type="checkbox" id="a-mag" checked> draw errors 5× larger</label></div>
+<div class="lab-controls"><div><label for="a-x">Robot x: <output id="a-x-out" for="a-x">4.7 m</output></label><input type="range" id="a-x" min="1.0" max="7.0" step="0.1" value="4.7"></div><div><label for="a-yaw">Camera turned by: <output id="a-yaw-out" for="a-yaw">2°</output></label><input type="range" id="a-yaw" min="-5" max="5" step="0.5" value="2"></div><div><label for="a-fwd">Camera really farther forward by: <output id="a-fwd-out" for="a-fwd">0 cm</output></label><input type="range" id="a-fwd" min="-10" max="10" step="1" value="0"></div></div>
+<div class="lab-readout"><div>Camera to tag<b id="a-dist" aria-live="polite">–</b></div><div>Position error<b id="a-pos" aria-live="polite">–</b></div><div>Heading error<b id="a-head" aria-live="polite">–</b></div></div></div>
+<p><b>Try this:</b></p><ol><li>With MegaTag1 and the camera turned 2°: predict the heading error, then check it. Move the robot closer and farther. What changes, and what doesn’t?</li>
+<li>Switch to MegaTag2. Now move the robot from x = 7 to x = 1. How does the position error grow?</li>
+<li>Choose “MegaTag2 after a MegaTag1 seed”. Why does the position error almost vanish, and what is still wrong?</li>
+<li>Set the turn to 0° and move the camera 5 cm forward. Does the error depend on distance now?</li></ol>
+
+<h2>2. How much to trust the camera <span class="key">Advanced 5</span></h2><p>A robot drives a figure-eight for 20 seconds. Its wheels slip a little, and at 8 seconds another robot shoves it sideways. The wheels don’t measure a shove, so odometry never finds out. Every 0.1 s the camera gives a noisy fix, and a few fixes are wildly wrong, like a single tag’s mirror-image answer.</p>
+<div class="lab"><svg id="b-svg" viewBox="0 0 760 270" role="img" aria-label="The robot's real path, the odometry-only path, the blended path and the camera fixes"></svg>
+<p class="lab-key">Gray = real path · amber = odometry only · blue = odometry + camera · red dots = camera fixes · red × = mirror-image fixes</p>
+<div class="lab-controls"><div><label for="b-slip">Wheel slip: <output id="b-slip-out" for="b-slip">3 %</output></label><input type="range" id="b-slip" min="0" max="10" step="0.5" value="3"></div><div><label for="b-noise">Camera noise: <output id="b-noise-out" for="b-noise">8 cm</output></label><input type="range" id="b-noise" min="0" max="30" step="1" value="8"></div><div><label for="b-trust">Camera std dev (trust): <output id="b-trust-out" for="b-trust">0.3 m</output></label><input type="range" id="b-trust" min="0.05" max="2.0" step="0.05" value="0.3"></div><div><label for="b-bad">Mirror-image fixes: <output id="b-bad-out" for="b-bad">5 %</output></label><input type="range" id="b-bad" min="0" max="20" step="1" value="5"></div><div><label for="b-push">Shoved sideways at 8 s: <output id="b-push-out" for="b-push">30 cm</output></label><input type="range" id="b-push" min="0" max="60" step="5" value="30"></div></div>
+<div class="lab-modes"><label><input type="checkbox" id="b-reject" checked> throw away ambiguous single-tag fixes</label></div>
+<div class="lab-readout"><div>Share per fix<b id="b-share" aria-live="polite">–</b></div><div>Odometry-only error at the end<b id="b-odo" aria-live="polite">–</b></div><div>Blended error, average (last 10 s)<b id="b-avg" aria-live="polite">–</b></div><div>Blended error, worst (last 10 s)<b id="b-max" aria-live="polite">–</b></div></div></div>
+<p><b>Try this:</b></p><ol><li>Set the shove to 0, then 60 cm. Watch the amber path jump away from the gray one and never come back. What does the blue path do?</li>
+<li>Untick “throw away ambiguous fixes”. What do the mirror-image fixes do to the blue path?</li>
+<li>Set the camera std dev very small (trust it a lot), then very large. Which gives the smallest average error? Which is jumpiest? There is a sweet spot, and it depends on the noise.</li></ol>
+
+<h2>3. A late picture <span class="key">Advanced 6</span></h2><p>A robot drives straight at a steady speed. Its odometry started 30 cm behind the truth. Camera fixes arrive every 0.04 s, each showing where the robot was when its picture was taken. One estimate uses the picture’s time; the other pretends each picture was taken “now”.</p>
+<div class="lab"><svg id="c-svg" viewBox="0 0 760 350" role="img" aria-label="Position error over three seconds for the two ways of using the picture time"></svg>
+<div class="lab-controls"><div><label for="c-speed">Robot speed: <output id="c-speed-out" for="c-speed">3 m/s</output></label><input type="range" id="c-speed" min="0" max="4.7" step="0.1" value="3"></div><div><label for="c-lat">Latency: <output id="c-lat-out" for="c-lat">50 ms</output></label><input type="range" id="c-lat" min="0" max="150" step="5" value="50"></div></div>
+<div class="lab-modes"><label><input type="checkbox" id="c-units"> time stamps in the wrong units (every fix fails the age check)</label></div>
+<div class="lab-readout"><div>Error after 3 s, using picture time<b id="c-a" aria-live="polite">–</b></div><div>Error after 3 s, pretending “now”<b id="c-b" aria-live="polite">–</b></div></div></div>
+<p><b>Try this:</b></p><ol><li>Predict the red line’s final error for 3 m/s and 50 ms. Hint: speed × latency.</li>
+<li>Set the speed to 0. Why do the two lines agree?</li>
+<li>Tick “wrong units”. The robot rejects every fix, and on the practice bot the <code>vision.timestamp</code> alert would fire. Which is better: rejecting them, or using them?</li></ol>
+<div class="checkpoint"><b>Pause and check</b><p>For each panel, say in one sentence what you changed and what it taught you. Then pick one result and check it against the code you ran on the matching Advanced page.</p></div>
+
+<script>
+(function () {
+  "use strict";
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = (id) => document.getElementById(id);
+  const rad = (d) => d * Math.PI / 180, deg = (r) => r * 180 / Math.PI;
+
+  // ---- 2D pose math (the same rules as WPILib's Pose2d / Transform2d) ----
+  const pose = (x, y, t) => ({ x, y, t });
+  function compose(a, b) {           // a.transformBy(b)
+    const c = Math.cos(a.t), s = Math.sin(a.t);
+    return pose(a.x + c * b.x - s * b.y, a.y + s * b.x + c * b.y, a.t + b.t);
+  }
+  function inverse(b) {              // b.inverse()
+    const c = Math.cos(b.t), s = Math.sin(b.t);
+    return pose(-c * b.x - s * b.y, s * b.x - c * b.y, -b.t);
+  }
+  const relative = (from, to) => compose(inverse(from), to);   // new Transform2d(from, to)
+  const wrap = (r) => Math.atan2(Math.sin(r), Math.cos(r));
+
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function txt(parent, x, y, s, size, fill, anchor, weight) {
+    const t = el("text", { x, y, "font-size": size || 12, fill: fill || "#182430", "text-anchor": anchor || "middle",
+      class: "svg-t", "font-weight": weight || 400 }, parent);
+    t.textContent = s;
+    return t;
+  }
+  function robotBox(parent, X, Y, p, size, stroke, fill, dash) {
+    const g = el("g", { transform: `translate(${X(p.x)},${Y(p.y)}) rotate(${-deg(p.t)})` }, parent);
+    el("rect", { x: -size / 2, y: -size / 2, width: size, height: size, rx: 3, fill: fill, stroke: stroke,
+      "stroke-width": 2, "stroke-dasharray": dash || "none" }, g);
+    el("line", { x1: 0, y1: 0, x2: size / 2 + 10, y2: 0, stroke: stroke, "stroke-width": 2.5,
+      "stroke-dasharray": dash || "none" }, g);
+    return g;
+  }
+  function bindRange(id, fmt, cb) {
+    const input = $(id), out = $(id + "-out");
+    const show = () => { out.textContent = fmt(parseFloat(input.value)); cb(); };
+    input.addEventListener("input", show);
+    return show;
+  }
+
+  // ======================================================================= Panel A: mount
+  const A = {};
+  A.tag = pose(8.0, 4.0, Math.PI);
+  A.codeMount = pose(0.30, 0, 0);
+  A.compute = function (robotX, yawErrDeg, fwdErrCm, mode) {
+    const robot = pose(robotX, 3.5, 0);
+    const realMount = pose(0.30 + fwdErrCm / 100, 0, rad(yawErrDeg));
+    const realCamera = compose(robot, realMount);
+    const camToTag = relative(realCamera, A.tag);
+    const mt1 = compose(compose(A.tag, inverse(camToTag)), inverse(A.codeMount));
+    let est = mt1;
+    if (mode !== "mt1") {
+      const gyro = mode === "seeded" ? mt1.t : 0;          // seeded: the gyro was set from MegaTag1
+      const camHeading = gyro + A.codeMount.t;
+      const c = Math.cos(camHeading), s = Math.sin(camHeading);
+      const fx = c * camToTag.x - s * camToTag.y, fy = s * camToTag.x + c * camToTag.y;
+      est = compose(pose(A.tag.x - fx, A.tag.y - fy, camHeading), inverse(A.codeMount));
+    }
+    return { robot, realCamera, est,
+      posErr: Math.hypot(est.x - robot.x, est.y - robot.y),
+      headErr: deg(wrap(est.t - robot.t)),
+      dist: Math.hypot(camToTag.x, camToTag.y) };
+  };
+  A.draw = function () {
+    const robotX = parseFloat($("a-x").value), yaw = parseFloat($("a-yaw").value), fwd = parseFloat($("a-fwd").value);
+    const mode = document.querySelector('input[name="a-mode"]:checked').value;
+    const mag = $("a-mag").checked ? 5 : 1;
+    const r = A.compute(robotX, yaw, fwd, mode);
+    const svg = $("a-svg"); svg.innerHTML = "";
+    const X = (x) => 30 + (x - 0.6) * 86, Y = (y) => 250 - (y - 2.55) * 86;
+    for (let x = 1; x <= 8; x++) {
+      el("line", { x1: X(x), y1: 20, x2: X(x), y2: 262, stroke: "#e6ebef" }, svg);
+      txt(svg, X(x), 280, "x = " + x, 11, "#4a5a68");
+    }
+    el("rect", { x: X(8.0) - 3, y: Y(4.0) - 20, width: 9, height: 40, fill: "#182430" }, svg);
+    txt(svg, X(8.0) - 8, Y(4.0) - 28, "tag", 12, "#182430", "middle", 700);
+    // sight line from the real camera to the tag
+    el("line", { x1: X(r.realCamera.x), y1: Y(r.realCamera.y), x2: X(8.0), y2: Y(4.0), stroke: "#1e7e46",
+      "stroke-width": 1.5, "stroke-dasharray": "6 4" }, svg);
+    robotBox(svg, X, Y, r.robot, 44, "#0f5cab", "#e3edf8");
+    el("circle", { cx: X(r.realCamera.x), cy: Y(r.realCamera.y), r: 5, fill: "#1e7e46" }, svg);
+    const shown = pose(r.robot.x + (r.est.x - r.robot.x) * mag, r.robot.y + (r.est.y - r.robot.y) * mag,
+      r.robot.t + (r.est.t - r.robot.t) * mag);
+    robotBox(svg, X, Y, shown, 44, "#c22b3d", "none", "5 3");
+    txt(svg, X(r.robot.x), Y(r.robot.y) + 46, "real robot", 11, "#0b3f76", "middle", 700);
+    txt(svg, 740, 30, mag > 1 ? "red dashed = estimate (error drawn 5x larger)" : "red dashed = estimate", 11, "#c22b3d", "end", 700);
+    $("a-dist").textContent = r.dist.toFixed(2) + " m";
+    $("a-pos").textContent = (r.posErr * 100).toFixed(1) + " cm";
+    $("a-head").textContent = r.headErr.toFixed(1) + "°";
+  };
+
+  // ======================================================================= Panel B: trust
+  function rng(seed) {   // small deterministic random generator, so every run is repeatable
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function gauss(rand) { return Math.sqrt(-2 * Math.log(rand() + 1e-12)) * Math.cos(2 * Math.PI * rand()); }
+  const B = {};
+  B.truth = (t) => {
+    const w = 2 * Math.PI / 10;
+    return { x: 4.0 + 2.6 * Math.cos(w * t), y: 3.4 + 1.3 * Math.sin(2 * w * t) };
+  };
+  B.simulate = function (slipPct, noiseCm, trust, badPct, reject, pushCm) {
+    const rand = rng(5675), dt = 0.02, steps = 1000, K = 0.1 / (0.1 + trust);
+    let prev = B.truth(0), odo = { ...prev }, est = { ...prev }, pushed = 0;
+    const out = { truth: [prev], odo: [{ ...odo }], est: [{ ...est }], fixes: [], errSum: 0, errN: 0, errMax: 0 };
+    for (let i = 1; i <= steps; i++) {
+      const t = i * dt, path = B.truth(t), before = B.truth(t - dt);
+      if (Math.abs(t - 8.0) < dt / 2) pushed = pushCm / 100;   // another robot shoves ours sideways at 8 s
+      const now = { x: path.x, y: path.y + pushed };
+      // the wheels only measure driving, not the shove, and they slip a little
+      const dx = (path.x - before.x) * (1 + slipPct / 100), dy = (path.y - before.y) * (1 + slipPct / 100);
+      odo = { x: odo.x + dx, y: odo.y + dy };
+      est = { x: est.x + dx, y: est.y + dy };
+      if (i % 5 === 0) {                          // a camera fix every 0.1 s
+        let m = { x: now.x + gauss(rand) * noiseCm / 100, y: now.y + gauss(rand) * noiseCm / 100 }, bad = false;
+        if (rand() < badPct / 100) {              // a mirror-image single-tag answer, flagged ambiguous
+          const a = rand() * 2 * Math.PI; m = { x: now.x + 1.5 * Math.cos(a), y: now.y + 1.5 * Math.sin(a) }; bad = true;
+        }
+        out.fixes.push({ ...m, bad });
+        if (!(bad && reject)) { est = { x: est.x + K * (m.x - est.x), y: est.y + K * (m.y - est.y) }; }
+      }
+      prev = now;
+      if (i % 2 === 0) { out.truth.push(now); out.odo.push({ ...odo }); out.est.push({ ...est }); }
+      if (t >= 10) {
+        const e = Math.hypot(est.x - now.x, est.y - now.y);
+        out.errSum += e; out.errN++; out.errMax = Math.max(out.errMax, e);
+      }
+    }
+    out.odoErr = Math.hypot(odo.x - prev.x, odo.y - prev.y);
+    out.share = K;
+    return out;
+  };
+  B.draw = function () {
+    const r = B.simulate(parseFloat($("b-slip").value), parseFloat($("b-noise").value), parseFloat($("b-trust").value),
+      parseFloat($("b-bad").value), $("b-reject").checked, parseFloat($("b-push").value));
+    const svg = $("b-svg"); svg.innerHTML = "";
+    const X = (x) => 30 + x * 90, Y = (y) => 250 - (y - 1.8) * 72;
+    const path = (pts, stroke, w, dash) => el("polyline", { points: pts.map((p) => X(p.x).toFixed(1) + "," + Y(p.y).toFixed(1)).join(" "),
+      fill: "none", stroke, "stroke-width": w, "stroke-dasharray": dash || "none" }, svg);
+    for (const f of r.fixes.slice(-150)) {
+      if (f.bad) {
+        el("path", { d: `M${X(f.x) - 4},${Y(f.y) - 4} l8,8 m0,-8 l-8,8`, stroke: "#c22b3d", "stroke-width": 2 }, svg);
+      } else {
+        el("circle", { cx: X(f.x), cy: Y(f.y), r: 2, fill: "#c22b3d", opacity: 0.45 }, svg);
+      }
+    }
+    path(r.truth, "#9aa7b3", 6);
+    path(r.odo, "#a86407", 2.5);
+    path(r.est, "#0f5cab", 2.5);
+    $("b-share").textContent = (r.share * 100).toFixed(0) + "%";
+    $("b-odo").textContent = (r.odoErr * 100).toFixed(0) + " cm";
+    $("b-avg").textContent = (r.errSum / r.errN * 100).toFixed(1) + " cm";
+    $("b-max").textContent = (r.errMax * 100).toFixed(1) + " cm";
+  };
+
+  // ======================================================================= Panel C: timing
+  const C = {};
+  C.simulate = function (speed, latencyMs, wrongUnits) {
+    const dt = 0.02, L = latencyMs / 1000, K = 0.25, start = -0.30;   // odometry starts 30 cm behind
+    let cA = 0, cB = 0;
+    const truth = (t) => speed * t, odo = (t) => speed * t + start;
+    const A = [], Bv = [];
+    for (let i = 0; i <= 150; i++) {
+      const t = i * dt;
+      if (i > 0 && i % 2 === 0 && t >= L && !wrongUnits) {   // a fix every 0.04 s; wrong units: all rejected
+        const meas = truth(t - L);                            // what the picture shows (taken L seconds ago)
+        cA += K * (meas - (odo(t - L) + cA));                 // compared with odometry AT the picture time
+        cB += K * (meas - (odo(t) + cB));                     // compared with odometry NOW (wrong)
+      }
+      A.push({ t, e: odo(t) + cA - truth(t) });
+      Bv.push({ t, e: odo(t) + cB - truth(t) });
+    }
+    return { A, B: Bv };
+  };
+  C.draw = function () {
+    const r = C.simulate(parseFloat($("c-speed").value), parseFloat($("c-lat").value), $("c-units").checked);
+    const svg = $("c-svg"); svg.innerHTML = "";
+    const X = (t) => 70 + t * 220, Y = (cm) => 40 + (10 - cm) * 5.2;
+    for (const cm of [10, 0, -10, -20, -30, -40]) {
+      el("line", { x1: X(0), y1: Y(cm), x2: X(3), y2: Y(cm), stroke: cm === 0 ? "#4a5a68" : "#e6ebef" }, svg);
+      txt(svg, X(0) - 8, Y(cm) + 4, cm + " cm", 11, "#4a5a68", "end");
+    }
+    for (const t of [0, 1, 2, 3]) txt(svg, X(t), Y(-40) + 20, t + " s", 11, "#4a5a68");
+    const line = (pts, stroke, dash) => el("polyline", { points: pts.map((p) => X(p.t).toFixed(1) + "," + Y(Math.max(-40, Math.min(10, p.e * 100))).toFixed(1)).join(" "),
+      fill: "none", stroke, "stroke-width": 3, "stroke-dasharray": dash || "none" }, svg);
+    line(r.B, "#c22b3d", "7 4");
+    line(r.A, "#1e7e46");
+    txt(svg, 740, 24, "green = uses the picture's time    red dashed = pretends it is 'now'", 11, "#182430", "end", 700);
+    txt(svg, X(1.5), Y(-40) + 38, "time since the first camera fix", 12, "#182430", "middle", 700);
+    const cm = (v) => (Math.abs(v * 100) < 0.05 ? 0 : v * 100).toFixed(1) + " cm";
+    $("c-a").textContent = cm(r.A[r.A.length - 1].e);
+    $("c-b").textContent = cm(r.B[r.B.length - 1].e);
+  };
+
+  // ---- wire up the controls ----
+  const fmt1 = (u) => (v) => v.toFixed(1) + u, fmt0 = (u) => (v) => v.toFixed(0) + u, fmt2 = (u) => (v) => v.toFixed(2) + u;
+  const showA = [bindRange("a-x", fmt1(" m"), A.draw), bindRange("a-yaw", fmt1("°"), A.draw), bindRange("a-fwd", fmt0(" cm"), A.draw)];
+  document.querySelectorAll('input[name="a-mode"]').forEach((i) => i.addEventListener("change", A.draw));
+  $("a-mag").addEventListener("change", A.draw);
+  const showB = [bindRange("b-slip", fmt1(" %"), B.draw), bindRange("b-noise", fmt0(" cm"), B.draw),
+    bindRange("b-trust", fmt2(" m"), B.draw), bindRange("b-bad", fmt0(" %"), B.draw), bindRange("b-push", fmt0(" cm"), B.draw)];
+  $("b-reject").addEventListener("change", B.draw);
+  const showC = [bindRange("c-speed", fmt1(" m/s"), C.draw), bindRange("c-lat", fmt0(" ms"), C.draw)];
+  $("c-units").addEventListener("change", C.draw);
+  showA.concat(showB, showC).forEach((f) => f());
+  window.poseLab = { A, B, C };   // for testing from the browser console
+})();
+</script>
+<nav class="lesson-next" aria-label="Lesson navigation">
+<a href="advanced-8-camera-check.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Check the camera with a tape measure</span></a>
+<a href="big-picture.html" rel="next"><span class="lesson-direction">Next →</span> <span>How it all fits together</span></a>
+</nav>
+</main><footer class="page-footer">Advanced track · October 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

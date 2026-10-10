@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Blend wheels and camera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20260923-nav"></head><body>
+<!-- Advanced track ("Drive and know where you are"), October 2026. Reading order and maintenance notes: README.md. -->
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Advanced 5 of 8 · Drive and know where you are</span><h1>Blend wheels and camera</h1><p class="lede">Combine smooth-but-drifting odometry with jumpy-but-honest camera fixes, and decide when to trust each.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Blend odometry with camera fixes using trust numbers, decide which fixes to throw away, and explain why the practice bot keeps trusting its heading through a short disable.</p>
+<p><b>Before you start:</b> Finish Advanced 3 (odometry) and Advanced 4 (cameras). Use the same practice project.</p><p class="meta">Allow 60 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="advanced-4-apriltags.html">← Cameras and AprilTags</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. Two imperfect witnesses</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col"></th><th scope="col">Odometry (wheels + gyro)</th><th scope="col">Camera (AprilTags)</th></tr></thead><tbody>
+<tr><td>Updates</td><td>Every loop, smoothly</td><td>Only when a tag is in view</td></tr>
+<tr><td>Short-term</td><td>Very good</td><td>Jumpy: each fix is a little different</td></tr>
+<tr><td>Long-term</td><td>Drifts and never recovers (Advanced 3)</td><td>Doesn’t drift</td></tr>
+<tr><td>Can be badly wrong when</td><td>Wheels slip, the robot is bumped or carried</td><td>A tag is far away, blurred or ambiguous, or a calibration is off</td></tr></tbody></table></div>
+<p>Neither one is good enough alone. A <b>pose estimator</b> keeps odometry running all the time and nudges it toward each camera fix by an amount that depends on how much it trusts each one.</p>
+
+<h2>2. Trust as a number</h2><p>Trust is written as a <b>standard deviation</b>: roughly, “how far off this usually is.” A small number means trusted, and a big number means not trusted. In the example below, odometry gets 0.1 m. A camera fix from far away might be 1.0 m, a close one with two tags 0.3 m.</p>
+<figure><svg viewBox="0 0 760 250" role="img" aria-labelledby="a51-title"><title id="a51-title">Two bell curves. Odometry says x is 5.00 and is narrow, meaning trusted. The camera says 5.40 and is wider, meaning less trusted. The blended answer, 5.10, sits a quarter of the way from odometry toward the camera.</title><line x1="60.0" y1="200.0" x2="700.0" y2="200.0" stroke="#4a5a68" stroke-width="1.5"/><line x1="140.0" y1="200.0" x2="140.0" y2="206.0" stroke="#4a5a68" stroke-width="1.0"/><text x="140.0" y="222.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">4.6</text><line x1="220.0" y1="200.0" x2="220.0" y2="206.0" stroke="#4a5a68" stroke-width="1.0"/><text x="220.0" y="222.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">4.8</text><line x1="300.0" y1="200.0" x2="300.0" y2="206.0" stroke="#4a5a68" stroke-width="1.0"/><text x="300.0" y="222.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">5.0</text><line x1="380.0" y1="200.0" x2="380.0" y2="206.0" stroke="#4a5a68" stroke-width="1.0"/><text x="380.0" y="222.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">5.2</text><line x1="460.0" y1="200.0" x2="460.0" y2="206.0" stroke="#4a5a68" stroke-width="1.0"/><text x="460.0" y="222.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">5.4</text><line x1="540.0" y1="200.0" x2="540.0" y2="206.0" stroke="#4a5a68" stroke-width="1.0"/><text x="540.0" y="222.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">5.6</text><line x1="620.0" y1="200.0" x2="620.0" y2="206.0" stroke="#4a5a68" stroke-width="1.0"/><text x="620.0" y="222.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">5.8</text><text x="380.0" y="242.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">x on the field (meters)</text><polyline points="60.0,200.0 63.2,200.0 66.4,200.0 69.6,200.0 72.8,200.0 76.0,200.0 79.2,200.0 82.4,200.0 85.6,200.0 88.8,200.0 92.0,200.0 95.2,200.0 98.4,200.0 101.6,200.0 104.8,200.0 108.0,200.0 111.2,200.0 114.4,200.0 117.6,200.0 120.8,200.0 124.0,200.0 127.2,200.0 130.4,200.0 133.6,200.0 136.8,200.0 140.0,199.9 143.2,199.9 146.4,199.9 149.6,199.9 152.8,199.8 156.0,199.8 159.2,199.7 162.4,199.6 165.6,199.5 168.8,199.3 172.0,199.1 175.2,198.8 178.4,198.5 181.6,198.1 184.8,197.6 188.0,197.0 191.2,196.3 194.4,195.4 197.6,194.3 200.8,193.1 204.0,191.6 207.2,189.8 210.4,187.8 213.6,185.4 216.8,182.8 220.0,179.7 223.2,176.3 226.4,172.4 229.6,168.1 232.8,163.4 236.0,158.3 239.2,152.8 242.4,146.8 245.6,140.5 248.8,133.9 252.0,127.0 255.2,119.9 258.4,112.7 261.6,105.4 264.8,98.2 268.0,91.1 271.2,84.2 274.4,77.8 277.6,71.8 280.8,66.3 284.0,61.5 287.2,57.5 290.4,54.3 293.6,51.9 296.8,50.5 300.0,50.0 303.2,50.5 306.4,51.9 309.6,54.3 312.8,57.5 316.0,61.5 319.2,66.3 322.4,71.8 325.6,77.8 328.8,84.2 332.0,91.1 335.2,98.2 338.4,105.4 341.6,112.7 344.8,119.9 348.0,127.0 351.2,133.9 354.4,140.5 357.6,146.8 360.8,152.8 364.0,158.3 367.2,163.4 370.4,168.1 373.6,172.4 376.8,176.3 380.0,179.7 383.2,182.8 386.4,185.4 389.6,187.8 392.8,189.8 396.0,191.6 399.2,193.1 402.4,194.3 405.6,195.4 408.8,196.3 412.0,197.0 415.2,197.6 418.4,198.1 421.6,198.5 424.8,198.8 428.0,199.1 431.2,199.3 434.4,199.5 437.6,199.6 440.8,199.7 444.0,199.8 447.2,199.8 450.4,199.9 453.6,199.9 456.8,199.9 460.0,199.9 463.2,200.0 466.4,200.0 469.6,200.0 472.8,200.0 476.0,200.0 479.2,200.0 482.4,200.0 485.6,200.0 488.8,200.0 492.0,200.0 495.2,200.0 498.4,200.0 501.6,200.0 504.8,200.0 508.0,200.0 511.2,200.0 514.4,200.0 517.6,200.0 520.8,200.0 524.0,200.0 527.2,200.0 530.4,200.0 533.6,200.0 536.8,200.0 540.0,200.0 543.2,200.0 546.4,200.0 549.6,200.0 552.8,200.0 556.0,200.0 559.2,200.0 562.4,200.0 565.6,200.0 568.8,200.0 572.0,200.0 575.2,200.0 578.4,200.0 581.6,200.0 584.8,200.0 588.0,200.0 591.2,200.0 594.4,200.0 597.6,200.0 600.8,200.0 604.0,200.0 607.2,200.0 610.4,200.0 613.6,200.0 616.8,200.0 620.0,200.0 623.2,200.0 626.4,200.0 629.6,200.0 632.8,200.0 636.0,200.0 639.2,200.0 642.4,200.0 645.6,200.0 648.8,200.0 652.0,200.0 655.2,200.0 658.4,200.0 661.6,200.0 664.8,200.0 668.0,200.0 671.2,200.0 674.4,200.0 677.6,200.0 680.8,200.0 684.0,200.0 687.2,200.0 690.4,200.0 693.6,200.0 696.8,200.0 700.0,200.0" fill="none" stroke="#a86407" stroke-width="3"/><text x="300.0" y="40.0" text-anchor="middle" class="svg-t" font-size="12" fill="#a86407" font-weight="700"></text><text x="244.0" y="50.0" text-anchor="end" class="svg-t" font-size="12" fill="#a86407" font-weight="700">odometry: 5.00</text><text x="244.0" y="66.0" text-anchor="end" class="svg-t" font-size="11" fill="#a86407">(std dev 0.1)</text><polyline points="60.0,199.7 63.2,199.7 66.4,199.7 69.6,199.6 72.8,199.6 76.0,199.6 79.2,199.5 82.4,199.5 85.6,199.5 88.8,199.4 92.0,199.4 95.2,199.3 98.4,199.3 101.6,199.2 104.8,199.1 108.0,199.1 111.2,199.0 114.4,198.9 117.6,198.8 120.8,198.7 124.0,198.6 127.2,198.5 130.4,198.4 133.6,198.3 136.8,198.1 140.0,198.0 143.2,197.9 146.4,197.7 149.6,197.5 152.8,197.4 156.0,197.2 159.2,197.0 162.4,196.8 165.6,196.5 168.8,196.3 172.0,196.1 175.2,195.8 178.4,195.5 181.6,195.3 184.8,195.0 188.0,194.6 191.2,194.3 194.4,194.0 197.6,193.6 200.8,193.2 204.0,192.8 207.2,192.4 210.4,192.0 213.6,191.5 216.8,191.0 220.0,190.5 223.2,190.0 226.4,189.5 229.6,188.9 232.8,188.3 236.0,187.7 239.2,187.1 242.4,186.5 245.6,185.8 248.8,185.1 252.0,184.4 255.2,183.7 258.4,182.9 261.6,182.2 264.8,181.4 268.0,180.5 271.2,179.7 274.4,178.8 277.6,178.0 280.8,177.0 284.0,176.1 287.2,175.2 290.4,174.2 293.6,173.2 296.8,172.2 300.0,171.2 303.2,170.2 306.4,169.1 309.6,168.1 312.8,167.0 316.0,165.9 319.2,164.8 322.4,163.7 325.6,162.6 328.8,161.5 332.0,160.4 335.2,159.2 338.4,158.1 341.6,157.0 344.8,155.8 348.0,154.7 351.2,153.6 354.4,152.5 357.6,151.4 360.8,150.3 364.0,149.2 367.2,148.1 370.4,147.0 373.6,146.0 376.8,145.0 380.0,143.9 383.2,143.0 386.4,142.0 389.6,141.1 392.8,140.2 396.0,139.3 399.2,138.4 402.4,137.6 405.6,136.8 408.8,136.1 412.0,135.4 415.2,134.7 418.4,134.1 421.6,133.5 424.8,132.9 428.0,132.4 431.2,132.0 434.4,131.6 437.6,131.2 440.8,130.9 444.0,130.6 447.2,130.4 450.4,130.2 453.6,130.1 456.8,130.0 460.0,130.0 463.2,130.0 466.4,130.1 469.6,130.2 472.8,130.4 476.0,130.6 479.2,130.9 482.4,131.2 485.6,131.6 488.8,132.0 492.0,132.4 495.2,132.9 498.4,133.5 501.6,134.1 504.8,134.7 508.0,135.4 511.2,136.1 514.4,136.8 517.6,137.6 520.8,138.4 524.0,139.3 527.2,140.2 530.4,141.1 533.6,142.0 536.8,143.0 540.0,143.9 543.2,145.0 546.4,146.0 549.6,147.0 552.8,148.1 556.0,149.2 559.2,150.3 562.4,151.4 565.6,152.5 568.8,153.6 572.0,154.7 575.2,155.8 578.4,157.0 581.6,158.1 584.8,159.2 588.0,160.4 591.2,161.5 594.4,162.6 597.6,163.7 600.8,164.8 604.0,165.9 607.2,167.0 610.4,168.1 613.6,169.1 616.8,170.2 620.0,171.2 623.2,172.2 626.4,173.2 629.6,174.2 632.8,175.2 636.0,176.1 639.2,177.0 642.4,178.0 645.6,178.8 648.8,179.7 652.0,180.5 655.2,181.4 658.4,182.2 661.6,182.9 664.8,183.7 668.0,184.4 671.2,185.1 674.4,185.8 677.6,186.5 680.8,187.1 684.0,187.7 687.2,188.3 690.4,188.9 693.6,189.5 696.8,190.0 700.0,190.5" fill="none" stroke="#c22b3d" stroke-width="3"/><text x="460.0" y="120.0" text-anchor="middle" class="svg-t" font-size="12" fill="#c22b3d" font-weight="700">camera: 5.40 (std dev 0.3)</text><line x1="340.0" y1="40.0" x2="340.0" y2="200.0" stroke="#0f5cab" stroke-width="2.5" stroke-dasharray="6 4"/><text x="348.0" y="30.0" text-anchor="start" class="svg-t" font-size="13" fill="#0b3f76" font-weight="700">blend: 5.10</text></svg><figcaption>A narrow curve is a confident witness. The blend lands closer to the more trusted one.</figcaption></figure>
+<p>WPILib’s pose estimator moves the estimate this share of the way toward each camera fix:</p>
+<p class="placement"><b>share = odometry std dev ÷ (odometry std dev + camera std dev)</b><br>Here: 0.1 ÷ (0.1 + 0.3) = 0.25, so the estimate moves a quarter of the way, from 5.00 to 5.10.</p>
+
+<h2>3. Watch WPILib’s estimator blend</h2><p class="placement"><b>Where this goes:</b> in <code>Robot.java</code> in your practice project, add the imports. Replace only <code>robotInit()</code>. You can leave the helper methods from earlier pages.</p>
+<p class="code-label">Code to use: imports</p><pre><code>import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;</code></pre>
+<p class="code-label">Code to use: robotInit()</p><pre><code>@Override
+public void robotInit() {
+    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+        new Translation2d(0.3048, 0.3048), new Translation2d(0.3048, -0.3048),
+        new Translation2d(-0.3048, 0.3048), new Translation2d(-0.3048, -0.3048));
+    SwerveModulePosition[] wheels = {
+        new SwerveModulePosition(), new SwerveModulePosition(),
+        new SwerveModulePosition(), new SwerveModulePosition()};
+
+    SwerveDrivePoseEstimator estimator = new SwerveDrivePoseEstimator(
+        kinematics, Rotation2d.kZero, wheels,
+        new Pose2d(5.00, 2.00, Rotation2d.kZero),  // where odometry thinks the robot is
+        VecBuilder.fill(0.1, 0.1, 0.1),            // trust in odometry (meters, meters, radians)
+        VecBuilder.fill(0.3, 0.3, 9_999_999));     // trust in the camera; its heading is ignored
+
+    Pose2d cameraSays = new Pose2d(5.40, 2.00, Rotation2d.kZero);
+    double time = 0.0;
+    for (int i = 1; i &lt;= 5; i++) {
+        time = time + 0.02;                                       // one robot loop later
+        estimator.updateWithTime(time, Rotation2d.kZero, wheels); // the wheels haven&#x27;t moved
+        estimator.addVisionMeasurement(cameraSays, time);
+        System.out.println(&quot;After camera fix &quot; + i + &quot;: x = &quot;
+            + String.format(&quot;%.3f&quot;, estimator.getEstimatedPosition().getX()));
+    }
+}</code></pre>
+<div class="table-scroll"><table><thead><tr><th scope="col">Piece</th><th scope="col">What it does here</th></tr></thead><tbody>
+<tr><td><code>SwerveDrivePoseEstimator</code></td><td>Odometry plus camera blending in one object. The real drivetrain has one inside it.</td></tr>
+<tr><td><code>VecBuilder.fill(0.1, 0.1, 0.1)</code></td><td>Three trust numbers: x, y and heading.</td></tr>
+<tr><td><code>9_999_999</code></td><td>A huge std dev for heading: “never let the camera change the heading.” Underscores make big numbers readable; Java ignores them.</td></tr>
+<tr><td><code>updateWithTime(...)</code></td><td>One odometry update, as the real robot does every loop. The wheels report no movement here.</td></tr>
+<tr><td><code>addVisionMeasurement(cameraSays, time)</code></td><td>One camera fix, with the time the picture was taken (Advanced 6).</td></tr></tbody></table></div>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>After camera fix 1: x = 5.100
+After camera fix 2: x = 5.175
+After camera fix 3: x = 5.231
+After camera fix 4: x = 5.273
+After camera fix 5: x = 5.305</code></pre>
+<p>Each fix closes a quarter of the <em>remaining</em> gap, so the estimate creeps toward 5.40 without jumping. A single wild fix can only pull it a quarter of the way.</p>
+<details><summary>Try one variation: change the camera’s trust</summary><p>Change both <code>0.3</code> values in the second <code>VecBuilder.fill</code> to <code>0.1</code> (as trusted as odometry), then to <code>0.9</code>. Predict the first line each time.</p><p>Camera std dev 0.1, share 0.5:</p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>After camera fix 1: x = 5.200
+After camera fix 2: x = 5.300
+After camera fix 3: x = 5.350
+After camera fix 4: x = 5.375
+After camera fix 5: x = 5.388</code></pre><p>Camera std dev 0.9, share 0.1:</p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>After camera fix 1: x = 5.040
+After camera fix 2: x = 5.076
+After camera fix 3: x = 5.108
+After camera fix 4: x = 5.138
+After camera fix 5: x = 5.164</code></pre></details>
+
+<h2>4. Not every picture deserves a vote</h2><p>Trust numbers handle ordinary noise. Some fixes are simply wrong, and blending even a quarter of a wrong answer moves the robot. So the vision code throws those away first. The practice bot’s rules:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Throw the fix away if…</th><th scope="col">Why</th></tr></thead><tbody>
+<tr><td>the camera isn’t answering, or is on the wrong pipeline</td><td>Old or meaningless numbers</td></tr>
+<tr><td>no tag is in view</td><td>There is no pose to use</td></tr>
+<tr><td>the picture’s time is impossible</td><td>Too old to help, or a clock problem (Advanced 6)</td></tr>
+<tr><td>the pose is off the field, beyond a 25 cm margin</td><td>Physically impossible. In 2026 this check had a bug: it skipped one wall and its margin pointed inward, so good fixes near a wall were thrown away</td></tr>
+<tr><td>the robot is spinning faster than half a turn per second</td><td>Blurred pictures, and the heading sent to MegaTag2 is already stale</td></tr>
+<tr><td>the tags are far away on average</td><td>Small tags in the picture give poor answers</td></tr>
+<tr><td>only one tag is seen and it is ambiguous (MegaTag1)</td><td>It could be the mirror-image pose</td></tr></tbody></table></div>
+<p>Good fixes then get a trust number from the robot’s formula: farther tags mean a bigger std dev, and more tags a smaller one. That’s the <code>xyStdDevMeters</code> method from the Lesson 5 real-robot box.</p>
+
+<h2>5. Seed, then maintain</h2><p>The practice bot uses its two camera answers (Advanced 4) in two steps:</p>
+<ol><li><b>Seed</b> with MegaTag1, only while <b>disabled</b> and still. A seed <em>jumps</em> the pose, x, y and heading, to the camera’s answer. That is fine while nobody is driving, but never while the robot moves.</li>
+<li><b>Maintain</b> with MegaTag2 while driving. It nudges x and y using the blending above, and never touches the heading. The heading comes from the gyro, which stays accurate for a whole match once it is lined up with the field.</li></ol>
+<p>So the robot needs to remember one important fact: <em>is my heading lined up with the field?</em> If it isn’t, MegaTag2 must stay off, because MegaTag2 is only as good as the heading it is given.</p>
+<figure><svg viewBox="0 0 780 300" role="img" aria-labelledby="a52-title"><title id="a52-title">Three states. Not trusted, fix wanted: at start-up, and after the X button, the View button or a reference check. A good MegaTag1 fix while disabled moves to Trusted. Disabling moves to Trusted, fresh fix welcome, where MegaTag2 keeps working; a good fix returns to Trusted, and enabling without one stays trusted.</title><defs><marker id="a52-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#182430"/></marker><marker id="a52-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c22b3d"/></marker></defs><rect x="14" y="110" width="190" height="80" rx="10" fill="#fbe9ec" stroke="#c22b3d" stroke-width="2"/><text x="109.0" y="131.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">Not trusted,</text><text x="109.0" y="149.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">fix wanted</text><text x="109.0" y="178.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">MegaTag2 off</text><rect x="310" y="110" width="180" height="80" rx="10" fill="#e5f3ea" stroke="#1e7e46" stroke-width="2"/><text x="400.0" y="140.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">Trusted</text><text x="400.0" y="178.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">MegaTag2 corrects x, y</text><rect x="576" y="110" width="190" height="80" rx="10" fill="#e5f3ea" stroke="#1e7e46" stroke-width="2"/><text x="671.0" y="131.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">Trusted,</text><text x="671.0" y="149.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">fresh fix welcome</text><text x="671.0" y="178.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">MegaTag2 still on</text><text x="109.0" y="212.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">where it starts at power-on</text><line x1="206.0" y1="140.0" x2="306.0" y2="140.0" stroke="#182430" stroke-width="2" marker-end="url(#a52-ink)"/><text x="256.0" y="130.0" text-anchor="middle" class="svg-t" font-size="10" fill="#182430">good MegaTag1</text><text x="256.0" y="160.0" text-anchor="middle" class="svg-t" font-size="10" fill="#182430">while disabled</text><line x1="492.0" y1="135.0" x2="572.0" y2="135.0" stroke="#182430" stroke-width="2" marker-end="url(#a52-ink)"/><text x="532.0" y="126.0" text-anchor="middle" class="svg-t" font-size="10" fill="#182430">disabled</text><path d="M671,190 C671,250 400,250 400,192" fill="none" stroke="#182430" stroke-width="2" marker-end="url(#a52-ink)"/><text x="525.0" y="254.0" text-anchor="middle" class="svg-t" font-size="11" fill="#182430">a good MegaTag1 fix while disabled</text><path d="M400,108 C400,40 109,40 109,106" fill="none" stroke="#c22b3d" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#a52-red)"/><text x="260.0" y="36.0" text-anchor="middle" class="svg-t" font-size="11" fill="#c22b3d" font-weight="700">X button, View button, or a reference check</text><text x="260.0" y="290.0" text-anchor="middle" class="svg-t" font-size="11" fill="#a86407" font-weight="700">Before October 2026, every disable went back to “Not trusted”.</text></svg><figcaption>The robot’s “can I trust my heading?” memory, which lives in <code>PoseSeedTracker</code>.</figcaption></figure>
+
+<h2>6. A real bug, and the fix</h2><p>Until October 2026, one true-or-false value meant two things: “the heading is trusted” and “we still want a fresh MegaTag1 fix.” Every disable set it to false, so a disable both asked for a fresh fix <em>and</em> took away trust. Now follow a match:</p>
+<ol><li>Before the match the robot is disabled, sees tags and seeds. Trusted.</li><li>Autonomous runs. Trusted.</li><li>Between auto and teleop the robot is disabled for a few seconds. Trust is taken away, and a fresh fix is needed. But if no tag is in view during those few seconds, there is no fix.</li><li>Teleop starts. Seeding is only allowed while disabled, so the robot can’t seed again, and MegaTag2 stays off for the <b>whole of teleop</b>.</li></ol>
+<p>The fix split the one value into two separate facts, <code>headingTrusted</code> and <code>refreshWanted</code>. A disable now only sets <code>refreshWanted</code>. The gyro keeps measuring through a disable, so there is no reason to doubt the heading. Trust is taken away only when something really overwrites or questions it.</p>
+<details><summary>Discuss: what else should make the robot stop trusting its heading?</summary><p>Today trust is taken away by the X button, the View button (“this way is forward”), and starting or leaving a reference check. A code review in October 2026 pointed out another case that isn’t handled yet: the gyro itself restarting or being reset while the robot code keeps running. Then its heading is no longer lined up with the field. How could the code notice that? What should the Pre-Match tab say when it happens? This is a real open question for the team.</p></details>
+
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>The practice bot’s rules for when a MegaTag1 fix may set the pose read like the table above, in the same order. Each rule returns a sentence, and the Pre-Match tab shows that sentence while the robot waits:</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/vision/VisionSubsystem.java</code> — do not paste</p><pre><code>static String seedRejectReason(PoseObservation obs, boolean connected, boolean pipelineCorrect,
+    boolean disabled, double now, double requestedAt, double omegaRadPerSec) {
+  if (!disabled) {
+    return &quot;robot is enabled (MegaTag1 only seeds while disabled)&quot;;
+  }
+  if (!connected) {
+    return &quot;camera not connected (no heartbeat)&quot;;
+  }
+  if (!pipelineCorrect) {
+    return &quot;camera is not on its AprilTag pipeline&quot;;
+  }
+  if (obs == null) {
+    return &quot;no AprilTag in view&quot;;
+  }
+  // ... time stamp, distance, field, turning and ambiguity rules ...
+  return null;
+}</code></pre><p class="code-label">And what happens on every disable, in RobotContainer.java — do not paste</p><pre><code>public void onDisabled() {
+  // Every disable is a chance to refresh the pose from a fresh MegaTag1 fix (2026 production
+  // behavior), BUT we keep trusting the current heading while we wait. In a match the robot is
+  // disabled for only a few seconds between auto and teleop; if no tag is in view then, clearing
+  // the seed here would switch vision off for all of teleop. (Before Oct 2026 this called
+  // clearPoseSeed(). See PoseSeedTracker for the full story.)
+  vision.requestFreshSeed();
+}</code></pre><p>The first excerpt is the Lesson 4 pattern again: worst problem first, one answer. The second is the October 2026 fix: one call, with a comment explaining why. A disable asks for a fresh fix, but doesn’t take away trust.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box try"><span class="box-tag">Practice at home</span><p>Open <code>PracticeA5Fusion.java</code> in your practice workbook. Write the blending rule, the trust formula and a rejection chain. The challenge is <code>PracticeSeedTracker</code>, a small version of the robot’s trust memory, with a check that walks through the gap between auto and teleop. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
+<div class="checkpoint"><b>Pause and check</b><p>Work out where the estimate goes when odometry says 3.00, the camera says 3.30, and both std devs are 0.2. Then explain, in your own words, why one true-or-false value used to switch vision off for all of teleop.</p></div>
+<section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>Next: why every camera picture comes with a time stamp, and what goes wrong when the time is wrong.</p>
+<p>In your learning notes, write one thing you changed, what happened, and one question.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation">
+<a href="advanced-4-apriltags.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Cameras and AprilTags</span></a>
+<a href="advanced-6-timestamps.html" rel="next"><span class="lesson-direction">Next →</span> <span>When was that picture taken?</span></a>
+</nav>
+</main><footer class="page-footer">Advanced track · October 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

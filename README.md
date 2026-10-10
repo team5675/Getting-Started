@@ -1,7 +1,7 @@
 # Team 5675 — Getting Started
 
 Beginner Java and robot-programming lessons for the Mattawan WiredCats.
-Open `(https://team5675.github.io/Getting-Started/)` in a browser to start. These are static pages; no package install is required.
+Open `index.html` in a browser to start. These are static pages; no package install is required.
 
 ## Pages
 
@@ -16,6 +16,87 @@ Open `(https://team5675.github.io/Getting-Started/)` in a browser to start. Thes
 - `teaching-guide.html` and `aiming.html`: architecture references.
 - `mentor-notes.html`: preparation, starter-dependent checks, and suggested meetings.
 - `systemcore-bench-guide.html` and its Markdown source: existing advanced bench reference. Its technical content was not updated in this teaching-language revision.
+- `advanced-1-…` to `advanced-8-…`, `pose-lab.html`, `robot-1-loop.html`, `robot-2-arrays.html`,
+  `robot-3-controller.html`, `big-picture.html`: Parts 2 and 3 below.
+- `practice-workbook.html` and `downloads/practice-workbook.zip`: the at-home practice workbook.
+
+## Course structure (October 2026)
+
+The guide is now three parts, read in order. Students who have programmed before take the
+fast lane through Part 1 (see below); everyone does Lesson 8 and Parts 2–3 fully.
+
+| Part | Pages | Status |
+|---|---|---|
+| 1 · First steps in Java | Lessons 1–8 (existing pages) | Linked. Each of Lessons 2–8 now has three new boxes (below) |
+| 2 · How a robot program runs | `robot-1-loop.html` (the 20 ms loop and modes), `robot-2-arrays.html` (arrays, four wheels), `robot-3-controller.html` (sticks, deadband, curve, lambdas) | Linked |
+| 3 · Drive and know where you are | `advanced-1-field-pose`, `-2-swerve`, `-3-odometry`, `-4-apriltags`, `-5-fusion`, `-6-timestamps`, (`-7-health-checks` planned), `-8-camera-check`, plus `pose-lab.html` | 1–6 and 8 linked; 7 planned |
+| Map | `big-picture.html`: the whole robot program on one page, three data paths, the course map and the two routes | Linked from `index.html` and `lessons.html` |
+
+### What changed on the existing beginner pages
+
+Lessons 2–8 (`lesson-2-…` to `lesson-7-…`, `first-command.html`) each gained:
+
+1. **“Programmed before? Try a two-minute check”** (a `details` block after the lesson trail): predict
+   a short program's output; if right, skim the lesson and do the matching ★ challenge.
+2. **“In the real robot · 2027Practice”** (amber `box next`, before the checkpoint): the same idea in
+   the practice-bot code, as an exact excerpt cut from the source by `site-adv/excerpts.py`
+   (e.g. `PoseSeedTracker` for objects, the Pre-Match camera row for `else if`).
+3. **“Practice at home”** (green `box try`): which practice-workbook file goes with the lesson,
+   linking to `practice-workbook.html`.
+
+`teaching-guide.html` §4 gained an “Update, October 2026” note under “Every disable clears the seed”.
+Advanced 1–3 had their “Where this shows up on the real robot” boxes replaced by the same
+real-robot box with a code excerpt.
+
+### The practice workbook
+
+`downloads/practice-workbook.zip` (about 64 KB) holds `src/main/java/frc/robot/practice/*` (one
+practice file per lesson, Lessons 2–7, Part 2 and Advanced 4, 5, 6 and 8), `src/test/java/...`
+(JUnit self-checks, 52 in total) and `answers/` (finished versions, plus known-good Lesson 8 files).
+Students make a second WPILib 2026 Command Robot project named `practice-workbook`, copy `src` into
+it, run a file with VS Code's **Run** CodeLens above `main`, and check it with **WPILib: Test Robot
+Code** after setting `CHECK_MY_WORK` (or `CHECK_CHALLENGE`) to true. Checks are skipped while a switch
+is false, so unfinished files never fail a build. Files are ASCII-only (Windows Java 17 encoding).
+
+### Connected (10 October 2026)
+
+Reading order, through the Back/Next cards: Lessons 1–8 → `robot-1-loop` → `robot-2-arrays` →
+`robot-3-controller` → `advanced-1` … `advanced-6` → `advanced-8` → `pose-lab` → `big-picture`.
+Advanced 7 (health checks) isn't written yet, so Advanced 6 leads straight to 8, and `lessons.html`
+shows it as “coming later”. When it is written, put it between 6 and 8 in `site-adv/connect.py`
+(`SEQUENCE`) and give it a link in `PART3_CARDS`.
+
+- `lessons.html`: Part 1 headings renamed; new Part 2 and Part 3 card groups; links to
+  `big-picture.html` and `practice-workbook.html` near the top and in the reference list.
+- `index.html`: a “Programmed before?” pointer to `big-picture.html` (the fast lane) and a
+  “Where the guide goes next” section.
+- `first-command.html`: its Next card now leads to `robot-1-loop.html` (it pointed to the team
+  examples, which stay linked from `index.html` and `lessons.html`).
+- New pages: lesson trail and Back/Next cards filled in; “draft” footers removed.
+
+### How the content was checked
+
+- Every “Expected output” on Parts 2–3 pages is produced by running the page's own code: plain Java
+  directly, WPILib code with the 2027 alpha math jars after a name-for-name translation (packages,
+  `kZero` → `ZERO`). WPILib APIs used are in the 2026.2.2 javadoc (`MathUtil.applyDeadband`,
+  `copyDirectionPow`, `SwerveDrivePoseEstimator`, `Transform2d`, …). The pose estimator's blending
+  rule (share = σodometry ÷ (σodometry + σcamera)) was confirmed numerically.
+- The workbook: all 52 checks are skipped with switches off, all fail on the unfinished files with
+  switches on, and all pass on the answers.
+- The pose lab's panels reproduce the Advanced 4 numbers exactly (1.0 cm / 2.0°, 10.6 cm, 21.0 cm) and the
+  expected −v·latency error in panel 3; tested in Chromium with Playwright, no script errors.
+- `check_site.py` after connecting: 31 pages, 592 local links, no errors. Every new or changed page fits at 390 px (wide diagrams scroll
+  inside their figure, as elsewhere on the site).
+- Still to do once on a student laptop with WPILib 2026: run the Lesson 2–8 boxes' fast-lane snippets
+  (they ran here as plain Java), the Part 2 sim exercises (`robot-1-loop` modes, keyboard joystick in
+  the Sim GUI), and the workbook's Run CodeLens and Test Robot Code in a fresh Command Robot project.
+
+### Sources
+
+Generators and the workbook source live outside the published folder, in
+`FRC2027/site/advanced-track-src.zip` (Python page generators, `excerpts.py`, `snipcheck.py`,
+`workbook/`; described in `advanced-track-src-README.md`). Edit the HTML directly for small fixes;
+regenerate for structural changes.
 
 ## September 23, 2026 beginner revision
 

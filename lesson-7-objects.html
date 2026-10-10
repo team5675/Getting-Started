@@ -9,6 +9,19 @@
 <section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Explain a class, an object, and a field using values you have observed.</p>
 <p><b>Before you start:</b> You have practiced methods and can distinguish a definition from a call. Allow a fresh session for this lesson.</p><p class="meta">Allow 45–60 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
 <p class="lesson-trail"><a href="lesson-6-loops.html">← Repeat a small task</a> · <a href="lessons.html">All lessons</a></p>
+<details><summary>Programmed before? Try a two-minute check</summary><p>Predict exactly what this prints. Write it down first, then open the answer.</p><p class="code-label">Check yourself — predict, don’t run</p><pre><code>class Counter {
+    private int n;
+    void add() { n++; }
+    int get() { return n; }
+}
+// ...and inside a method that runs:
+Counter first = new Counter();
+Counter second = first;
+Counter third = new Counter();
+first.add();
+second.add();
+third.add();
+System.out.println(first.get() + &quot; &quot; + second.get() + &quot; &quot; + third.get());</code></pre><details><summary>Answer and what to do next</summary><pre><code>2 2 1</code></pre><p><code>second = first</code> does not make a copy. It is a second name for the same object. Only <code>new</code> creates an object, so there are just two counters here, and the first one was added to twice.</p><p><b>Right, and you can explain why?</b> Skim this lesson, then do the ★ challenge in <code>Practice07Objects.java</code>. <b>Not quite?</b> Follow the lesson step by step; the surprise is exactly what it teaches.</p></details></details>
 <h2>1. Why another file?</h2><p>So far, most examples ran inside one startup method. A robot program needs groups of related
 information and actions. A <b>class</b> describes one kind of thing. An <b>object</b> is one particular instance made from that description.</p>
 <p>Our class describes a counter. Each counter object will hold its own number, increase it, and tell us its current value.
@@ -72,6 +85,20 @@ System.out.println(&quot;Third: &quot; + third.getCount());</code></pre><p>The a
 <h2>If Java cannot find the class</h2><p>Check the filename, class name, and capitalization: all say <code>PracticeCounter</code>.
 Check that the file is beside Robot.java, its first line says <code>package frc.robot;</code>, and both files are saved.
 Do not paste the complete class definition into robotInit.</p>
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>Your <code>PracticeCounter</code> remembered a number between method calls. The robot has a small class built the same way. It remembers whether the robot’s heading can be trusted, so the camera knows when to correct the position:</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/vision/PoseSeedTracker.java</code> — do not paste</p><pre><code>public final class PoseSeedTracker {
+  /** True once a MegaTag1 fix has lined the heading up with the field. */
+  private boolean headingTrusted = false;
+
+  /** True when we&#x27;d like a fresh MegaTag1 fix (only used while disabled). */
+  private boolean refreshWanted = true;
+
+  // ... more fields and methods ...
+
+  public boolean headingTrusted() {
+    return headingTrusted;
+  }
+}</code></pre><p class="code-label">Where one object is created, in VisionSubsystem.java — do not paste</p><pre><code>private final PoseSeedTracker seed = new PoseSeedTracker();</code></pre><p>Find the same parts as in your counter: <code>private</code> fields that keep their values between calls, and a getter, <code>headingTrusted()</code>, that reports one of them. Other methods change the fields. For example, disabling the robot asks for a fresh camera fix without forgetting the heading.</p><p>This class uses no robot hardware, only plain Java. So the team’s tests can walk through a whole match in a few lines, with no robot attached.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box try"><span class="box-tag">Practice at home</span><p>Open <code>Practice07Objects.java</code> in your practice workbook. Finish <code>PracticeBattery.java</code>, which keeps each battery’s lowest voltage, then run two battery objects side by side. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
 <div class="checkpoint"><b>Pause and check</b><p>Point to the class definition, a constructor call, a field, and a method call. Explain why increasing first does not increase second.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>Objects often take more than one session to feel familiar. Repeat with different starting values if useful. The command lesson uses these ideas with two files and framework callbacks; start it with a mentor when you can explain this smaller example.</p>
 <p>Save your files. In your learning notes, write one thing you changed, what happened,
 and one question. Note the lesson number so you can resume here next time.</p></section>

@@ -9,6 +9,17 @@
 <section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Tell the difference between defining a method and calling it, then trace one input and one returned result.</p>
 <p><b>Before you start:</b> Lessons 2–4 feel familiar. You can find the braces belonging to robotInit().</p><p class="meta">Allow 35–50 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
 <p class="lesson-trail"><a href="lesson-4-decisions.html">← Make a decision</a> · <a href="lessons.html">All lessons</a></p>
+<details><summary>Programmed before? Try a two-minute check</summary><p>Predict exactly what this prints. Write it down first, then open the answer.</p><p class="code-label">Check yourself — predict, don’t run</p><pre><code>static int twice(int x) {
+    return x * 2;
+}
+static void show(int x) {
+    System.out.println(&quot;x is &quot; + x);
+}
+// ...and inside a method that runs:
+int y = twice(twice(3));
+show(y);
+show(twice(y) - 1);</code></pre><details><summary>Answer and what to do next</summary><pre><code>x is 12
+x is 23</code></pre><p>The inner call runs first: <code>twice(3)</code> is 6, and <code>twice(6)</code> is 12. Then <code>twice(12) - 1</code> is 23. <code>show</code> returns nothing (<code>void</code>); it only prints.</p><p><b>Right, and you can explain why?</b> Skim this lesson, then do the ★ challenge in <code>Practice05Methods.java</code>. <b>Not quite?</b> Follow the lesson step by step; the surprise is exactly what it teaches.</p></details></details>
 <h2>1. You have already called a method</h2><p><code>System.out.println("Hello");</code> calls Java’s print method.
 You supply text between parentheses; the method prints it. Now you’ll write a short method of your own.</p>
 <p>A <b>method definition</b> gives the method a name and a body of instructions. A <b>method call</b>
@@ -68,7 +79,18 @@ public void robotInit() {
     System.out.println(firstResult);
     System.out.println(secondResult);
 }</code></pre><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>4.0
-1.0</code></pre></details><div class="checkpoint"><b>Pause and check</b><p>Point to one definition and one call. Explain which word names a parameter, which value is an argument, and where the returned number goes.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>It is fine to use the examples while explaining. Save both helper methods. In later lessons, they can remain in the file even when robotInit does not call them.</p>
+1.0</code></pre></details><div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>When the camera reports where the robot is, the code must decide how much to believe it. One small method answers that question. It takes two inputs and returns one number:</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/vision/VisionSubsystem.java</code> — do not paste</p><pre><code>static double xyStdDevMeters(int tagCount, double avgTagDistM) {
+  double stdDev = Constants.Vision.STD_DEV_BASE_M + avgTagDistM * Constants.Vision.STD_DEV_PER_METER;
+  if (tagCount &gt;= 2) {
+    stdDev *= Constants.Vision.STD_DEV_TWO_TAG_SCALE;
+  }
+  if (tagCount &gt;= 3) {
+    stdDev *= Constants.Vision.STD_DEV_THREE_TAG_SCALE;
+  }
+  return Math.max(Constants.Vision.STD_DEV_MIN_M, Math.min(Constants.Vision.STD_DEV_MAX_M, stdDev));
+}</code></pre><p class="code-label">And the line that calls it — do not paste</p><pre><code>double xyStdDev = xyStdDevMeters(obs.tagCount(), obs.avgTagDistM());</code></pre><p>This is your <code>clamp</code> idea in a real job. The inputs are how many tags the camera saw and how far away they were. The answer is an “uncertainty” in meters: bigger means trust it less. Far tags make the number bigger, and more tags make it smaller. <code>Math.max</code> and <code>Math.min</code> on the last line keep the answer between a smallest and a largest allowed value. That is exactly what a clamp does. (<code>stdDev *= x</code> is short for <code>stdDev = stdDev * x</code>.)</p><p>Because the method uses only its inputs (that’s what <code>static</code> allows here), the team can test it with no robot, the same way your practice self-checks test your methods.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box try"><span class="box-tag">Practice at home</span><p>Open <code>Practice05Methods.java</code> in your practice workbook. Write a unit conversion, a <code>clamp</code>, and a method that calls your clamp. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
+<div class="checkpoint"><b>Pause and check</b><p>Point to one definition and one call. Explain which word names a parameter, which value is an argument, and where the returned number goes.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>It is fine to use the examples while explaining. Save both helper methods. In later lessons, they can remain in the file even when robotInit does not call them.</p>
 <p>Save your files. In your learning notes, write one thing you changed, what happened,
 and one question. Note the lesson number so you can resume here next time.</p></section>
 <nav class="lesson-next" aria-label="Lesson navigation">

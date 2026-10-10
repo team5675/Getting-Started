@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Keep track of where you went</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20260923-nav"></head><body>
+<!-- Advanced track ("Drive and know where you are"), October 2026. Reading order and maintenance notes: README.md. -->
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Advanced 3 of 8 · Drive and know where you are</span><h1>Keep track of where you went</h1><p class="lede">Add up thousands of tiny moves to follow the robot, and see why small mistakes keep growing.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Explain how the robot follows its own motion by adding up tiny moves, and measure how a small wheel slip or heading error grows into a position error.</p>
+<p><b>Before you start:</b> Finish “Where is the robot?” and “How a swerve drive moves.” This page uses <code>for</code> loops from Lesson 6 and the practice project from those pages.</p><p class="meta">Allow 45–60 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="advanced-2-swerve.html">← How a swerve drive moves</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. Counting steps with your eyes closed</h2><p>Close your eyes, take ten steps forward, turn right, and take five more. You can guess where you are by adding up your steps and turns. That is <b>dead reckoning</b>. Robots do the same thing, called <b>odometry</b>.</p>
+<figure><svg viewBox="0 0 740 190" role="img" aria-labelledby="o2-title"><title id="o2-title">A curved path drawn as many short arrows joined end to end. Each arrow is one tiny move measured by the wheels and the gyro; adding them up gives the current pose.</title><defs><marker id="o2-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f5cab"/></marker></defs><line x1="50.0" y1="119.8" x2="86.0" y2="119.8" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="86.0" y1="119.8" x2="121.9" y2="116.7" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="121.9" y1="116.7" x2="157.3" y2="110.4" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="157.3" y1="110.4" x2="192.1" y2="101.1" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="192.1" y1="101.1" x2="226.3" y2="90.0" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="226.3" y1="90.0" x2="260.6" y2="78.9" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="260.6" y1="78.9" x2="295.3" y2="69.6" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="295.3" y1="69.6" x2="330.8" y2="63.3" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="330.8" y1="63.3" x2="366.7" y2="60.2" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="366.7" y1="60.2" x2="402.7" y2="60.2" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="402.7" y1="60.2" x2="438.5" y2="63.3" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="438.5" y1="63.3" x2="474.0" y2="69.6" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="474.0" y1="69.6" x2="508.9" y2="78.3" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="508.9" y1="78.3" x2="543.8" y2="87.0" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="543.8" y1="87.0" x2="579.3" y2="93.2" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="579.3" y1="93.2" x2="615.1" y2="96.4" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="615.1" y1="96.4" x2="651.1" y2="96.4" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><line x1="651.1" y1="96.4" x2="687.1" y2="93.9" stroke="#0f5cab" stroke-width="2" marker-end="url(#o2-blue)"/><circle cx="50.0" cy="119.8" r="5" fill="#182430"/><text x="50.0" y="143.8" text-anchor="middle" class="svg-t" font-size="11" fill="#182430" font-weight="700">start pose</text><circle cx="687.1" cy="93.9" r="5" fill="#0f5cab"/><text x="687.1" y="117.9" text-anchor="middle" class="svg-t" font-size="11" fill="#0b3f76" font-weight="700">pose now</text><text x="370.0" y="176.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">pose now = start pose + every tiny move (250 tiny moves a second on the practice bot)</text></svg><figcaption>Odometry never “sees” the field. It starts from a known pose and keeps adding small moves.</figcaption></figure>
+<p>Each tiny move comes from sensors the robot already has:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Sensor</th><th scope="col">What it tells odometry</th><th scope="col">What fools it</th></tr></thead><tbody>
+<tr><td>Drive motor encoders</td><td>How far each wheel rolled</td><td>Wheels slipping or skidding on carpet; a robot that is lifted and carried</td></tr>
+<tr><td>CANcoders</td><td>Which way each wheel pointed while it rolled</td><td>Very little, if they are calibrated</td></tr>
+<tr><td>Pigeon 2 gyro</td><td>Which way the whole robot faces, measured directly</td><td>A small slow drift over time; a wrong starting heading</td></tr></tbody></table></div>
+<p>Notice what is missing: nothing here measures <em>where the robot is on the field</em>. Odometry only knows where the robot is <em>compared with where it started</em>.</p>
+
+<h2>2. Add the imports</h2><p class="placement"><b>Where this goes:</b> in <code>Robot.java</code> in your practice project, add these near the top with the other imports. Skip any that are already there.</p>
+<p class="code-label">Code to use</p><pre><code>import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;</code></pre>
+
+<h2>3. Simulate a robot whose wheels slip</h2><p>We will keep two poses. <code>truth</code> is where a pretend robot really is. <code>odometry</code> is where its program thinks it is. The real robot drives 50 steps of 10 cm. Its wheels slip a little, so the program counts 10.3 cm per step.</p>
+<p class="placement"><b>Where this goes:</b> replace only the <code>robotInit()</code> method. Add the helper method <code>printComparison</code> below it, inside the Robot class. If <code>printModules</code> from the previous page is still there, you may keep it or delete it.</p>
+<p class="code-label">Code to use: robotInit</p><pre><code>@Override
+public void robotInit() {
+    Pose2d truth = new Pose2d(1.0, 1.0, Rotation2d.kZero);    // where the robot really is
+    Pose2d odometry = new Pose2d(1.0, 1.0, Rotation2d.kZero); // where the robot thinks it is
+
+    Transform2d trueStep = new Transform2d(0.10, 0.0, Rotation2d.kZero);     // what really happened
+    Transform2d countedStep = new Transform2d(0.103, 0.0, Rotation2d.kZero); // wheels slipped 3%
+
+    for (int i = 0; i &lt; 50; i++) {
+        truth = truth.plus(trueStep);
+        odometry = odometry.plus(countedStep);
+    }
+
+    printComparison(truth, odometry);
+}</code></pre>
+<p class="code-label">Code to use: new helper method, below robotInit</p><pre><code>private void printComparison(Pose2d truth, Pose2d odometry) {
+    double error = odometry.getTranslation().getDistance(truth.getTranslation());
+    System.out.println(&quot;Real robot:    x=&quot; + String.format(&quot;%.2f&quot;, truth.getX())
+        + &quot; y=&quot; + String.format(&quot;%.2f&quot;, truth.getY()));
+    System.out.println(&quot;Odometry says: x=&quot; + String.format(&quot;%.2f&quot;, odometry.getX())
+        + &quot; y=&quot; + String.format(&quot;%.2f&quot;, odometry.getY()));
+    System.out.println(&quot;Error: &quot; + String.format(&quot;%.2f&quot;, error) + &quot; m&quot;);
+}</code></pre>
+<div class="table-scroll"><table><thead><tr><th scope="col">Piece</th><th scope="col">What it does here</th></tr></thead><tbody>
+<tr><td><code>Rotation2d.kZero</code></td><td>A ready-made angle of 0°: facing +X, toward the red wall.</td></tr>
+<tr><td><code>new Transform2d(0.10, 0.0, Rotation2d.kZero)</code></td><td>A move measured from the robot’s own point of view: 0.10 m forward, nothing sideways, no turn.</td></tr>
+<tr><td><code>truth.plus(trueStep)</code></td><td>Apply that move starting from the pose. “Forward” means the way the pose faces, so the heading matters.</td></tr>
+<tr><td><code>truth = truth.plus(...)</code></td><td>A Pose2d cannot be changed after it is made. <code>plus</code> returns a <em>new</em> pose, so we store it back in the same variable. (Your PracticeCounter worked differently: its <code>addOne()</code> changed the object itself.)</td></tr>
+<tr><td><code>getDistance(...)</code></td><td>The straight-line distance between where odometry thinks the robot is and where it really is.</td></tr></tbody></table></div>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Real robot:    x=6.00 y=1.00
+Odometry says: x=6.15 y=1.00
+Error: 0.15 m</code></pre>
+<p>Each step was only 3 mm wrong, but 50 steps make 15 cm. The error did not cancel out; it piled up.</p>
+
+<h2>4. A small heading mistake</h2><p>Now make the wheels perfect, but start the program with a heading that is 2° wrong. That can happen if the robot was set down slightly crooked and someone told it “you face exactly 0°.”</p>
+<p class="placement"><b>Where this goes:</b> replace robotInit again. Keep <code>printComparison</code>.</p>
+<p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    Pose2d truth = new Pose2d(1.0, 1.0, Rotation2d.kZero);
+    Pose2d odometry = new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(2)); // heading 2 degrees wrong
+
+    Transform2d step = new Transform2d(0.10, 0.0, Rotation2d.kZero); // wheels measure perfectly now
+
+    for (int i = 0; i &lt; 50; i++) {
+        truth = truth.plus(step);
+        odometry = odometry.plus(step);
+    }
+
+    printComparison(truth, odometry);
+}</code></pre>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Real robot:    x=6.00 y=1.00
+Odometry says: x=6.00 y=1.17
+Error: 0.17 m</code></pre>
+<figure><svg viewBox="0 0 760 250" role="img" aria-labelledby="o1-title"><title id="o1-title">The real robot drives 5 meters straight from x 1 to x 6. Odometry with 3 percent wheel slip ends 0.15 meters too far. Odometry with a 2 degree heading error ends 0.17 meters to the side.</title><defs><marker id="o1-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#182430"/></marker><marker id="o1-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c22b3d"/></marker><marker id="o1-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a86407"/></marker></defs><line x1="70.0" y1="40.0" x2="70.0" y2="220.0" stroke="#eef2f5" stroke-width="1.0"/><text x="70.0" y="30.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">x = 1</text><line x1="180.0" y1="40.0" x2="180.0" y2="220.0" stroke="#eef2f5" stroke-width="1.0"/><text x="180.0" y="30.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">x = 2</text><line x1="290.0" y1="40.0" x2="290.0" y2="220.0" stroke="#eef2f5" stroke-width="1.0"/><text x="290.0" y="30.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">x = 3</text><line x1="400.0" y1="40.0" x2="400.0" y2="220.0" stroke="#eef2f5" stroke-width="1.0"/><text x="400.0" y="30.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">x = 4</text><line x1="510.0" y1="40.0" x2="510.0" y2="220.0" stroke="#eef2f5" stroke-width="1.0"/><text x="510.0" y="30.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">x = 5</text><line x1="620.0" y1="40.0" x2="620.0" y2="220.0" stroke="#eef2f5" stroke-width="1.0"/><text x="620.0" y="30.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">x = 6</text><circle cx="70.0" cy="140.0" r="5" fill="#182430"/><text x="70.0" y="162.0" text-anchor="middle" class="svg-t" font-size="11" fill="#182430" font-weight="700">start (1, 1)</text><line x1="70.0" y1="140.0" x2="620.0" y2="140.0" stroke="#182430" stroke-width="3" marker-end="url(#o1-ink)"/><text x="356.0" y="162.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">real robot: 5.00 m straight ahead</text><line x1="70.0" y1="192.0" x2="636.5" y2="192.0" stroke="#c22b3d" stroke-width="2.5" stroke-dasharray="7 4" marker-end="url(#o1-red)"/><line x1="620.0" y1="180.0" x2="620.0" y2="204.0" stroke="#4a5a68" stroke-width="1" stroke-dasharray="2 2"/><text x="356.0" y="216.0" text-anchor="middle" class="svg-t" font-size="12" fill="#c22b3d" font-weight="700">odometry with 3% wheel slip: thinks it went 5.15 m</text><line x1="70.0" y1="140.0" x2="619.7" y2="120.8" stroke="#a86407" stroke-width="2.5" stroke-dasharray="7 4" marker-end="url(#o1-amber)"/><text x="356.0" y="100.0" text-anchor="middle" class="svg-t" font-size="12" fill="#a86407" font-weight="700">odometry with a 2° heading error: ends 0.17 m to the side</text><line x1="630.0" y1="140.0" x2="630.0" y2="120.8" stroke="#a86407" stroke-width="1.5"/><text x="636.0" y="134.4" text-anchor="start" class="svg-t" font-size="11" fill="#a86407" font-weight="700">0.17 m</text></svg><figcaption>Two different mistakes. Slipping wheels make the robot think it went too far. A heading error turns “forward” into “forward and a bit sideways.” Real robots have both, all the time.</figcaption></figure>
+<p>A 2° error sounds tiny, but over 5 m it moves the robot’s idea of its position 17 cm sideways: 5 m × sin(2°) ≈ 0.17 m. Drive farther and the error grows with it.</p>
+
+<h2>5. Why odometry alone is not enough</h2><p>During a match the robot drives, turns, gets bumped and skids. Every one of those moments adds a little error, and nothing in odometry ever removes it. After a couple of minutes, odometry alone can be tens of centimeters off, sometimes more.</p>
+<p>The heading is the one part that stays good. The gyro measures rotation directly, so slipping wheels don’t fool it. Once the heading is lined up with the field at the start, it stays close for a whole match. That is why, on the practice bot, cameras are allowed to correct the robot’s x and y while it drives, but not its heading.</p>
+<div class="box oops"><span class="box-tag">The carried robot</span>If you lift the robot and carry it, the wheels don’t turn, so odometry thinks the robot never moved. The gyro still notices turns. This is why the Pre-Match tab never shows the start position as green unless a camera can see an AprilTag: the map may be showing where the robot used to be.</div>
+
+<h2>6. Try one variation</h2><p>Go back to the slip experiment from section 3. Change the loop to 100 steps (10 m), and try a 1% slip (<code>0.101</code>) and a 3% slip (<code>0.103</code>). Predict both errors before you run.</p>
+<details><summary>Hint and expected results</summary><p>Change <code>i &lt; 50</code> to <code>i &lt; 100</code>. With 1% slip:</p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Real robot:    x=11.00 y=1.00
+Odometry says: x=11.10 y=1.00
+Error: 0.10 m</code></pre><p>With 3% slip:</p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Real robot:    x=11.00 y=1.00
+Odometry says: x=11.30 y=1.00
+Error: 0.30 m</code></pre><p>Twice the distance makes twice the error, and three times the slip makes three times the error. Odometry error grows with how far the robot drives.</p></details>
+
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>CTRE’s swerve library runs odometry in its own fast loop, about 250 times a second on the practice bot (<code>Drive/OdometryHz</code>). The practice-bot code also keeps a second, odometry-only pose that cameras never correct, logged as <code>Drive/OdometryOnlyPose</code>. Drive around and compare it with <code>Drive/Pose</code> in AdvantageScope: the odometry-only “ghost” slowly drifts away from the real robot while the corrected pose stays on it.</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java</code>, inside <code>periodic()</code> — do not paste</p><pre><code>SwerveDriveState state = getState();
+Rotation2d gyro = rawHeading(state);
+Pose2d odometryOnlyPose = odometryOnly.update(gyro, state.ModulePositions);
+
+Logger.recordOutput(&quot;Drive/Pose&quot;, state.Pose);
+Logger.recordOutput(&quot;Drive/OdometryOnlyPose&quot;, odometryOnlyPose);</code></pre><p><code>odometryOnly.update(gyro, modulePositions)</code> is the add-up-tiny-moves idea from this page in one call, fed with the gyro heading and the four wheels’ distances and angles. Its result is logged next to the camera-corrected <code>Drive/Pose</code>, so the two can be compared on the same graph.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box seam"><span class="box-tag">2027 differences</span>In the WPILib 2027 alpha, <code>Rotation2d.kZero</code> is renamed <code>Rotation2d.ZERO</code> and the classes live in <code>org.wpilib.math.geometry</code>. Odometry itself works the same way. Keep your practice on WPILib 2026.</div>
+
+<div class="checkpoint"><b>Pause and check</b><p>Explain the difference between the two mistakes in sections 3 and 4. Then explain why a carried robot can fool odometry but not the gyro.</p></div>
+<section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>You now know why the robot needs something that can see the field. Next in this track: cameras and AprilTags, which give the robot a fix on where it really is.</p>
+<p>Save your files. In your learning notes, write one thing you changed, what happened, and one question. Note the page name so you can resume here next time.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation">
+<a href="advanced-2-swerve.html" rel="prev"><span class="lesson-direction">← Back</span> <span>How a swerve drive moves</span></a>
+<a href="advanced-4-apriltags.html" rel="next"><span class="lesson-direction">Next →</span> <span>Cameras and AprilTags</span></a>
+</nav>
+</main><footer class="page-footer">Advanced track · October 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

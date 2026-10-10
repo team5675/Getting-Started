@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Check the camera with a tape measure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20260923-nav"></head><body>
+<!-- Advanced track ("Drive and know where you are"), October 2026. Reading order and maintenance notes: README.md. -->
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Advanced 8 of 8 · Drive and know where you are</span><h1>Check the camera with a tape measure</h1><p class="lede">A camera can report the same wrong answer very confidently. Learn how the team checks it against something it can’t fool.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Check a camera’s answer against an independent measurement. Separate a steady mistake (bias) from noise (scatter), and decide pass, fail or “we can’t tell yet”.</p>
+<p><b>Before you start:</b> Finish Advanced 4–6. This page uses arrays and loops from Part 2 and the three calibrations from Advanced 4.</p><p class="meta">Allow 60–75 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="advanced-6-timestamps.html">← When was that picture taken?</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. A confident answer can still be wrong</h2><p>A camera with a wrong mount or lens calibration doesn’t look broken. It reports a steady, believable pose, and the dashboard shows the robot in a slightly wrong place. Recalibrating doesn’t settle it either: a calibration can match its own pictures well and still be wrong. The only way to know is to compare the camera with something it didn’t produce.</p>
+<p>That “something” is the <b>reference</b>: where the robot really is, measured by people with a tape measure, a meter stick and a jig. The reference must not come from the camera, the dashboard map, or a tag whose position you are testing.</p>
+
+<h2>2. Put the robot somewhere you know exactly</h2><p>One tape measurement gives one distance, but a pose needs three numbers: x, y and heading. A simple <b>jig</b> gives all three: two contact pads against a rigid chassis face, and one stop on a perpendicular face.</p>
+<figure><svg viewBox="-40 0 800 300" role="img" aria-labelledby="a81-title"><title id="a81-title">Top view of a measuring jig. An L-shaped rail is placed from a field reference. The robot's chassis rests against two contact pads 750 millimeters apart on the long side, which set its heading and one coordinate, and one stop on the short side, which sets the other coordinate.</title><defs><marker id="a81-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#182430"/></marker></defs><rect x="60" y="230" width="640" height="14" fill="#4a5a68"/><text x="380.0" y="268.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">long rail: placed from a field reference you trust</text><rect x="60" y="40" width="14" height="190" fill="#4a5a68"/><text x="48.0" y="130.0" text-anchor="end" class="svg-t" font-size="11" fill="#a86407" font-weight="700">one stop:</text><text x="48.0" y="146.0" text-anchor="end" class="svg-t" font-size="11" fill="#a86407" font-weight="700">the other</text><text x="48.0" y="162.0" text-anchor="end" class="svg-t" font-size="11" fill="#a86407" font-weight="700">coordinate</text><rect x="90" y="60" width="420" height="160" rx="8" fill="#e3edf8" stroke="#0f5cab" stroke-width="2"/><text x="300.0" y="110.0" text-anchor="middle" class="svg-t" font-size="12" fill="#0b3f76" font-weight="700">robot chassis (rigid frame,</text><text x="300.0" y="128.0" text-anchor="middle" class="svg-t" font-size="12" fill="#0b3f76" font-weight="700">not the soft bumper)</text><rect x="136" y="220" width="28" height="10" fill="#a86407"/><rect x="436" y="220" width="28" height="10" fill="#a86407"/><rect x="74" y="126" width="16" height="28" fill="#a86407"/><line x1="150.0" y1="205.0" x2="450.0" y2="205.0" stroke="#a86407" stroke-width="1.5" stroke-dasharray="4 3"/><text x="300.0" y="200.0" text-anchor="middle" class="svg-t" font-size="11" fill="#a86407" font-weight="700">two contact pads, 750 mm apart: heading + one coordinate</text></svg><figcaption>Two pads set the heading and one coordinate; the stop sets the other. Touch rigid chassis parts, not soft bumpers.</figcaption></figure>
+<p>The jig itself must be placed from field features you trust, and you must know the offset from the contact faces to the robot’s center. A robot pressed square against a rail on the carpet is placed <em>repeatably</em>, but that alone doesn’t say where on the <em>field</em> it is.</p>
+<p>How precise is the heading? If one pad can be off by 5 mm more than the other, the heading is uncertain by atan(5 ÷ spacing). The farther apart the pads, the better.</p>
+<p class="placement"><b>Where this goes:</b> in <code>Robot.java</code> in your practice project, replace only <code>robotInit()</code>.</p>
+<p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    double gapMm = 5.0;      // how far one contact point can be off, compared with the other
+    double sightlineM = 4.0; // how far away the tags are
+    double[] spacingsMm = {375.0, 750.0, 1000.0};
+    for (double spacing : spacingsMm) {
+        double headingDeg = Math.toDegrees(Math.atan(gapMm / spacing));
+        double sidewaysMm = sightlineM * 1000.0 * Math.tan(Math.toRadians(headingDeg));
+        System.out.println(&quot;Contacts &quot; + spacing + &quot; mm apart: heading +/-&quot;
+            + String.format(&quot;%.2f&quot;, headingDeg) + &quot; degrees, at 4 m that is +/-&quot;
+            + String.format(&quot;%.0f&quot;, sidewaysMm) + &quot; mm&quot;);
+    }
+}</code></pre>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Contacts 375.0 mm apart: heading +/-0.76 degrees, at 4 m that is +/-53 mm
+Contacts 750.0 mm apart: heading +/-0.38 degrees, at 4 m that is +/-27 mm
+Contacts 1000.0 mm apart: heading +/-0.29 degrees, at 4 m that is +/-20 mm</code></pre>
+<p>A third of a degree sounds tiny, but 4 m away it is about 27 mm sideways. That is the same size as the camera mistakes you are trying to find. Spread the contacts as far apart as the chassis allows.</p>
+
+<h2>3. Bias and scatter</h2><p>Hold the robot still at one measured spot and record ten camera readings. Two different things can be wrong with them:</p>
+<figure><svg viewBox="0 0 760 270" role="img" aria-labelledby="a82-title"><title id="a82-title">Two targets. Left: ten camera readings packed tightly together but 3 centimeters away from the measured reference: small scatter, large bias. Right: readings spread widely around the reference: no bias, large scatter.</title><circle cx="190" cy="130" r="90" fill="none" stroke="#d5dde4" stroke-width="1.5"/><circle cx="190" cy="130" r="60" fill="none" stroke="#d5dde4" stroke-width="1.5"/><circle cx="190" cy="130" r="30" fill="none" stroke="#d5dde4" stroke-width="1.5"/><line x1="180.0" y1="130.0" x2="200.0" y2="130.0" stroke="#182430" stroke-width="2.5"/><line x1="190.0" y1="120.0" x2="190.0" y2="140.0" stroke="#182430" stroke-width="2.5"/><circle cx="242.9" cy="126.3" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="241.9" cy="117.0" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="238.7" cy="123.5" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="236.2" cy="117.7" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="235.0" cy="121.4" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="238.7" cy="119.8" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="239.2" cy="115.3" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="243.8" cy="107.9" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="241.9" cy="127.9" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="241.2" cy="115.0" r="4.5" fill="#c22b3d" opacity="0.85"/><text x="190.0" y="246.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">Tight but wrong</text><text x="190.0" y="264.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">small scatter, big bias</text><circle cx="570" cy="130" r="90" fill="none" stroke="#d5dde4" stroke-width="1.5"/><circle cx="570" cy="130" r="60" fill="none" stroke="#d5dde4" stroke-width="1.5"/><circle cx="570" cy="130" r="30" fill="none" stroke="#d5dde4" stroke-width="1.5"/><line x1="560.0" y1="130.0" x2="580.0" y2="130.0" stroke="#182430" stroke-width="2.5"/><line x1="570.0" y1="120.0" x2="570.0" y2="140.0" stroke="#182430" stroke-width="2.5"/><circle cx="553.5" cy="125.7" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="554.9" cy="144.9" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="487.0" cy="100.2" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="556.2" cy="167.9" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="640.7" cy="134.3" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="574.4" cy="127.9" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="558.6" cy="160.6" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="539.1" cy="103.7" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="599.9" cy="134.9" r="4.5" fill="#c22b3d" opacity="0.85"/><circle cx="550.3" cy="160.8" r="4.5" fill="#c22b3d" opacity="0.85"/><text x="570.0" y="246.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">Right on average, but noisy</text><text x="570.0" y="264.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">no bias, big scatter</text><text x="380.0" y="24.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">+ = measured reference      • = camera readings</text></svg><figcaption>Bias is a steady offset, usually from a calibration. Scatter is noise: motion, blur, lighting or distance.</figcaption></figure>
+<ul><li><b>Bias</b>: the average reading minus the reference. A steady mistake, the kind a wrong mount causes.</li>
+<li><b>Scatter</b>: how spread out the readings are, as a standard deviation. Noise.</li></ul>
+<p class="placement"><b>Where this goes:</b> replace only <code>robotInit()</code>.</p>
+<p class="code-label">Code to use</p><pre><code>@Override
+public void robotInit() {
+    double referenceX = 2.000; // measured with the jig and a tape measure
+    double[] cameraX = {2.031, 2.027, 2.035, 2.029, 2.033, 2.030, 2.028, 2.034, 2.032, 2.031};
+
+    double sum = 0.0;
+    for (double x : cameraX) {
+        sum = sum + x;
+    }
+    double average = sum / cameraX.length;
+
+    double sumOfSquares = 0.0;
+    for (double x : cameraX) {
+        sumOfSquares = sumOfSquares + (x - average) * (x - average);
+    }
+    double scatter = Math.sqrt(sumOfSquares / (cameraX.length - 1));
+
+    System.out.println(&quot;Bias:    &quot; + String.format(&quot;%+.4f&quot;, average - referenceX) + &quot; m&quot;);
+    System.out.println(&quot;Scatter: &quot; + String.format(&quot;%.4f&quot;, scatter) + &quot; m&quot;);
+}</code></pre>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Bias:    +0.0310 m
+Scatter: 0.0026 m</code></pre>
+<p>The readings agree with each other to within a few millimeters, yet they are all 3 cm off. A tight cluster is <em>not</em> proof of a correct camera. <code>%+.4f</code> prints the sign even when it is positive.</p>
+<div class="box oops"><span class="box-tag">Ten frames are not ten measurements</span><p>Ten pictures from one placement all share the same placement mistake. To learn how repeatable the jig is, remove the robot and place it again, at least three times, and compare. Many frames from one placement only measure the camera’s noise.</p></div>
+
+<h2>4. Pass, fail, or we can’t tell yet</h2><p>The reference has its own uncertainty: the tape measure, the jig, the offset to the robot’s center. So the true bias could be anywhere from <code>|bias| − uncertainty</code> to <code>|bias| + uncertainty</code>.</p>
+<figure><svg viewBox="0 0 760 230" role="img" aria-labelledby="a83-title"><title id="a83-title">Three number lines from 0 to 8 centimeters with a 5 centimeter limit. Pass: the whole range of possible bias, 2 to 4 centimeters, is below the limit. Inconclusive: the range, 0.6 to 5.6 centimeters, crosses the limit. Fail: the range, 8 to 10 centimeters, is entirely above it.</title><line x1="160.0" y1="50.0" x2="720.0" y2="50.0" stroke="#d5dde4" stroke-width="2"/><text x="148.0" y="54.0" text-anchor="end" class="svg-t" font-size="12" fill="#1e7e46" font-weight="700">PASS</text><rect x="277.6" y="41" width="112.0" height="18" rx="5" fill="#1e7e46" opacity="0.25" stroke="#1e7e46"/><circle cx="333.6" cy="50" r="5" fill="#1e7e46"/><text x="333.6" y="36.0" text-anchor="middle" class="svg-t" font-size="11" fill="#1e7e46" font-weight="700">bias 3.1 cm ± 1.0</text><line x1="160.0" y1="110.0" x2="720.0" y2="110.0" stroke="#d5dde4" stroke-width="2"/><text x="148.0" y="114.0" text-anchor="end" class="svg-t" font-size="12" fill="#a86407" font-weight="700">INCONCLUSIVE</text><rect x="193.6" y="101" width="280.0" height="18" rx="5" fill="#a86407" opacity="0.25" stroke="#a86407"/><circle cx="333.6" cy="110" r="5" fill="#a86407"/><text x="333.6" y="96.0" text-anchor="middle" class="svg-t" font-size="11" fill="#a86407" font-weight="700">bias 3.1 cm ± 2.5</text><line x1="160.0" y1="170.0" x2="720.0" y2="170.0" stroke="#d5dde4" stroke-width="2"/><text x="148.0" y="174.0" text-anchor="end" class="svg-t" font-size="12" fill="#c22b3d" font-weight="700">FAIL</text><rect x="608.0" y="161" width="112.0" height="18" rx="5" fill="#c22b3d" opacity="0.25" stroke="#c22b3d"/><circle cx="664.0" cy="170" r="5" fill="#c22b3d"/><text x="664.0" y="156.0" text-anchor="middle" class="svg-t" font-size="11" fill="#c22b3d" font-weight="700">bias 9.0 cm ± 1.0</text><line x1="440.0" y1="24.0" x2="440.0" y2="190.0" stroke="#182430" stroke-width="2" stroke-dasharray="6 4"/><text x="440.0" y="208.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">limit: 5 cm</text><text x="160.0" y="226.0" text-anchor="middle" class="svg-t" font-size="10" fill="#4a5a68">0 cm</text><text x="272.0" y="226.0" text-anchor="middle" class="svg-t" font-size="10" fill="#4a5a68">2 cm</text><text x="384.0" y="226.0" text-anchor="middle" class="svg-t" font-size="10" fill="#4a5a68">4 cm</text><text x="496.0" y="226.0" text-anchor="middle" class="svg-t" font-size="10" fill="#4a5a68">6 cm</text><text x="608.0" y="226.0" text-anchor="middle" class="svg-t" font-size="10" fill="#4a5a68">8 cm</text><text x="720.0" y="226.0" text-anchor="middle" class="svg-t" font-size="10" fill="#4a5a68">10 cm</text></svg><figcaption>If the range crosses the limit, the honest answer is “inconclusive”: improve the reference, not the camera.</figcaption></figure>
+<p class="placement"><b>Where this goes:</b> at the end of the same <code>robotInit()</code>, before its closing brace.</p>
+<p class="code-label">Code to use</p><pre><code>double limit = 0.050;                // the team decided: within 5 cm is good enough
+double referenceUncertainty = 0.010; // how well the jig placement is known
+double size = Math.abs(average - referenceX);
+if (size + referenceUncertainty &lt;= limit) {
+    System.out.println(&quot;PASS&quot;);
+} else if (size - referenceUncertainty &gt; limit) {
+    System.out.println(&quot;FAIL&quot;);
+} else {
+    System.out.println(&quot;INCONCLUSIVE: measure the reference better&quot;);
+}</code></pre>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Bias:    +0.0310 m
+Scatter: 0.0026 m
+PASS</code></pre>
+<details><summary>Try one variation: a sloppier reference</summary><p>Change <code>referenceUncertainty</code> to <code>0.025</code>. Predict the last line.</p><p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Bias:    +0.0310 m
+Scatter: 0.0026 m
+INCONCLUSIVE: measure the reference better</code></pre><p>The camera didn’t change, only how well we know the truth. The team’s rule of thumb is to make the reference uncertainty about a third of the error you want to catch, or smaller.</p></details>
+
+<h2>5. Investigate, then prove it on a station you didn’t tune</h2><p>A bias is a clue, not a diagnosis. Measure at least two stations, A and B, with different positions, headings and distances, and look for a pattern:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">What repeats</th><th scope="col">Look at first</th></tr></thead><tbody>
+<tr><td>One camera is off at many stations</td><td>That camera’s mount, lens calibration, focus, and whether it is the camera you think it is</td></tr>
+<tr><td>Several cameras are off near one tag</td><td>That tag’s place in the field map, and the reference survey</td></tr>
+<tr><td>The error changes a lot with heading</td><td>The mount angles, the offset to the robot’s center, the heading reference (Advanced 4, section 6)</td></tr>
+<tr><td>The error changes across the picture or with distance</td><td>The lens calibration</td></tr>
+<tr><td>Big scatter with no steady bias</td><td>Motion, blur, lighting, blocked tags, or timing (Advanced 6)</td></tr>
+<tr><td>The result changes when the robot is placed again</td><td>The jig and the reference, not the camera</td></tr></tbody></table></div>
+<p>Then try a <em>small</em> correction that makes physical sense, such as a mount angle a mechanic could believe. Try it offline on the recorded data. A real fix improves several stations, not just one. Finally, test it at a third station, C, which you did <b>not</b> use while choosing the correction. If C fails, the correction was wrong, however good A looked. Never change the mount, the lens and the field map all at once to make one view look right.</p>
+
+<h2>6. Checking the lens calibration the right way</h2><p>Advanced 4 said a low reprojection score only proves the model fits its own pictures. To check a lens calibration honestly:</p>
+<ol><li><b>Keep the existing lens model fixed.</b> Don’t recalibrate. Save the old calibration files first.</li>
+<li><b>Take 15–25 new pictures</b> of a flat, measured ChArUco board, covering the center, edges and corners at several tilts and distances. Keep them separate from any calibration set.</li>
+<li><b>Compare</b> where the fixed model predicts each corner with where it is detected. Look at the misses by region of the picture, not only one average. Errors that grow toward the edges point to the lens model.</li>
+<li><b>Check a real distance.</b> Measure the camera’s answer to a correctly sized tag at a few known distances, measured from a defined point on the camera.</li></ol>
+<p>If the old model fails, make a new calibration from a <em>different</em> set of pictures and compare both on the same held-out pictures. A lower fitting score alone is not a reason to switch.</p>
+
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>The practice bot has a built-in recorder for this check. Its timing is a few named constants, each with a comment:</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/Constants.java</code> — do not paste</p><pre><code>/** Seconds the robot must hold still before recording starts. */
+public static final double SETTLE_S = 0.5;
+
+/** Seconds of camera frames to record once settled. */
+public static final double CAPTURE_S = 2.0;
+
+/** Seconds from D-pad Up until the capture gives up and reports FAILED. */
+public static final double ATTEMPT_TIMEOUT_S = 6.0;</code></pre><p class="code-label">And how many pictures make a capture — do not paste</p><pre><code>/** Fewest qualified multi-tag frames for a COMPLETE capture. */
+public static final int MIN_FRAMES = 10;</code></pre><p>With the robot disabled at a measured station, the operator presses D-pad Up. The robot pauses normal vision, waits until it has been still for half a second, then records camera frames for two seconds. A capture needs at least 10 frames that each see two or more tags, and gives up after 6 seconds. D-pad Down leaves the check, and the robot then needs a fresh MegaTag1 fix (Advanced 5). The saved session opens in an offline <b>workbench</b> in a web browser, where small mount changes can be tried on the recorded data. “COMPLETE” means enough data was recorded. It does <em>not</em> mean the camera passed.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box try"><span class="box-tag">Practice at home</span><p>Open <code>PracticeA8CameraCheck.java</code> in your practice workbook. Write bias, scatter and the pass / fail / inconclusive decision as methods, using arrays and loops from Part 2. The challenge computes a jig’s heading uncertainty. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
+<div class="box note"><span class="box-tag">Try it without a robot</span><p>The practice-bot repository has an offline workbench, <code>src/main/deploy/verification/index.html</code>, that opens in a normal web browser. Choose <b>Load synthetic example</b>, then try the known correction: X +3 cm, Y −1 cm, Z −2 cm, roll −1°, pitch +2°, yaw +4°. Both made-up stations drop to almost zero error. Then try a wrong correction and watch one station improve while the other gets worse. The workbench’s pitch is positive nose-down, the WPILib convention. The numbers are made up for teaching; they are not the team’s cameras.</p></div>
+<div class="checkpoint"><b>Pause and check</b><p>Explain the difference between bias and scatter using the two targets. Then explain why a result can be “inconclusive” even when the camera is fine, and what you would change to decide.</p></div>
+<section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>You can now explain where the robot is, how it knows, and how the team checks that it is right. Use the pose lab to try these ideas with sliders, without a robot.</p>
+<p>In your learning notes, write one thing you changed, what happened, and one question.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation">
+<a href="advanced-6-timestamps.html" rel="prev"><span class="lesson-direction">← Back</span> <span>When was that picture taken?</span></a>
+<a href="pose-lab.html" rel="next"><span class="lesson-direction">Next →</span> <span>Pose lab</span></a>
+</nav>
+</main><footer class="page-footer">Advanced track · October 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>

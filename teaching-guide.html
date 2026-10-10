@@ -329,6 +329,7 @@ heading barely drifts in a match, while vision heading jitters; letting them fig
 <p><strong>Every disable clears the seed.</strong> <code>Robot.disabledInit()</code>
 calls <code>clearPoseSeeded()</code>, and re-seeding restarts automatically. Fresh
 enable, fresh lock — never trust drift you accumulated before sitting still.</p>
+<div class="box note"><span class="box-tag">Update, October 2026</span><p>The practice bot found a problem with this rule. Seeding is only allowed while disabled, and in a match the robot is disabled for just a few seconds between auto and teleop. If no tag is in view during that gap, clearing the seed switches vision corrections off for all of teleop. The practice bot (2027Practice) now keeps its heading trust through a disable and only <em>asks</em> for a fresh fix; trust is removed only by a deliberate reset, such as the reseed button or a heading reset. Check whether this baseline needs the same change. The advanced track page “Blend wheels and camera” tells the whole story.</p></div>
 <p><strong>The camera list is one array.</strong> <code>Constants.VisionConstants.kCompCameras</code>
 holds a name and mounting position per camera. The subsystem loops over whatever is
 there — adding a fourth camera at kickoff is one line, and its mounting offsets are

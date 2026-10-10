@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team 5675 — Reading a controller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20260923-nav"></head><body>
+<!-- Part 2 ("How a robot program runs"), October 2026. Reading order and maintenance notes: README.md. -->
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Robot basics 3 of 3 · How a robot program runs</span><h1>Reading a controller</h1><p class="lede">Turn stick numbers into robot directions and speeds: fix the signs, ignore a resting stick, and make small pushes gentle.</p></header>
+<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Turn raw stick numbers into robot directions and speeds: fix the signs, ignore a resting stick, and make small pushes gentle.</p>
+<p><b>Before you start:</b> Finish the two earlier Part 2 pages. A real Xbox controller is optional; the simulator can use your keyboard.</p><p class="meta">Allow 45–60 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
+<p class="lesson-trail"><a href="robot-2-arrays.html">← Many of the same thing</a> · <a href="lessons.html">All lessons</a></p>
+<h2>1. What a controller sends</h2><p>Every pass of the loop, the robot can ask the controller for its <b>axes</b> and <b>buttons</b>. Each stick has two axes, and each axis reads from −1.0 to 1.0. A button reads <code>true</code> or <code>false</code>.</p>
+<figure><svg viewBox="0 0 760 260" role="img" aria-labelledby="rc1-title"><title id="rc1-title">Left: an Xbox left stick seen from above. Pushing it away from you gives a negative Y reading; pushing right gives a positive X reading. Right: the robot seen from above, where plus X is forward and plus Y is to the robot's left. So forward equals minus stick Y, and left equals minus stick X.</title><defs><marker id="rc1-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f5cab"/></marker><marker id="rc1-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c22b3d"/></marker><marker id="rc1-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e7e46"/></marker></defs><circle cx="150" cy="140" r="80" fill="#f6f8fa" stroke="#4a5a68" stroke-width="2"/><circle cx="150" cy="140" r="10" fill="#4a5a68"/><line x1="150.0" y1="126.0" x2="150.0" y2="68.0" stroke="#c22b3d" stroke-width="2.5" marker-end="url(#rc1-red)"/><text x="150.0" y="34.0" text-anchor="middle" class="svg-t" font-size="12" fill="#c22b3d" font-weight="700">push away from you: Y = -1</text><line x1="164.0" y1="140.0" x2="222.0" y2="140.0" stroke="#0f5cab" stroke-width="2.5" marker-end="url(#rc1-blue)"/><text x="240.0" y="144.0" text-anchor="start" class="svg-t" font-size="12" fill="#0f5cab" font-weight="700">push right:</text><text x="240.0" y="160.0" text-anchor="start" class="svg-t" font-size="12" fill="#0f5cab" font-weight="700">X = +1</text><text x="150.0" y="248.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">Xbox left stick (from above)</text><rect x="570" y="95" width="100" height="100" rx="6" fill="#e3edf8" stroke="#0f5cab" stroke-width="2"/><line x1="620.0" y1="145.0" x2="620.0" y2="40.0" stroke="#1e7e46" stroke-width="3" marker-end="url(#rc1-green)"/><text x="628.0" y="53.0" text-anchor="start" class="svg-t" font-size="12" fill="#1e7e46" font-weight="700">+X forward</text><line x1="620.0" y1="145.0" x2="525.0" y2="145.0" stroke="#1e7e46" stroke-width="3" marker-end="url(#rc1-green)"/><text x="525.0" y="135.0" text-anchor="start" class="svg-t" font-size="12" fill="#1e7e46" font-weight="700">+Y left</text><text x="620.0" y="248.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">Robot (from above), front up</text><text x="400.0" y="196.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">forward = -stickY</text><text x="400.0" y="218.0" text-anchor="middle" class="svg-t" font-size="13" fill="#182430" font-weight="700">left = -stickX</text></svg><figcaption>The stick and the robot use different directions. Pushing the stick away from you reads as <em>negative</em> Y.</figcaption></figure>
+<div class="table-scroll"><table><thead><tr><th scope="col">The driver wants</th><th scope="col">Stick reading</th><th scope="col">Robot direction</th></tr></thead><tbody>
+<tr><td>Go forward (away from the driver)</td><td>left Y is negative</td><td><code>forward = -leftY</code></td></tr>
+<tr><td>Slide left</td><td>left X is negative</td><td><code>left = -leftX</code></td></tr>
+<tr><td>Turn counter-clockwise (to the left)</td><td>right X is negative</td><td><code>turn = -rightX</code>; counter-clockwise is positive in WPILib</td></tr></tbody></table></div>
+
+<h2>2. Clean up the numbers</h2><p>A stick never rests at exactly 0. It might sit at 0.03 even when nobody touches it, and the robot would creep. A <b>deadband</b> treats any reading close to 0 as exactly 0.</p>
+<p>A simple deadband has a problem: just outside it, the output jumps from 0 to 0.08. WPILib’s <code>MathUtil.applyDeadband</code> rescales instead, so the output grows smoothly from 0 and still reaches 1.0 at full stick. Then many teams <b>square</b> the result, keeping its sign. Small pushes become gentler for fine control, while full stick stays full speed.</p>
+<figure><svg viewBox="0 0 760 270" role="img" aria-labelledby="rc2-title"><title id="rc2-title">Two graphs of output against stick input from 0 to 1. Both are zero up to 0.08. The simple deadband then jumps straight to 0.08 and climbs to 1. The rescaled deadband starts at zero and climbs smoothly to 1. A third curve, the squared response, stays lower near the middle and also reaches 1.</title><line x1="70.0" y1="230.0" x2="389.2" y2="230.0" stroke="#4a5a68" stroke-width="1.5"/><line x1="70.0" y1="230.0" x2="70.0" y2="30.5" stroke="#4a5a68" stroke-width="1.5"/><text x="70.0" y="248.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">0.0</text><text x="62.0" y="234.0" text-anchor="end" class="svg-t" font-size="11" fill="#4a5a68">0.0</text><text x="222.0" y="248.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">0.5</text><text x="62.0" y="139.0" text-anchor="end" class="svg-t" font-size="11" fill="#4a5a68">0.5</text><text x="374.0" y="248.0" text-anchor="middle" class="svg-t" font-size="11" fill="#4a5a68">1.0</text><text x="62.0" y="44.0" text-anchor="end" class="svg-t" font-size="11" fill="#4a5a68">1.0</text><text x="222.0" y="266.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">stick input</text><text x="24.0" y="135.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700" transform="rotate(-90 24 135.0)">output</text><rect x="70" y="40.0" width="24.3" height="190.0" fill="#fdf3e0"/><text x="82.2" y="34.0" text-anchor="middle" class="svg-t" font-size="10" fill="#a86407" font-weight="700">deadband</text><polyline points="70,230 94.3,230 94.3,214.8 374.0,40.0" fill="none" stroke="#c22b3d" stroke-width="2.5" stroke-dasharray="6 4"/><polyline points="70,230 94.3,230 374.0,40.0" fill="none" stroke="#0f5cab" stroke-width="3"/><polyline points="70.0,230.0 73.0,230.0 76.1,230.0 79.1,230.0 82.2,230.0 85.2,230.0 88.2,230.0 91.3,230.0 94.3,230.0 97.4,230.0 100.4,229.9 103.4,229.8 106.5,229.6 109.5,229.4 112.6,229.2 115.6,228.9 118.6,228.6 121.7,228.2 124.7,227.8 127.8,227.3 130.8,226.8 133.8,226.2 136.9,225.6 139.9,224.9 143.0,224.3 146.0,223.5 149.0,222.7 152.1,221.9 155.1,221.0 158.2,220.1 161.2,219.1 164.2,218.1 167.3,217.1 170.3,216.0 173.4,214.8 176.4,213.6 179.4,212.4 182.5,211.1 185.5,209.8 188.6,208.4 191.6,207.0 194.6,205.6 197.7,204.1 200.7,202.5 203.8,200.9 206.8,199.3 209.8,197.6 212.9,195.9 215.9,194.1 219.0,192.3 222.0,190.4 225.0,188.5 228.1,186.5 231.1,184.5 234.2,182.5 237.2,180.4 240.2,178.3 243.3,176.1 246.3,173.9 249.4,171.6 252.4,169.3 255.4,166.9 258.5,164.5 261.5,162.1 264.6,159.6 267.6,157.1 270.6,154.5 273.7,151.9 276.7,149.2 279.8,146.5 282.8,143.7 285.8,140.9 288.9,138.1 291.9,135.2 295.0,132.2 298.0,129.2 301.0,126.2 304.1,123.1 307.1,120.0 310.2,116.8 313.2,113.6 316.2,110.4 319.3,107.1 322.3,103.7 325.4,100.3 328.4,96.9 331.4,93.4 334.5,89.9 337.5,86.3 340.6,82.7 343.6,79.1 346.6,75.4 349.7,71.6 352.7,67.8 355.8,64.0 358.8,60.1 361.8,56.2 364.9,52.2 367.9,48.2 371.0,44.1 374.0,40.0" fill="none" stroke="#1e7e46" stroke-width="3"/><line x1="409.2" y1="60.0" x2="439.2" y2="60.0" stroke="#c22b3d" stroke-width="3" stroke-dasharray="6 4"/><text x="447.2" y="64.0" text-anchor="start" class="svg-t" font-size="12" fill="#182430">simple: jumps from 0 to 0.08</text><line x1="409.2" y1="88.0" x2="439.2" y2="88.0" stroke="#0f5cab" stroke-width="3"/><text x="447.2" y="92.0" text-anchor="start" class="svg-t" font-size="12" fill="#182430">rescaled: MathUtil.applyDeadband</text><line x1="409.2" y1="116.0" x2="439.2" y2="116.0" stroke="#1e7e46" stroke-width="3"/><text x="447.2" y="120.0" text-anchor="start" class="svg-t" font-size="12" fill="#182430">rescaled, then squared</text></svg><figcaption>Inside the shaded deadband, the output is 0. The blue line climbs smoothly from there; the green curve is gentler near the middle.</figcaption></figure>
+<p class="placement"><b>Where this goes:</b> add the import near the top of <code>Robot.java</code>. Then replace only your <code>robotInit()</code> method.</p>
+<p class="code-label">Code to use: import</p><pre><code>import edu.wpi.first.math.MathUtil;</code></pre>
+<p class="code-label">Code to use: robotInit()</p><pre><code>@Override
+public void robotInit() {
+    double[] rawValues = {0.03, 0.08, 0.10, 0.50, -0.50, 1.00};
+    for (double raw : rawValues) {
+        double clean = MathUtil.applyDeadband(raw, 0.08);
+        double curved = Math.copySign(clean * clean, clean);
+        double speed = curved * 4.0; // pretend top speed: 4.0 m/s
+        System.out.println(&quot;raw &quot; + String.format(&quot;%5.2f&quot;, raw)
+            + &quot;  clean &quot; + String.format(&quot;%6.3f&quot;, clean)
+            + &quot;  curved &quot; + String.format(&quot;%6.3f&quot;, curved)
+            + &quot;  speed &quot; + String.format(&quot;%5.2f&quot;, speed) + &quot; m/s&quot;);
+    }
+}</code></pre>
+<p><code>String.format("%5.2f", raw)</code> prints a number with 2 decimals, padded to 5 characters wide so the columns line up. <code>Math.copySign(a, b)</code> gives <code>a</code> with the sign of <code>b</code>, so squaring −0.457 gives −0.208, not +0.208.</p>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>raw  0.03  clean  0.000  curved  0.000  speed  0.00 m/s
+raw  0.08  clean  0.000  curved  0.000  speed  0.00 m/s
+raw  0.10  clean  0.022  curved  0.000  speed  0.00 m/s
+raw  0.50  clean  0.457  curved  0.208  speed  0.83 m/s
+raw -0.50  clean -0.457  curved -0.208  speed -0.83 m/s
+raw  1.00  clean  1.000  curved  1.000  speed  4.00 m/s</code></pre>
+<p>Look at the 0.10 row: the deadband passes a tiny 0.022, and squaring makes it 0.0005, which rounds to 0.000. Half stick gives 0.83 m/s, not 2.0. That leaves plenty of fine control in the first half of the stick.</p>
+
+<h2>3. Read the real stick in the simulator</h2><p class="placement"><b>Where this goes:</b> add the import with the others, and the field next to <code>loopCount</code>. Replace the existing <code>teleopPeriodic()</code> method. This needs the <code>loopCount</code> code from “The robot’s heartbeat” in <code>robotPeriodic()</code>.</p>
+<p class="code-label">Code to use: import</p><pre><code>import edu.wpi.first.wpilibj.XboxController;</code></pre>
+<p class="code-label">Code to use: field</p><pre><code>private final XboxController controller = new XboxController(0);</code></pre>
+<p class="code-label">Code to use: teleopPeriodic()</p><pre><code>@Override
+public void teleopPeriodic() {
+    if (loopCount % 25 == 0) { // twice a second, using the counter from &quot;The robot&#x27;s heartbeat&quot;
+        double forward = -controller.getLeftY();
+        double left = -controller.getLeftX();
+        System.out.println(&quot;forward &quot; + String.format(&quot;%5.2f&quot;, forward)
+            + &quot;  left &quot; + String.format(&quot;%5.2f&quot;, left));
+    }
+}</code></pre>
+<ol><li>Start the simulation. In the Simulation GUI, find <b>System Joysticks</b>. Drag <b>Keyboard 0</b>, or your plugged-in controller, onto slot 0 of the <b>Joysticks</b> list.</li>
+<li>Click <b>Teleoperated</b> in Robot State, then click on the Simulation GUI window so it receives your key presses.</li>
+<li>Try the keyboard keys for axes 0 and 1. The Simulation GUI shows which keys move which axis. Watch the Terminal.</li></ol>
+<p>There is no single expected output here: it depends on what you press. Check two things. With nothing pressed, both numbers are 0.00. And “away from you” on a real controller gives a <em>positive</em> forward value, because the code flips the sign. Keyboard keys don’t have an “away”, so note which key gives positive forward.</p>
+
+<h2>4. Try one variation</h2><p>In section 2, change the deadband from 0.08 to 0.15. Predict which rows change before you run.</p>
+<details><summary>Hint and expected result</summary><p>Rows 0.03, 0.08 and 0.10 are now all inside the deadband, so all three print 0.000. The 0.50 row becomes (0.50 − 0.15) / 0.85 = 0.412, so curved 0.170 and speed 0.68 m/s. Full stick still gives 4.00. A bigger deadband ignores more stick drift but makes the robot less responsive to small pushes.</p></details>
+
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>The practice bot turns the right stick into a turning speed in one short method. It uses WPILib’s versions of the two steps you just tried:</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/util/JoystickUtil.java</code> — do not paste</p><pre><code>public static double rotation(
+    CommandXboxController controller, double deadband, double curveExponent) {
+  double value = MathUtil.applyDeadband(-controller.getRightX(), deadband);
+  return MathUtil.copyDirectionPow(value, curveExponent);
+}</code></pre><p class="code-label">And where the sticks are read every loop, in RobotContainer.java — do not paste</p><pre><code>drivetrain.setDefaultCommand(
+    drivetrain
+        .applyRequest(
+            () -&gt; {
+              boolean slow = slowModeButton.getAsBoolean();
+              double[] t = stickTranslation(slow);
+              return fieldCentric
+                  .withVelocityX(t[0])
+                  .withVelocityY(t[1])
+                  .withRotationalRate(stickRotation(slow));
+            })
+        .withName(&quot;Drive (field-centric)&quot;));</code></pre><p>In the first excerpt, <code>-controller.getRightX()</code> flips the sign so that pushing right turns clockwise, which is negative in WPILib. <code>MathUtil.copyDirectionPow(value, 2.0)</code> squares the value and keeps its sign. It does the same job as your <code>Math.copySign</code>.</p><p>The second excerpt is the robot’s default drive command. The part starting with <code>() -&gt; {</code> is a <b>lambda</b>: a small method with no name, handed to the drivetrain. The drivetrain calls it on every pass of the loop. So the sticks are read fresh 50 times a second, never just once.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box try"><span class="box-tag">Practice at home</span><p>Open <code>Practice11Controller.java</code> in your practice workbook. Write your own deadband, curve and stick-to-speed methods. The ★ challenge is the round deadband the real robot uses. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
+<div class="checkpoint"><b>Pause and check</b><p>Explain why <code>forward = -leftY</code> has a minus sign. Then explain what problem a deadband solves and why WPILib rescales instead of jumping.</p></div>
+<section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>You now know how a robot program runs, how it handles many of the same thing, and how a stick becomes a speed. Part 3 starts with where the robot is on the field, then shows how those speeds become four swerve wheels.</p>
+<p>In your learning notes, write one thing you changed, what happened, and one question.</p></section>
+<nav class="lesson-next" aria-label="Lesson navigation">
+<a href="robot-2-arrays.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Many of the same thing</span></a>
+<a href="advanced-1-field-pose.html" rel="next"><span class="lesson-direction">Next →</span> <span>Where is the robot?</span></a>
+</nav>
+</main><footer class="page-footer">Part 2 · October 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>
+</div></body></html>
