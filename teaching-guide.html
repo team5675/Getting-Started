@@ -47,9 +47,7 @@ Mentors should match the supplied starter to the <a href="mentor-notes.html">pre
 
 <!-- ================================================================ -->
 <h2 id="big-picture">1. The big picture</h2>
-<p>This project is a <strong>chassis that runs</strong>: you can deploy it, pick up a
-controller, and drive a swerve robot that continuously knows its position on the
-field. There are deliberately <strong>no game mechanisms</strong> — no intake, no
+<p>This is a <strong>design reference for the planned teaching baseline</strong>. The website does not include that baseline’s Java project, and its described deployment behavior has not been verified against a supplied starter. The separate alpha-7 <code>2027Practice</code> project appears in the newer lesson excerpts. Names such as <code>CanSeam</code>, <code>PowerMonitor</code> and <code>Drivetrain/*</code> below belong to the baseline design; they are not a file/topic inventory of that practice project. There are deliberately <strong>no game mechanisms</strong> — no intake, no
 shooter — because the 2027 game has not been announced. What exists is everything a game
 mechanism will need to stand on.</p>
 
@@ -249,7 +247,7 @@ key to the entire design:</p>
 <tr><td><strong>Needs to be told our heading?</strong></td><td>No — solves position <em>and</em> heading from tag geometry alone</td><td>Yes — you feed it the robot's heading every frame</td></tr>
 <tr><td><strong>Quality</strong></td><td>Trustworthy from a cold boot, but noisy at range</td><td>Very stable position — <em>if</em> the heading you fed it was right</td></tr>
 <tr><td><strong>Failure mode</strong></td><td>Jitter</td><td>Garbage in, confident garbage out</td></tr>
-<tr><td><strong>Our use</strong></td><td><strong>Seed</strong>: once, at startup</td><td><strong>Maintain</strong>: every frame after seeding</td></tr>
+<tr><td><strong>Our use</strong></td><td><strong>Seed</strong>: when requested, while disabled</td><td><strong>Maintain</strong>: every frame after seeding</td></tr>
 </table></div>
 
 <figure>
@@ -267,7 +265,7 @@ key to the entire design:</p>
   </defs>
   <!-- Phase 1 -->
   <rect x="14" y="16" width="400" height="130" rx="10" fill="#fdf3e0" stroke="#a86407" stroke-dasharray="5 4"/>
-  <text x="30" y="40" class="svg-t" font-size="12" font-weight="600" fill="#a86407">PHASE 1 · UNSEEDED (boot, or after every disable)</text>
+  <text x="30" y="40" class="svg-t" font-size="12" font-weight="600" fill="#a86407">PHASE 1 · REQUESTED SEED (boot / refresh / reset)</text>
   <rect x="30" y="54" width="170" height="40" rx="6" fill="#fff" stroke="#182430"/>
   <text x="115" y="79" text-anchor="middle" class="svg-t" font-size="11.5">Ask every camera: MT1?</text>
   <rect x="230" y="54" width="168" height="40" rx="6" fill="#fff" stroke="#182430"/>
@@ -275,7 +273,7 @@ key to the entire design:</p>
   <text x="314" y="87" text-anchor="middle" class="svg-t" font-size="10.5" fill="#4a5a68">most tags, then closest</text>
   <line x1="200" y1="74" x2="230" y2="74" stroke="#4a5a68" stroke-width="1.6" marker-end="url(#arr3)"/>
   <text x="115" y="118" text-anchor="middle" class="svg-t" font-size="10.5" fill="#a86407">retries every ~200 ms,</text>
-  <text x="115" y="132" text-anchor="middle" class="svg-t" font-size="10.5" fill="#a86407">even while disabled</text>
+  <text x="115" y="132" text-anchor="middle" class="svg-t" font-size="10.5" fill="#a86407">only while disabled</text>
   <rect x="230" y="104" width="168" height="34" rx="6" fill="#1e7e46"/>
   <text x="314" y="126" text-anchor="middle" class="svg-t" font-size="11.5" fill="#fff">resetPose( ) → SEEDED</text>
   <line x1="314" y1="94" x2="314" y2="104" stroke="#1e7e46" stroke-width="1.8" marker-end="url(#arr3g)"/>
@@ -291,7 +289,7 @@ key to the entire design:</p>
     <rect x="212" y="204" width="98" height="44" rx="6" fill="#fff" stroke="#c22b3d"/>
     <text x="261" y="222" text-anchor="middle">null / no</text><text x="261" y="236" text-anchor="middle">tags?</text>
     <rect x="342" y="204" width="98" height="44" rx="6" fill="#fff" stroke="#c22b3d"/>
-    <text x="391" y="222" text-anchor="middle">spinning</text><text x="391" y="236" text-anchor="middle">&gt; 720°/s?</text>
+    <text x="391" y="222" text-anchor="middle">spinning</text><text x="391" y="236" text-anchor="middle">over spin limit?</text>
     <rect x="472" y="204" width="98" height="44" rx="6" fill="#fff" stroke="#c22b3d"/>
     <text x="521" y="222" text-anchor="middle">tags &gt; 4 m</text><text x="521" y="236" text-anchor="middle">away?</text>
     <rect x="602" y="204" width="98" height="44" rx="6" fill="#fff" stroke="#c22b3d"/>
@@ -314,7 +312,7 @@ key to the entire design:</p>
   <line x1="651" y1="248" x2="651" y2="278" stroke="#c22b3d" stroke-width="1.5" marker-end="url(#arr3r)"/>
   <text x="456" y="298" text-anchor="middle" class="svg-t" font-size="11" fill="#c22b3d">yes → REJECT (a wrong measurement is worse than none — each rejection is logged with its reason)</text>
 </svg>
-<figcaption><strong>Seed once, maintain forever, trust nothing blindly.</strong> Every
+<figcaption><strong>Seed when required; maintain while heading is trusted.</strong> Every
 box in the filter chain is a question; answering "yes" to any of them throws the
 measurement away. What survives is weighted: more tags and closer range = the filter
 listens harder (<code>Vision/&lt;camera&gt;/StdDev</code> shows the weight live).</figcaption>
@@ -326,10 +324,8 @@ correct X and Y — its rotation estimate is fed to the filter with a gigantic
 uncertainty (9999999), which is Kalman-filter language for "ignore this." The Pigeon's
 heading barely drifts in a match, while vision heading jitters; letting them fight made
 2026's pose shimmy.</p>
-<p><strong>Every disable clears the seed.</strong> <code>Robot.disabledInit()</code>
-calls <code>clearPoseSeeded()</code>, and re-seeding restarts automatically. Fresh
-enable, fresh lock — never trust drift you accumulated before sitting still.</p>
-<div class="box note"><span class="box-tag">Update, October 2026</span><p>The practice bot found a problem with this rule. Seeding is only allowed while disabled, and in a match the robot is disabled for just a few seconds between auto and teleop. If no tag is in view during that gap, clearing the seed switches vision corrections off for all of teleop. The practice bot (2027Practice) now keeps its heading trust through a disable and only <em>asks</em> for a fresh fix; trust is removed only by a deliberate reset, such as the reseed button or a heading reset. Check whether this baseline needs the same change. The advanced track page “Blend wheels and camera” tells the whole story.</p></div>
+<p><strong>A disable asks for a fresh seed; it does not automatically erase a valid heading.</strong> Keep heading trust separate from the request for a fresh fix. At boot or after a deliberate heading reset, MegaTag2 stays gated until a valid seed. After an ordinary disable, retain trustworthy heading while waiting for a fresh disabled seed. Gyro faults and resets need an explicit recovery policy.</p>
+<div class="box note"><span class="box-tag">Update, October 2026</span><p>The earlier version of this baseline design cleared the seed on every disable. The practice bot exposed a problem with that rule. Seeding is only allowed while disabled, and in a match the robot is disabled for just a few seconds between auto and teleop. If no tag is in view during that gap, clearing the seed switches vision corrections off for all of teleop. The practice bot (2027Practice) now keeps its heading trust through a disable and only <em>asks</em> for a fresh fix; trust is removed only by a deliberate reset, such as the reseed button or a heading reset. Check whether this baseline needs the same change. The advanced track page “Blend wheels and camera” tells the whole story.</p></div>
 <p><strong>The camera list is one array.</strong> <code>Constants.VisionConstants.kCompCameras</code>
 holds a name and mounting position per camera. The subsystem loops over whatever is
 there — adding a fourth camera at kickoff is one line, and its mounting offsets are
@@ -540,10 +536,10 @@ you're not done designing it.</p>
 
 <div class="box note"><span class="box-tag">The team's WPILOG Analyzer</span>
 The team's own <em>Unified WPILOG Analyzer</em> (the HTML tool in the project
-knowledge) reads exactly the files this robot writes. Feed it a match
+knowledge) is intended to read these files. Its v10 timestamp handling was checked against synthetic logs; a real alpha-log compatibility check remains open. Feed it a match
 <code>.wpilog</code> and point its pose sources at <code>Drivetrain/Pose</code> (the
 fused track) and <code>Vision/OdometryOnlyPose</code> (the shadow track that never gets
-vision corrections). The gap between those two lines <em>is</em> wheel drift — the
+vision corrections). The gap shows the difference between two estimates, not measured ground-truth error. It can include wheel drift, bad vision, reset differences and update-rate differences. The planned
 robot keeps both on purpose, anchored to the same seed, precisely so that comparison
 stays meaningful. Heat maps of <code>Power/ChannelPeaks</code> answer "what browned us
 out" without guessing.</div>
@@ -582,7 +578,7 @@ names the auto and the error size. Setup stops being a guess:</p>
 <pre><span class="c">Alerts panel, robot sitting on the field:</span>
 <span class="s">✓ CAN devices OK          ✓ Cameras OK           ✓ Gyro fresh</span>
 <span class="s">✓ Vision seeded (MT1)     ✓ Battery 12.7 V</span>
-<span class="h">⚠ Robot 0.82 m from 'CenterTwoPiece' start position</span>
+<span class="h">⚠ Robot 0.82 m from 'PracticeStart' start position</span>
 <span class="c">→ slide the robot until the warning clears. Then play.</span></pre>
 <p>A small pose difference is one useful check, but it does not prove the entire vision
 pipeline is healthy. Check camera heartbeat, measurement freshness, seed status, and
@@ -601,7 +597,7 @@ Raspberry Pi 5 SystemCore stand-in — see
 <a href="systemcore-bench-guide.html">the SystemCore Clone Bench guide</a> (or the
 raw <a href="SystemCore-Clone-Setup-Guide.md">markdown source</a>) for the
 build, the open questions, and a running findings log (including whether Commands v2
-or v3 is appropriate, and what actually broke when the analyzer met real 2027 timestamps).</div>
+or v3 is appropriate, and the synthetic timestamp cases that exposed the old analyzer’s assumptions).</div>
 <div class="table-scroll"><table>
 <tr><th>Seam</th><th>File</th><th>What changes when 2027 stable ships</th></tr>
 <tr><td>CAN bus construction</td><td><code>util/CanSeam.java</code></td>

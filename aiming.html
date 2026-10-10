@@ -39,7 +39,7 @@ the same heading regardless of alliance.</p>
 </svg><figcaption>Subtract the robot position from the target position. The direction of that vector is the target heading.</figcaption></figure>
 <pre><code>Rotation2d headingToTarget = targetPoint.minus(robotPose.getTranslation()).getAngle();</code></pre>
 <p><code>minus</code> gives the displacement from robot to target. <code>getAngle()</code>
-gives its direction. This is a geometry excerpt; the existing aim helper supplies the surrounding control code.</p>
+gives its direction. At the exact target position the vector has zero length, so there is no meaningful direction: keep the last valid target heading or stop aiming. This is a geometry excerpt; the starter’s aim helper must supply that guard and the surrounding control code.</p>
 <h2>Keep joystick direction separate</h2>
 <p>The driver may expect forward stick to mean away from their alliance wall. That is
 operator-relative translation. The target heading above is field-relative. Set the swerve

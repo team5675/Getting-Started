@@ -11,8 +11,7 @@
 they do not need the full competition repository, vendor libraries, a gamepad, or a robot.
 Lesson 8 adds a pretend light and one command in the same sandbox.</p>
 <p>The website ZIP contains teaching pages, not a ready-to-run Java project. Before class, follow the lessons
-on a student machine and record the exact approved stable-2026 version. The content was reviewed against the 2026.2.1 template;
-the Java examples have not been compiled or simulated on this editing machine.</p></section>
+on a student machine and record the exact approved stable-2026 version. The October 10 review compiled and ran 29 startup examples and all 52 workbook answer checks against actual WPILib 2026.2.2 libraries, using JDK 25 with Java 17 compatibility. The Lesson 8 classes also compile. Full simulation, the VS Code workflow and hardware behavior still need a classroom walkthrough.</p></section>
 <h2>Before the first session</h2><ol><li>Provide the approved WPILib <b>2026</b> installer and help with installation permissions.
 Keep the 2027 alpha tools and SystemCore bench separate.</li><li>Create the lesson sandbox outside cloud sync, build it, and launch its simulation once.
 Verify that the lesson’s robotInit message appears in the VS Code Terminal while disabled.</li>
@@ -48,8 +47,15 @@ DriveOffLine auto, and the simulated goal-sensor control before assigning their 
 <li>Use the <a href="git-guide.html">Git walkthrough</a> with one cumulative branch per learner/pair and small commits.
 Decide how practice work should be reviewed before merging anything.</li></ul>
 <p>Vision tuning, PID, retained-request arbitration, field geometry, and SystemCore migration can wait until students have a reason to use them.</p>
+<h2>Before Parts 2 and 3</h2><ul>
+<li>Run the mode-counter and keyboard-joystick activities in the WPILib 2026 simulation GUI.</li>
+<li>Try the <a href="practice-workbook.html">workbook</a> in a fresh Command Robot project: Run CodeLens, switches off, an unfinished exercise with its switch on, and the matching answer.</li>
+<li>Use the <a href="pose-lab.html">pose lab</a> to compare predictions with its readouts. These are simplified teaching models, not a Limelight solver or a hardware validation.</li>
+<li>Advanced 7 (health checks) remains planned. The later architecture reference describes a baseline design; its log paths must be checked against the training repository you supply.</li>
+<li>The separate alpha-7 camera-verification project contains uncommitted work. The timestamp page labels its per-stream fix accordingly; do not present that example as deployed behavior.</li></ul>
 <h2>References used for the lessons</h2><ul>
 <li><a href="https://raw.githubusercontent.com/wpilibsuite/allwpilib/v2026.2.1/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/templates/commandbased/Robot.java">WPILib 2026.2.1 Command Robot template</a>: uses a constructor; Lesson 2 explicitly adds robotInit.</li>
+<li><a href="https://raw.githubusercontent.com/wpilibsuite/allwpilib/v2026.2.2/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/templates/commandbased/Robot.java">WPILib 2026.2.2 Command Robot template</a>: independently checked in the October review.</li>
 <li><a href="https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/simulation-gui.html">WPILib simulation GUI</a></li>
 <li><a href="https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html">Command lifecycle and requirements</a></li>
 <li><a href="https://docs.wpilib.org/en/stable/docs/romi-robot/programming-romi.html">Romi workflow</a>: runs configured code on the laptop.</li></ul>

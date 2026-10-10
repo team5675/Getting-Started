@@ -1,3 +1,7 @@
+> **ARCHIVED SEPTEMBER 3 NOTES — superseded.** Reviewed 10 October 2026. This is a historical investigation, not a current installation procedure. See [current bench status](systemcore-bench-guide.html#current-status).
+>
+> The alpha-7 practice project now pins Phoenix 26.70.0-alpha-2, PathPlanner 2027.0.0-alpha-4.1 and AdvantageKit 27.0.0-alpha-6; the old vendor-incompatibility and 2026-firmware claims below do not describe that combination. Card B's reported target is beta 15. Preserve Card A (alpha-6/image 11). Never OTA-update clone cards; use the maintained workspace guide and scripts to re-flash the intended test card. Do not reuse the historical boot-config replacement below. Students stay on stable WPILib 2026.
+
 # SystemCore Clone Bench — Setup Guide (Team 5675)
 
 **Purpose:** Build a Raspberry Pi 5 stand-in for the SystemCore control system so we can validate our `SYSTEMCORE-2027:` migration seams *before* the 2027 season starts, instead of discovering them during build season.

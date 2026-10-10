@@ -15,7 +15,7 @@
 <p>Each tiny move comes from sensors the robot already has:</p>
 <div class="table-scroll"><table><thead><tr><th scope="col">Sensor</th><th scope="col">What it tells odometry</th><th scope="col">What fools it</th></tr></thead><tbody>
 <tr><td>Drive motor encoders</td><td>How far each wheel rolled</td><td>Wheels slipping or skidding on carpet; a robot that is lifted and carried</td></tr>
-<tr><td>CANcoders</td><td>Which way each wheel pointed while it rolled</td><td>Very little, if they are calibrated</td></tr>
+<tr><td>CANcoders</td><td>Which way each wheel pointed while it rolled</td><td>Wrong module offsets, a loose magnet, mechanical play, stale data or a sensor fault</td></tr>
 <tr><td>Pigeon 2 gyro</td><td>Which way the whole robot faces, measured directly</td><td>A small slow drift over time; a wrong starting heading</td></tr></tbody></table></div>
 <p>Notice what is missing: nothing here measures <em>where the robot is on the field</em>. Odometry only knows where the robot is <em>compared with where it started</em>.</p>
 
@@ -84,7 +84,7 @@ Error: 0.17 m</code></pre>
 <p>A 2° error sounds tiny, but over 5 m it moves the robot’s idea of its position 17 cm sideways: 5 m × sin(2°) ≈ 0.17 m. Drive farther and the error grows with it.</p>
 
 <h2>5. Why odometry alone is not enough</h2><p>During a match the robot drives, turns, gets bumped and skids. Every one of those moments adds a little error, and nothing in odometry ever removes it. After a couple of minutes, odometry alone can be tens of centimeters off, sometimes more.</p>
-<p>The heading is the one part that stays good. The gyro measures rotation directly, so slipping wheels don’t fool it. Once the heading is lined up with the field at the start, it stays close for a whole match. That is why, on the practice bot, cameras are allowed to correct the robot’s x and y while it drives, but not its heading.</p>
+<p>Heading is usually more stable than wheel-based position. The gyro measures rotation, so wheel slip does not directly corrupt it. It still needs an initial field alignment and fresh, healthy data; drift, a reset or a fault can make its heading wrong. That is why, on the practice bot, cameras are allowed to correct the robot’s x and y while it drives, but not its heading.</p>
 <div class="box oops"><span class="box-tag">The carried robot</span>If you lift the robot and carry it, the wheels don’t turn, so odometry thinks the robot never moved. The gyro still notices turns. This is why the Pre-Match tab never shows the start position as green unless a camera can see an AprilTag: the map may be showing where the robot used to be.</div>
 
 <h2>6. Try one variation</h2><p>Go back to the slip experiment from section 3. Change the loop to 100 steps (10 m), and try a 1% slip (<code>0.101</code>) and a 3% slip (<code>0.103</code>). Predict both errors before you run.</p>
@@ -94,12 +94,13 @@ Error: 0.10 m</code></pre><p>With 3% slip:</p><p class="code-label">Expected out
 Odometry says: x=11.30 y=1.00
 Error: 0.30 m</code></pre><p>Twice the distance makes twice the error, and three times the slip makes three times the error. Odometry error grows with how far the robot drives.</p></details>
 
-<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>CTRE’s swerve library runs odometry in its own fast loop, about 250 times a second on the practice bot (<code>Drive/OdometryHz</code>). The practice-bot code also keeps a second, odometry-only pose that cameras never correct, logged as <code>Drive/OdometryOnlyPose</code>. Drive around and compare it with <code>Drive/Pose</code> in AdvantageScope: the odometry-only “ghost” slowly drifts away from the real robot while the corrected pose stays on it.</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java</code>, inside <code>periodic()</code> — do not paste</p><pre><code>SwerveDriveState state = getState();
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>CTRE’s swerve library runs odometry in its own fast loop, about 250 times a second on the practice bot (<code>Drive/OdometryHz</code>). The practice-bot code also keeps a second, odometry-only pose that cameras never correct, logged as <code>Drive/OdometryOnlyPose</code>. Drive around and compare it with <code>Drive/Pose</code> in AdvantageScope: the two estimates can separate. Neither trace is ground truth: compare them with an independent physical reference. A bad camera or mount can move the corrected pose the wrong way, and this second tracker also runs at a different update rate.</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java</code>, inside <code>periodic()</code> — do not paste</p><pre><code>SwerveDriveState state = getState();
 Rotation2d gyro = rawHeading(state);
 Pose2d odometryOnlyPose = odometryOnly.update(gyro, state.ModulePositions);
 
 Logger.recordOutput(&quot;Drive/Pose&quot;, state.Pose);
 Logger.recordOutput(&quot;Drive/OdometryOnlyPose&quot;, odometryOnlyPose);</code></pre><p><code>odometryOnly.update(gyro, modulePositions)</code> is the add-up-tiny-moves idea from this page in one call, fed with the gyro heading and the four wheels’ distances and angles. Its result is logged next to the camera-corrected <code>Drive/Pose</code>, so the two can be compared on the same graph.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<!-- SYSTEMCORE-2027: these differences describe the pinned alpha-7 project; verify at migration. -->
 <div class="box seam"><span class="box-tag">2027 differences</span>In the WPILib 2027 alpha, <code>Rotation2d.kZero</code> is renamed <code>Rotation2d.ZERO</code> and the classes live in <code>org.wpilib.math.geometry</code>. Odometry itself works the same way. Keep your practice on WPILib 2026.</div>
 
 <div class="checkpoint"><b>Pause and check</b><p>Explain the difference between the two mistakes in sections 3 and 4. Then explain why a carried robot can fool odometry but not the gyro.</p></div>

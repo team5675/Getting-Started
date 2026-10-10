@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="style.css?v=20260923-nav"></head><body>
 <!-- Practice workbook page, October 2026. See README.md. -->
 <a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><span class="brand">FRC 5675</span><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
-<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Practice at home · Lessons 2–8</span><h1>Your practice workbook</h1><p class="lede">Extra exercises for each lesson, with self-checks that tell you when you’ve got it right.</p></header>
+<main id="main-content" tabindex="-1"><header class="hero"><span class="hero-tag">Practice at home · Java, robot loops and pose</span><h1>Your practice workbook</h1><p class="lede">Extra exercises for each lesson, with self-checks that tell you when you’ve got it right.</p></header>
 <section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Set up a second practice project on your own computer, run one practice file, and use a self-check to confirm an exercise.</p>
 <p><b>Before you start:</b> WPILib 2026 is installed and your <code>learning-sandbox</code> from Lesson 1 builds. You need the workbook download (under 100 KB).</p><p class="meta">Allow about 15 minutes, once. After that, each practice file takes 15–30 minutes.</p></section>
 
@@ -24,7 +24,7 @@
 <li>Name the project <code>practice-workbook</code>. Generate it, but don’t open it yet.</li></ol>
 
 <h2>3. Copy the practice files in</h2><ol><li>Download <a href="downloads/practice-workbook.zip"><code>practice-workbook.zip</code></a>. In File Explorer, right-click it and choose <b>Extract All</b>.</li>
-<li>Open the extracted folder. Copy its <code>src</code> folder.</li>
+<li>Open the extracted folder, then the <code>practice-workbook</code> folder inside it if needed, until you see <code>src</code>, <code>answers</code> and <code>README.txt</code>. Copy <code>src</code>.</li>
 <li>Open <code>C:\dev\practice-workbook</code>, the folder that contains <code>build.gradle</code>, and paste. Windows merges the two <code>src</code> folders: your project keeps its own files and gains a <code>practice</code> folder. No file should be replaced. If Windows asks to replace a file, choose <b>Skip</b> and ask a mentor.</li>
 <li>Copy the <code>answers</code> folder into <code>C:\dev\practice-workbook</code> too. It sits outside <code>src</code>, so Java ignores it.</li>
 <li>In VS Code, choose <b>File → Open Folder</b> and open <code>C:\dev\practice-workbook</code>.</li></ol>
@@ -45,7 +45,7 @@
 <tr><td>A line with <code>FAILED</code>, such as <code>Check04Decisions &gt; exercise2_exactlyOnTheBoundaries() FAILED</code></td><td>That exercise isn’t right yet. The next lines give a hint, for example <i>exactly 11.5 is NOT below 11.5</i>. FAILED here means “not finished”; it doesn’t mean anything is broken.</td></tr>
 <tr><td>A compile error</td><td>Java can’t read part of a file. Fix the line it names first, exactly as in Lesson 2.</td></tr></tbody></table></div>
 <p>For the full list, including checks that were skipped because you haven’t switched them on, open <code>build/reports/tests/test/index.html</code> from the Explorer in a web browser.</p>
-<div class="box note"><span class="box-tag">Two switches</span><p><code>CHECK_MY_WORK</code> checks the exercises everyone does. <code>CHECK_CHALLENGE</code> checks the ★ challenge, which the files mark with the word <code>CHALLENGE</code>. Leave a switch <code>false</code> until you are ready; its checks are then skipped instead of failing.</p></div>
+<div class="box note"><span class="box-tag">Two switches</span><p><code>CHECK_MY_WORK</code> checks the exercises everyone does. <code>CHECK_CHALLENGE</code> checks the ★ challenge, which the files mark with the word <code>CHALLENGE</code>. Leave a switch <code>false</code> until you are ready; its exercise checks are then skipped instead of failing. Java still compiles every source file, so a missing brace or another syntax error can stop the build even with both switches off.</p></div>
 
 <h2>6. Which file goes with which lesson</h2>
 <div class="table-scroll"><table><thead><tr><th scope="col">Lesson</th><th scope="col">Practice file</th><th scope="col">You practice</th></tr></thead><tbody>
@@ -72,7 +72,7 @@
 
 <div class="checkpoint"><b>Pause and check</b><p>Run <code>Practice02FirstProgram</code> and find its output. Then switch on <code>CHECK_MY_WORK</code> before doing any exercises and run the checks. They should say FAILED with hints. Read one hint and explain which exercise it points to.</p></div>
 <section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>The workbook is ready. Use it after each lesson, or any time you want a refresher. Your changes stay in <code>C:\dev\practice-workbook</code>.</p></section>
-<div class="box read"><span class="box-tag">For mentors</span><p>The practice files and checks are plain ASCII, so they compile the same with any Windows text encoding. They were compiled at the Java 17 level and run with JUnit 5.10.1, the version in the WPILib-generated build.gradle; the one WPILib-geometry file was checked against the WPILib math library with 2027 names swapped in. With every switch off, all checks are skipped. With switches on, unfinished files fail every check. The answer files pass all 52. Still to confirm once on a student laptop with WPILib 2026: the Run CodeLens and <b>WPILib: Test Robot Code</b> in a freshly generated Command Robot project.</p></div>
+<div class="box read"><span class="box-tag">For mentors</span><p>The practice files and checks are plain ASCII, so they compile the same with any Windows text encoding. On 10 October 2026 they were compiled unchanged against the actual WPILib 2026.2.2 libraries, using Java 17 compatibility mode and JUnit 5.10.1. The installed compiler/runtime was JDK 25; this checks the Java 17 API surface but does not replace testing the complete WPILib 2026 installation. With every switch off, all checks are skipped. With switches on, unfinished files fail every check. The answer files pass all 52. Still to confirm once on a student laptop with WPILib 2026: the Run CodeLens and <b>WPILib: Test Robot Code</b> in a freshly generated Command Robot project.</p></div>
 </main><footer class="page-footer">Practice workbook · October 2026 · Student tools: WPILib 2026<br>
 <a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
 Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a></footer>

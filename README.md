@@ -15,7 +15,7 @@ Open `index.html` in a browser to start. These are static pages; no package inst
 - `git-guide.html`: beginner cloning, branching, staging, committing, pushing, and review walkthrough.
 - `teaching-guide.html` and `aiming.html`: architecture references.
 - `mentor-notes.html`: preparation, starter-dependent checks, and suggested meetings.
-- `systemcore-bench-guide.html` and its Markdown source: existing advanced bench reference. Its technical content was not updated in this teaching-language revision.
+- `systemcore-bench-guide.html` and its Markdown source: dated bench status and clearly marked September archive. Use the maintained workspace guide for installation.
 - `advanced-1-…` to `advanced-8-…`, `pose-lab.html`, `robot-1-loop.html`, `robot-2-arrays.html`,
   `robot-3-controller.html`, `big-picture.html`: Parts 2 and 3 below.
 - `practice-workbook.html` and `downloads/practice-workbook.zip`: the at-home practice workbook.
@@ -44,7 +44,7 @@ Lessons 2–8 (`lesson-2-…` to `lesson-7-…`, `first-command.html`) each gain
 3. **“Practice at home”** (green `box try`): which practice-workbook file goes with the lesson,
    linking to `practice-workbook.html`.
 
-`teaching-guide.html` §4 gained an “Update, October 2026” note under “Every disable clears the seed”.
+`teaching-guide.html` §4 now distinguishes the earlier clear-on-disable design from the practice project’s retained seed and explicit refresh behavior.
 Advanced 1–3 had their “Where this shows up on the real robot” boxes replaced by the same
 real-robot box with a code excerpt.
 
@@ -56,7 +56,7 @@ practice file per lesson, Lessons 2–7, Part 2 and Advanced 4, 5, 6 and 8), `sr
 Students make a second WPILib 2026 Command Robot project named `practice-workbook`, copy `src` into
 it, run a file with VS Code's **Run** CodeLens above `main`, and check it with **WPILib: Test Robot
 Code** after setting `CHECK_MY_WORK` (or `CHECK_CHALLENGE`) to true. Checks are skipped while a switch
-is false, so unfinished files never fail a build. Files are ASCII-only (Windows Java 17 encoding).
+is false. Syntax errors still fail compilation even when exercise checks are switched off. Files are ASCII-only (Windows Java 17 encoding).
 
 ### Connected (10 October 2026)
 
@@ -74,7 +74,7 @@ shows it as “coming later”. When it is written, put it between 6 and 8 in `s
   examples, which stay linked from `index.html` and `lessons.html`).
 - New pages: lesson trail and Back/Next cards filled in; “draft” footers removed.
 
-### How the content was checked
+### Original October generation checks (before independent review)
 
 - Every “Expected output” on Parts 2–3 pages is produced by running the page's own code: plain Java
   directly, WPILib code with the 2027 alpha math jars after a name-for-name translation (packages,
@@ -96,7 +96,20 @@ shows it as “coming later”. When it is written, put it between 6 and 8 in `s
 Generators and the workbook source live outside the published folder, in
 `FRC2027/site/advanced-track-src.zip` (Python page generators, `excerpts.py`, `snipcheck.py`,
 `workbook/`; described in `advanced-track-src-README.md`). Edit the HTML directly for small fixes;
-regenerate for structural changes.
+port the October 10 corrections before regenerating. The archived generators do not yet contain the independent review fixes.
+
+## Independent correctness review · October 10, 2026
+
+- Compared all 31 HTML pages, CSS, workbook and bench Markdown with the published Getting-Started site before editing: all matched. README already contained the new local publisher instructions.
+- Compiled and ran 29 on-page startup examples against actual WPILib 2026.2.2 JARs with no API translation. Compiled Lesson 8's subsystem and command. Used JDK 25 with `--release 17`; this is not a full WPILib 2026 GUI simulation.
+- Ran the workbook's 52 JUnit checks in three modes: switches off abort the checks as intended; unfinished exercises with switches on fail all 52; completed answers pass all 52.
+- Corrected Java explanations, made the controller example independent of a removed earlier counter, qualified pose/vision models and timestamps, and labeled uncommitted alpha-7 code accurately.
+- Fixed the pose-lab timing graph to display the complete error range at high speed and latency.
+- Marked obsolete bench installation notes as an archive and added dated local version/status information. Kept the planned baseline distinct from the supplied practice project.
+- Still required before class: the fresh-project VS Code/Gradle workflow, simulation GUI, and any hardware-dependent exercises. Advanced 7 remains planned.
+
+Review evidence and the pre-edit snapshot are outside the published folder in
+`FRC2027/reviews/teaching-site-2026-10-10/`. Ed publishes using the procedure below.
 
 ## September 23, 2026 beginner revision
 
@@ -125,7 +138,7 @@ Student code stays on WPILib 2026. The website archive does not include the teac
 baseline robot project. Mentors must provide its repository/version and run the
 preparation checks before class. The final 2026 season repository is a separate historical reference.
 
-## Validation
+## Historical September validation
 
 - Checked HTML nesting, duplicate IDs, local file links, and page anchors.
 - Inspected desktop and 390-pixel layouts; all 18 HTML pages fit the narrow viewport.
@@ -135,17 +148,17 @@ preparation checks before class. The final 2026 season repository is a separate 
   simulated here: the standard local WPILib installations available were 2027 alpha,
   and the teaching baseline source was not provided. A stable-2026 classroom walkthrough remains necessary.
 
-## Preview and update GitHub Pages
+## Publishing to GitHub Pages
 
-1. Extract the edited ZIP into a new folder. Double-click `index.html` to review it.
-   Google Fonts needs internet access; system-font fallbacks work offline.
-2. In a local checkout of the existing Getting-Started website repository, create an edit branch.
-3. Copy the **contents** of the extracted folder into the repository root, replacing the
-   matching site files and adding the new pages. Do not nest the entire extracted folder
-   under the repository: `index.html` must remain at the root.
-4. Review the diff, commit, push the branch, and open a pull request. After review, merge
-   to `main` when ready to publish.
-5. The supplied `.github/workflows/static.yml` runs on pushes to `main`; it was preserved
-   unchanged. Check that workflow in GitHub Actions and then check the published site.
+The site is published from Ed's local folder with the publisher script, **not** by uploading files on
+github.com. The full procedure is in `FRC2027/site/PUBLISHING.md`. In short:
 
-This delivery does not publish to GitHub Pages or change robot code.
+1. Make every change in this folder (`FRC2027/site/Getting-Started-main/`), the single source of truth.
+2. Run `FRC2027/site/publish-getting-started.bat`. It checks links, copies this folder into a clone of
+   `team5675/Getting-Started` at `C:\dev\Getting-Started`, lists the changes, and commits and pushes to
+   `main` after you confirm. Use `-Mirror` after deleting or renaming a page.
+3. `.github/workflows/static.yml` redeploys GitHub Pages on every push to `main`. Check the Actions tab,
+   then the live site.
+
+Don't edit files on github.com or in `C:\dev\Getting-Started`: the next publish replaces them (the
+publisher warns first).
