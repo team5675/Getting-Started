@@ -225,3 +225,45 @@ tool needing clock, phase, mapping and data-quality fixes; actual SystemCore log
 and native GUI acceptance are still required. The mentor roadmap is outside the
 published folder at `docs/guides/log-viewer-roadmap-2026-10-13.html` in the workspace.
 Suggested commit: `Add guided log reading from historical E3 evidence`.
+
+
+## October 13 visual refresh — illustrated, interactive course
+
+The local source now has a wider illustrated homepage, three clear learning stages,
+consistent reading-page typography and spacing, keyboard focus styles, and optional
+per-page contents. Original lesson code, inline scripts, anchors, and the four
+exercise downloads are preserved. The homepage text and layout were intentionally
+rewritten; its legacy anchors remain available.
+
+- `assets/course.css` layers the shared presentation over the existing `style.css`.
+- `assets/course.js` progressively adds navigation and teaching interactions.
+- `assets/course-mark.svg` is an original programming mark, not an official team logo.
+- `assets/robot-lab.svg` is an original coordinate illustration, not a 2027 field.
+- `index.html`: opt-in path animation with pause, step and keyboard slider; Hello
+  World output preview explicitly identified as an illustration, not a Java compiler.
+- `lesson-4-decisions.html`: compare distances around the 1.0 boundary.
+- `lesson-6-loops.html`: trace the exact for-loop structure through the final failed
+  check; output 1/2/3, counter 4 at that check. Reset/play/pause/step controls.
+- `robot-1-loop.html`: simplified read/choose/send/return model, stopping after ten
+  illustrated passes. Timing is illustrative, not measured or actual scheduler order.
+
+All new motion starts paused and stops offscreen or when the tab is hidden. There
+are text equivalents, print styles and reduced-motion rules. The new presentation
+uses local assets and system fonts; it makes no analytics or tracking requests.
+
+Maintainer sources are outside the publishing folder in `site/visual-refresh-src/`.
+Run `site/build_visual_refresh.py` with Python to reapply this presentation after
+an older generator, then run `site/check_site.py`. The builder is idempotent but
+cannot restore unrelated course corrections overwritten by an old generator.
+Treat the editable lesson HTML as authoritative; do not regenerate it casually.
+
+Validation: 39 HTML pages / 898 local links; all 39 pages inspected at desktop and
+390px for layout overflow and required assets; teaching controls and existing pose
+lab checked in the browser. All downloads match their original SHA-256 hashes.
+Source inspection covers reduced-motion/print rules; no screen-reader or print-
+preview acceptance is claimed. Evidence and the pre-refresh HTML/CSS snapshot are
+in `reviews/visual-refresh-2026-10-14/` outside the published source.
+
+Nothing published. Ed runs the existing publisher as described in `site/PUBLISHING.md`.
+Suggested commit: `Refresh course design and add interactive learning diagrams`.
+V11 and raw logs remain local outside this website folder.
