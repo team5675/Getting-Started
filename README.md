@@ -214,56 +214,43 @@ not merely because the calendar says January. New suggested publish commit:
 `Add portable Java practice and SystemCore learning bridges`. No publication performed.
 
 
-## October 13 follow-up — learning from logs
+## October 14 follow-up — authentic WiredCats identity
 
-`log-reading-lab.html` follows debugging and precedes field pose. Its small
-`downloads/log-reading-e3.zip` contains five verified historical Enabled changes,
-worksheet, answers and provenance. Rebuild via `site/build_log_lesson.py` after
-`reviews/log-viewer-2026-10-13/inspect_logs.py` has inventoried the mentor's archive.
-The original full WPILOGs and v10 viewer are not published. V10 remains a historical
-tool needing clock, phase, mapping and data-quality fixes; actual SystemCore logs
-and native GUI acceptance are still required. The mentor roadmap is outside the
-published folder at `docs/guides/log-viewer-roadmap-2026-10-13.html` in the workspace.
-Suggested commit: `Add guided log reading from historical E3 evidence`.
+The current design uses photographs from wiredcatrobotics.org: programming, Note
+Worthy (2024), Catalyst (2025), and the team at St. Joseph (2024). The WIRED wordmark
+appears in navigation; its original cat emblem is displayed with a fixed CSS crop.
+The square site icon is the official WIRED wordmark. Past-season robot captions
+avoid suggesting that these are the unknown 2027 robot or field.
 
+Ed clarified that the character portraits should stay, without names. Sixteen pages
+keep their short, topic-specific illustrated learning prompts, labeled Team tip or
+Pause & predict. The homepage introduces the same learning habits without naming
+characters. Only the character portraits are generated illustrations; all robot and
+team photographs are authentic. Exact diagrams still explain the technical concepts.
 
-## October 13 visual refresh — illustrated, interactive course
+The homepage uses a split photo hero, colorful course cards and a team section.
+Beginner lessons include See it / Try it / Check it links wherever those destinations
+exist, plus highlighted goals, practice and checkpoints. Core instruction stays visible.
 
-The local source now has a wider illustrated homepage, three clear learning stages,
-consistent reading-page typography and spacing, keyboard focus styles, and optional
-per-page contents. Original lesson code, inline scripts, anchors, and the four
-exercise downloads are preserved. The homepage text and layout were intentionally
-rewritten; its legacy anchors remain available.
+Active assets: assets/identity.css, assets/team/ (six optimized WebP photos/logos and
+sources.json), assets/companions/ (two unchanged portrait WebPs), assets/course.css
+and assets/course.js. Team photographs/logos total 843,822 bytes; portraits total
+102,096 bytes. All media is local, with no runtime request to the team website.
 
-- `assets/course.css` layers the shared presentation over the existing `style.css`.
-- `assets/course.js` progressively adds navigation and teaching interactions.
-- `assets/course-mark.svg` is an original programming mark, not an official team logo.
-- `assets/robot-lab.svg` is an original coordinate illustration, not a 2027 field.
-- `index.html`: opt-in path animation with pause, step and keyboard slider; Hello
-  World output preview explicitly identified as an illustration, not a Java compiler.
-- `lesson-4-decisions.html`: compare distances around the 1.0 boundary.
-- `lesson-6-loops.html`: trace the exact for-loop structure through the final failed
-  check; output 1/2/3, counter 4 at that check. Reset/play/pause/step controls.
-- `robot-1-loop.html`: simplified read/choose/send/return model, stopping after ten
-  illustrated passes. Timing is illustrative, not measured or actual scheduler order.
+The existing visual builder calls build_course_imagery.py to maintain this layer.
+prepare_team_images.cjs resizes/encodes official photos without retouching; the older
+prepare_course_images.cjs now redirects to it. Generated robot scenes and old style
+assets are archived in reviews/team-identity-2026-10-14/retired-assets/ outside the
+published source. Historical artwork and decisions also remain in prior reviews.
 
-All new motion starts paused and stops offscreen or when the tab is hidden. There
-are text equivalents, print styles and reduced-motion rules. The new presentation
-uses local assets and system fonts; it makes no analytics or tracking requests.
+Validation: 39 HTML pages / 1,134 local links and anchors, desktop and 390px layouts,
+all old anchors and all pre/code, SVG and inline script content preserved. Four
+exercise download hashes are unchanged. The builder produces identical results on
+repeat runs. Browser checks cover Hello World preview, path step, lesson shortcuts
+and the Java loop trace. Reduced-motion and print styles are retained; no full
+screen-reader or print-preview acceptance is claimed.
 
-Maintainer sources are outside the publishing folder in `site/visual-refresh-src/`.
-Run `site/build_visual_refresh.py` with Python to reapply this presentation after
-an older generator, then run `site/check_site.py`. The builder is idempotent but
-cannot restore unrelated course corrections overwritten by an old generator.
-Treat the editable lesson HTML as authoritative; do not regenerate it casually.
-
-Validation: 39 HTML pages / 898 local links; all 39 pages inspected at desktop and
-390px for layout overflow and required assets; teaching controls and existing pose
-lab checked in the browser. All downloads match their original SHA-256 hashes.
-Source inspection covers reduced-motion/print rules; no screen-reader or print-
-preview acceptance is claimed. Evidence and the pre-refresh HTML/CSS snapshot are
-in `reviews/visual-refresh-2026-10-14/` outside the published source.
-
-Nothing published. Ed runs the existing publisher as described in `site/PUBLISHING.md`.
-Suggested commit: `Refresh course design and add interactive learning diagrams`.
-V11 and raw logs remain local outside this website folder.
+Recovery ZIP, official original downloads, provenance and screenshots are under
+reviews/team-identity-2026-10-14/. No publishing, GitHub writes or log-tool changes.
+Ed alone runs the publisher. Suggested commit:
+Refresh WiredCats course with real team photos and unnamed learning guides.

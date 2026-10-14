@@ -1,0 +1,66 @@
+{
+  "retrieved": "2026-10-14",
+  "use": "Team learning website, requested by team mentor. Photos and logos remain team assets. Only resizing and encoding applied; layout cropping uses CSS. Cat emblem is displayed from the right side of the original wordmark.",
+  "images": [
+    {
+      "file": "wired-logo.webp",
+      "source": "https://wiredcatrobotics.org/wp-content/uploads/2023/04/WIREDCAT-Logo-Navy-Blue.webp",
+      "sourcePage": "https://wiredcatrobotics.org/",
+      "caption": "Official WIRED wordmark and cat emblem",
+      "width": 650,
+      "height": 216,
+      "bytes": 12868,
+      "sha256": "1098fa02fbca24e490f505b532b29184de262dcedb55f3ac286b189339e3ec22"
+    },
+    {
+      "file": "wired-icon.webp",
+      "source": "https://wiredcatrobotics.org/wp-content/uploads/2023/06/WIRED_allcaps2-1-300x300.webp",
+      "sourcePage": "https://wiredcatrobotics.org/",
+      "caption": "Official square WIRED site icon (wordmark, not cat)",
+      "width": 192,
+      "height": 192,
+      "bytes": 2466,
+      "sha256": "3aec0f3828f0afbfb0f4a5fceeb79432be82d1597f13159af86ce944ff84fa3a"
+    },
+    {
+      "file": "programming.webp",
+      "source": "https://wiredcatrobotics.org/wp-content/uploads/2023/08/Programming-3-18-1-scaled.webp",
+      "sourcePage": "https://wiredcatrobotics.org/",
+      "caption": "Programming with the WiredCats; team website archive",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 147706,
+      "sha256": "b815bca351ed059ed2a03a79b18e05723817c7663682aeef8b011d7dd0ac2689"
+    },
+    {
+      "file": "note-worthy-2024.webp",
+      "source": "https://wiredcatrobotics.org/wp-content/uploads/2024/03/DSC_0531-scaled-e1711658209889.webp",
+      "sourcePage": "https://wiredcatrobotics.org/",
+      "caption": "Note Worthy, the 2024 WiredCats robot",
+      "width": 1600,
+      "height": 1306,
+      "bytes": 134174,
+      "sha256": "8ddf230db926b60d1c828517952384b18f293d5e83522b89568b00042f89b39b"
+    },
+    {
+      "file": "catalyst-2025.webp",
+      "source": "https://wiredcatrobotics.org/wp-content/uploads/2025/04/Image-from-iOS-1365x2048.jpg",
+      "sourcePage": "https://wiredcatrobotics.org/our-robots/",
+      "caption": "Catalyst, the 2025 WiredCats robot",
+      "width": 1000,
+      "height": 1500,
+      "bytes": 283488,
+      "sha256": "b2cb3374ce4af0aebc399a76f5bc8176c8fe047b15507e9c38fda1d024683918"
+    },
+    {
+      "file": "team-2024.webp",
+      "source": "https://wiredcatrobotics.org/wp-content/uploads/2024/03/St-Joe-2024-IMG-0421-scaled.jpg",
+      "sourcePage": "https://wiredcatrobotics.org/",
+      "caption": "The WiredCats team at St. Joseph in 2024",
+      "width": 1600,
+      "height": 884,
+      "bytes": 263120,
+      "sha256": "d31128afeae5abf20bccd3e9e3e335ae4cde3e6e63204062f4b6e8975a5c2139"
+    }
+  ]
+}
