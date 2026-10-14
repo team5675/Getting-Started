@@ -162,3 +162,66 @@ github.com. The full procedure is in `FRC2027/site/PUBLISHING.md`. In short:
 
 Don't edit files on github.com or in `C:\dev\Getting-Started`: the next publish replaces them (the
 publisher warns first).
+
+## October 13, 2026 — reviewed home route and completed course bridges
+
+This section supersedes the “Advanced 7 planned” and original reading-order notes above.
+
+- `home-java.html` is the independent stable 2026.2.1 installation/Hello World route.
+  `downloads/home-java-starter.zip` has ten plain Java exercises and answers, 49 checks,
+  README and learning notes. Rebuild with `python site/build_home_java.py` from the workspace,
+  or run that script by absolute path. Its declarative lesson data is the editable source.
+  This route uses Java directly, without Gradle/native libraries; Java 17 is the student default.
+- The stable class installer is WPILib 2026.2.1 (see release verification below). The older practice-workbook.zip is unchanged.
+- New pages: `advanced-7-health-checks.html`, `debugging-and-logs.html`,
+  `pathplanner-first-path.html`, `code-map.html`. The PathPlanner ZIP contains standalone
+  GUI-only starter/answer projects; settings are synthetic and never for hardware.
+- Next-link order now includes Git after Lesson 8, debugging/logs after controller input,
+  PathPlanner after odometry, and health between timestamps and camera verification.
+- Real-code links freeze camera branch ddb14a2 and selected main examples at 38eba04.
+  The per-stream timestamp fix remains explicitly local/uncommitted. Team GitHub access
+  is needed for private source links, but the home downloads require no account.
+- Keep the small prerequisite fixes (else-if, clamp, bounded while, constructor terminology)
+  when maintaining pages. The archived September/October generators predate this revision;
+  do not regenerate over the editable HTML without porting the changes.
+- Verification: extracted home answers 49/49 on installed Alpha 7 JDK25; all ten unfinished
+  exercises detected; static HTML/link checks; representative desktop/narrow browser checks.
+  Fresh Windows installer/VS Code and native PathPlanner GUI acceptance remain mentor tasks.
+- Review, robot findings, evidence and next additions:
+  `../../reviews/course-review-2026-10-13/review.html` in the workspace (not a published site link).
+- Ed publishes using `site/publish-getting-started.bat`; agent did not run it.
+  Suggested commit: `Add portable Java practice and SystemCore learning bridges`.
+
+### Follow-up: stable student default and Commands v3 (13 October 2026)
+
+Supersedes the alpha-default recommendation earlier in this review/session: Ed questioned the
+benefit of alpha setup given limited student progress before January. Recommend released
+WPILib **2026.2.1/JDK17** for beginners; teach SystemCore concepts now and reserve alpha for mentors.
+GitHub releases/latest confirms 2026.2.1; releases/tags/v2026.2.2 returns404. Earlier 2026.2.2
+library compile checks are not evidence of a 2.2 installer. Do not alter historical test evidence.
+
+The portable home Java ZIP works without robot libraries. Final validation checks Java17 API
+compatibility using the installed JDK25 compiler and executes on JDK25; no JDK17 runtime or fresh
+2026 install is present here. Keep that acceptance limit explicit. PathPlanner editor lab needs
+only stable GUI2026.1.2, no alpha vendordep. Added systemcore-for-students.html and optional
+commands-v2-v3.html after Lesson8. Official WPILib docs support v2/v3 side by side for several
+seasons; SystemCore does not force v3. Current robot CommandsV2 vendordep conflicts with V3,
+so prototype a separate integration before changing the class/robot framework. Alpha7 disables
+Run/Debug CodeLens per changelog; terminal/trace-table fallbacks remain explicit.
+
+Move the class only after a released 2027 WPILib/vendor/GUI combination is verified together,
+not merely because the calendar says January. New suggested publish commit:
+`Add portable Java practice and SystemCore learning bridges`. No publication performed.
+
+
+## October 13 follow-up — learning from logs
+
+`log-reading-lab.html` follows debugging and precedes field pose. Its small
+`downloads/log-reading-e3.zip` contains five verified historical Enabled changes,
+worksheet, answers and provenance. Rebuild via `site/build_log_lesson.py` after
+`reviews/log-viewer-2026-10-13/inspect_logs.py` has inventoried the mentor's archive.
+The original full WPILOGs and v10 viewer are not published. V10 remains a historical
+tool needing clock, phase, mapping and data-quality fixes; actual SystemCore logs
+and native GUI acceptance are still required. The mentor roadmap is outside the
+published folder at `docs/guides/log-viewer-roadmap-2026-10-13.html` in the workspace.
+Suggested commit: `Add guided log reading from historical E3 evidence`.

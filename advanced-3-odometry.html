@@ -94,7 +94,7 @@ Error: 0.10 m</code></pre><p>With 3% slip:</p><p class="code-label">Expected out
 Odometry says: x=11.30 y=1.00
 Error: 0.30 m</code></pre><p>Twice the distance makes twice the error, and three times the slip makes three times the error. Odometry error grows with how far the robot drives.</p></details>
 
-<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>CTRE’s swerve library runs odometry in its own fast loop, about 250 times a second on the practice bot (<code>Drive/OdometryHz</code>). The practice-bot code also keeps a second, odometry-only pose that cameras never correct, logged as <code>Drive/OdometryOnlyPose</code>. Drive around and compare it with <code>Drive/Pose</code> in AdvantageScope: the two estimates can separate. Neither trace is ground truth: compare them with an independent physical reference. A bad camera or mount can move the corrected pose the wrong way, and this second tracker also runs at a different update rate.</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java</code>, inside <code>periodic()</code> — do not paste</p><pre><code>SwerveDriveState state = getState();
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p class="meta"><a href="code-map.html">Source map and exact reviewed versions</a> · Private team repository; excerpts remain readable here.</p><p>CTRE’s swerve library runs odometry in its own fast loop, about 250 times a second on the practice bot (<code>Drive/OdometryHz</code>). The practice-bot code also keeps a second, odometry-only pose that cameras never correct, logged as <code>Drive/OdometryOnlyPose</code>. Drive around and compare it with <code>Drive/Pose</code> in AdvantageScope: the two estimates can separate. Neither trace is ground truth: compare them with an independent physical reference. A bad camera or mount can move the corrected pose the wrong way, and this second tracker also runs at a different update rate.</p><p class="code-label">Reading example from <a href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java"><code>src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java</code></a>, inside <code>periodic()</code> — do not paste</p><pre><code>SwerveDriveState state = getState();
 Rotation2d gyro = rawHeading(state);
 Pose2d odometryOnlyPose = odometryOnly.update(gyro, state.ModulePositions);
 
@@ -108,7 +108,7 @@ Logger.recordOutput(&quot;Drive/OdometryOnlyPose&quot;, odometryOnlyPose);</code
 <p>Save your files. In your learning notes, write one thing you changed, what happened, and one question. Note the page name so you can resume here next time.</p></section>
 <nav class="lesson-next" aria-label="Lesson navigation">
 <a href="advanced-2-swerve.html" rel="prev"><span class="lesson-direction">← Back</span> <span>How a swerve drive moves</span></a>
-<a href="advanced-4-apriltags.html" rel="next"><span class="lesson-direction">Next →</span> <span>Cameras and AprilTags</span></a>
+<a href="pathplanner-first-path.html" rel="next"><span class="lesson-direction">Next →</span> <span>Make your first PathPlanner path</span></a>
 </nav>
 </main><footer class="page-footer">Advanced track · October 2026 · Student tools: WPILib 2026<br>
 <a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>

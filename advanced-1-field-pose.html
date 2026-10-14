@@ -27,7 +27,7 @@
 <tr><td><code>Rotation2d</code></td><td>An angle. <code>Rotation2d.fromDegrees(90)</code> makes one from degrees.</td></tr>
 <tr><td><code>Pose2d</code></td><td>A Translation2d plus a Rotation2d: where the robot is and which way it faces.</td></tr></tbody></table></div>
 
-<h2>3. Add three imports</h2><p class="placement"><b>Where this goes:</b> open <code>src/main/java/frc/robot/Robot.java</code> in your practice project. Add these lines near the top, below the <code>package frc.robot;</code> line, with any other <code>import</code> lines. Skip any that are already there.</p>
+<h2>3. Add three imports</h2><p class="placement"><b>Where this goes:</b> open <a href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/Robot.java"><code>src/main/java/frc/robot/Robot.java</code></a> in your practice project. Add these lines near the top, below the <code>package frc.robot;</code> line, with any other <code>import</code> lines. Skip any that are already there.</p>
 <p class="code-label">Code to use</p><pre><code>import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;</code></pre>
@@ -78,7 +78,7 @@ Field direction to target: 115.0 degrees
 Turn needed: -65.0 degrees</code></pre><p>The turn is negative again, so the robot turns right by 65°. Facing the blue wall, the target is ahead and to the right of the robot’s nose.</p></details>
 <details><summary>Challenge: which heading needs no turn?</summary><p>Put the robot back at (2.0, 1.5). Which heading should make “Turn needed” close to zero? Try your answer.</p><p>Answer: about 44°, the field direction to the target. With <code>Rotation2d.fromDegrees(44)</code> the turn prints as <code>-0.1 degrees</code>: almost no turn at all.</p></details>
 
-<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>The practice-bot code keeps exactly one official pose, owned by the drivetrain. You see it as <code>Drive/Pose</code> in AdvantageScope and as the robot on the field map in the Elastic dashboard. Holding the aim button uses the same subtraction you just ran, and the Pre-Match tab compares this pose with the selected auto’s starting pose.</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/subsystems/aim/FieldPointAim.java</code>, inside <code>periodic()</code> — do not paste</p><pre><code>Pose2d robot = drivetrain.getState().Pose;
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p class="meta"><a href="code-map.html">Source map and exact reviewed versions</a> · Private team repository; excerpts remain readable here.</p><p>The practice-bot code keeps exactly one official pose, owned by the drivetrain. You see it as <code>Drive/Pose</code> in AdvantageScope and as the robot on the field map in the Elastic dashboard. Holding the aim button uses the same subtraction you just ran, and the Pre-Match tab compares this pose with the selected auto’s starting pose.</p><p class="code-label">Reading example from <a href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/subsystems/aim/FieldPointAim.java"><code>src/main/java/frc/robot/subsystems/aim/FieldPointAim.java</code></a>, inside <code>periodic()</code> — do not paste</p><pre><code>Pose2d robot = drivetrain.getState().Pose;
 Translation2d target = AllianceUtil.flipIfRed(targetBlue);
 Translation2d robotToTarget = target.minus(robot.getTranslation());
 
@@ -100,7 +100,7 @@ headingErrorDegrees = robot.getRotation().minus(targetHeading).getDegrees();</co
 <section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>Coordinates and angles take practice. Repeat section 7 with a few positions of your own, sketching each one first. Next in this track: how a swerve drive turns a request like “go this way” into four wheel angles and speeds.</p>
 <p>Save your files. In your learning notes, write one thing you changed, what happened, and one question. Note the page name so you can resume here next time.</p></section>
 <nav class="lesson-next" aria-label="Lesson navigation">
-<a href="robot-3-controller.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Reading a controller</span></a>
+<a href="log-reading-lab.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Find a bug and read the evidence</span></a>
 <a href="advanced-2-swerve.html" rel="next"><span class="lesson-direction">Next →</span> <span>How a swerve drive moves</span></a>
 </nav>
 </main><footer class="page-footer">Advanced track · October 2026 · Student tools: WPILib 2026<br>

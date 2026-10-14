@@ -15,7 +15,7 @@
 <p>Each pass is short. It reads the controller and sensors, decides what to do <em>right now</em>, sends new requests to the motors, and finishes. The next pass does it all again with fresh readings.</p>
 
 <h2>2. Watch the loop run</h2><p>We will count passes and print once every 50, about once a second at the default loop period. This counter estimates elapsed time; use a clock or WPILib <code>Timer</code> when actual time matters.</p>
-<p class="placement"><b>Where this goes:</b> open <code>src/main/java/frc/robot/Robot.java</code> in your <code>learning-sandbox</code>. Add the field near the top of the class, next to <code>private Command m_autonomousCommand;</code>. Then replace only the existing <code>robotPeriodic()</code> method with the one below, keeping its scheduler line first.</p>
+<p class="placement"><b>Where this goes:</b> open <a href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/Robot.java"><code>src/main/java/frc/robot/Robot.java</code></a> in your <code>learning-sandbox</code>. Add the field near the top of the class, next to <code>private Command m_autonomousCommand;</code>. Then replace only the existing <code>robotPeriodic()</code> method with the one below, keeping its scheduler line first.</p>
 <p class="code-label">Code to use: the field</p><pre><code>private int loopCount = 0;</code></pre>
 <p class="code-label">Code to use: robotPeriodic()</p><pre><code>@Override
 public void robotPeriodic() {
@@ -66,7 +66,7 @@ if (controller.getAButtonPressed()) {
 Seconds running: 1.0
 Seconds running: 1.5</code></pre></details>
 
-<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p>The practice bot’s <code>Robot.java</code> has the same line in the same place, with a comment saying why it matters:</p><p class="code-label">Reading example from <code>src/main/java/frc/robot/Robot.java</code> — do not paste</p><pre><code>public void robotPeriodic() {
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p class="meta"><a href="code-map.html">Source map and exact reviewed versions</a> · Private team repository; excerpts remain readable here.</p><p>The practice bot’s <code>Robot.java</code> has the same line in the same place, with a comment saying why it matters:</p><p class="code-label">Reading example from <a href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/Robot.java"><code>src/main/java/frc/robot/Robot.java</code></a> — do not paste</p><pre><code>public void robotPeriodic() {
   // Runs every subsystem&#x27;s periodic(), checks every button, runs every active command.
   // Nothing in command-based code happens without this line.
   CommandScheduler.getInstance().run();
@@ -85,12 +85,12 @@ Seconds running: 1.5</code></pre></details>
   }
   // ... use the pictures ...
 }</code></pre><p>The first excerpt is the heartbeat. Every 20 ms, WPILib calls <code>robotPeriodic()</code>, and the scheduler runs every subsystem’s <code>periodic()</code>. The second excerpt is one of those. Each pass it reads the robot clock (<code>now</code>), asks the drivetrain for its latest state, and loops over every camera. Nothing in it waits: it checks, decides, and returns in time for the next tick.</p><p>One 2027 difference: the practice bot has no <code>robotInit()</code>. Its start-up code goes in the <code>Robot()</code> constructor, which runs once, before the loop starts.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
-<div class="box try"><span class="box-tag">Practice at home</span><p>Open <code>Practice09RobotLoop.java</code> in your practice workbook. Count loops in a match, and finish <code>PracticeBlinker</code>, a light that blinks by counting loops instead of waiting. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
+<div class="box try"><span class="box-tag">Practice at home</span><p>The <a href="home-java.html">home starter</a> covers Java fundamentals, arrays, simple pose math and health decisions without a robot project. The more detailed workbook activity below uses the 2026 class project.</p><p>Open <code>Practice09RobotLoop.java</code> in your practice workbook. Count loops in a match, and finish <code>PracticeBlinker</code>, a light that blinks by counting loops instead of waiting. The ★ challenge is optional. The self-check tells you when each exercise is right.</p><p>First time? <a href="practice-workbook.html">Set up the practice workbook</a> (about 15 minutes, once).</p></div>
 <div class="checkpoint"><b>Pause and check</b><p>Explain the difference between <code>teleopInit()</code> and <code>teleopPeriodic()</code>. Then explain why a <code>while</code> loop that waits for a button freezes the robot, and what to write instead.</p></div>
 <section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>Remove the extra print lines when you’re done, or the once-a-second messages will fill your Terminal in later lessons. Next: arrays, for robots that have four of everything.</p>
 <p>In your learning notes, write one thing you changed, what happened, and one question.</p></section>
 <nav class="lesson-next" aria-label="Lesson navigation">
-<a href="first-command.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Start and stop one action</span></a>
+<a href="git-guide.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Save and share with Git</span></a>
 <a href="robot-2-arrays.html" rel="next"><span class="lesson-direction">Next →</span> <span>Many of the same thing</span></a>
 </nav>
 </main><footer class="page-footer">Part 2 · October 2026 · Student tools: WPILib 2026<br>
