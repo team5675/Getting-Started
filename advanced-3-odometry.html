@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="style.css?v=20261014"><link rel="stylesheet" href="assets/course.css?v=20261014"><link rel="icon" href="assets/team/wired-icon.webp" type="image/webp"><script defer src="assets/course.js?v=20261014"></script><link rel="stylesheet" href="assets/identity.css?v=20261014team"></head><body data-course-track="explore">
 <!-- Advanced track ("Drive and know where you are"), October 2026. Reading order and maintenance notes: README.md. -->
 <a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><a class="brand" href="index.html" aria-label="WiredCats 5675 programming lab home"><img src="assets/team/wired-logo.webp" width="650" height="216" alt=""><span>PROGRAMMING LAB<small>TEAM 5675 · MATTAWAN, MI</small></span></a><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
-<main id="main-content" tabindex="-1"><header class="hero"><!-- PHOTO:START --><img class="lesson-photo" src="assets/team/note-worthy-2024.webp" width="1600" height="1306" alt="" fetchpriority="high"><a class="photo-credit" href="https://wiredcatrobotics.org/our-robots/">Note Worthy · 2024 team robot ↗</a><!-- PHOTO:END --><span class="hero-tag">Advanced 3 of 8 · Drive and know where you are</span><h1>Keep track of where you went</h1><p class="lede">Add up thousands of tiny moves to follow the robot, and see why small mistakes keep growing.</p></header>
+<main id="main-content" tabindex="-1"><header class="hero"><!-- PHOTO:START --><img class="lesson-photo" src="assets/team/note-worthy-2024.webp" width="1600" height="1306" alt="" fetchpriority="high"><a class="photo-credit" href="https://wiredcatrobotics.org/our-robots/">Note Worthy · 2024 team robot ↗</a><!-- PHOTO:END --><span class="hero-tag">Advanced 3 of 8 · Drive and know where you are</span><h1>Keep track of where you went</h1><p class="lede">Add up thousands of tiny moves to follow the robot, and see why small mistakes keep growing.</p></header><div class="box note"><span class="box-tag">Your working project</span><p>Use the <a href="robot-project.html">downloadable simulation starter</a>. Robot() already calls the private practice() helper once. Replace that helper only for a startup calculation; keep the constructor, mode callbacks and scheduler. A helper has no @Override.</p></div>
 <section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Explain how the robot follows its own motion by adding up tiny moves, and measure how a small wheel slip or heading error grows into a position error.</p>
 <p><b>Before you start:</b> Finish “Where is the robot?” and “How a swerve drive moves.” This page uses <code>for</code> loops from Lesson 6 and the practice project from those pages.</p><p class="meta">Allow 45–60 minutes. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
 <p class="lesson-trail"><a href="advanced-2-swerve.html">← How a swerve drive moves</a> · <a href="lessons.html">All lessons</a></p>
@@ -23,9 +23,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;</code></pre>
 
 <h2>3. Simulate a robot whose wheels slip</h2><p>We will keep two poses. <code>truth</code> is where a pretend robot really is. <code>odometry</code> is where its program thinks it is. The real robot drives 50 steps of 10 cm. Its wheels slip a little, so the program counts 10.3 cm per step.</p>
-<p class="placement"><b>Where this goes:</b> replace only the <code>robotInit()</code> method. Add the helper method <code>printComparison</code> below it, inside the Robot class. If <code>printModules</code> from the previous page is still there, you may keep it or delete it.</p>
-<p class="code-label">Code to use: robotInit</p><pre><code>@Override
-public void robotInit() {
+<p class="placement"><b>Where this goes:</b> replace only the <code>practice()</code> method. Add the helper method <code>printComparison</code> below it, inside the Robot class. If <code>printModules</code> from the previous page is still there, you may keep it or delete it.</p>
+<p class="code-label">Code to use: practice</p><pre><code>private void practice() {
     Pose2d truth = new Pose2d(1.0, 1.0, Rotation2d.kZero);    // where the robot really is
     Pose2d odometry = new Pose2d(1.0, 1.0, Rotation2d.kZero); // where the robot thinks it is
 
@@ -39,7 +38,7 @@ public void robotInit() {
 
     printComparison(truth, odometry);
 }</code></pre>
-<p class="code-label">Code to use: new helper method, below robotInit</p><pre><code>private void printComparison(Pose2d truth, Pose2d odometry) {
+<p class="code-label">Code to use: new helper method, below practice</p><pre><code>private void printComparison(Pose2d truth, Pose2d odometry) {
     double error = odometry.getTranslation().getDistance(truth.getTranslation());
     System.out.println(&quot;Real robot:    x=&quot; + String.format(&quot;%.2f&quot;, truth.getX())
         + &quot; y=&quot; + String.format(&quot;%.2f&quot;, truth.getY()));
@@ -53,16 +52,15 @@ public void robotInit() {
 <tr><td><code>truth.plus(trueStep)</code></td><td>Apply that move starting from the pose. “Forward” means the way the pose faces, so the heading matters.</td></tr>
 <tr><td><code>truth = truth.plus(...)</code></td><td>A Pose2d cannot be changed after it is made. <code>plus</code> returns a <em>new</em> pose, so we store it back in the same variable. (Your PracticeCounter worked differently: its <code>addOne()</code> changed the object itself.)</td></tr>
 <tr><td><code>getDistance(...)</code></td><td>The straight-line distance between where odometry thinks the robot is and where it really is.</td></tr></tbody></table></div>
-<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>Ctrl+Shift+P → WPILib: Simulate Robot Code</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>.\gradlew.bat simulateJava</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
 <p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Real robot:    x=6.00 y=1.00
 Odometry says: x=6.15 y=1.00
 Error: 0.15 m</code></pre>
 <p>Each step was only 3 mm wrong, but 50 steps make 15 cm. The error did not cancel out; it piled up.</p>
 
 <h2>4. A small heading mistake</h2><p>Now make the wheels perfect, but start the program with a heading that is 2° wrong. That can happen if the robot was set down slightly crooked and someone told it “you face exactly 0°.”</p>
-<p class="placement"><b>Where this goes:</b> replace robotInit again. Keep <code>printComparison</code>.</p>
-<p class="code-label">Code to use</p><pre><code>@Override
-public void robotInit() {
+<p class="placement"><b>Where this goes:</b> replace practice again. Keep <code>printComparison</code>.</p>
+<p class="code-label">Code to use</p><pre><code>private void practice() {
     Pose2d truth = new Pose2d(1.0, 1.0, Rotation2d.kZero);
     Pose2d odometry = new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(2)); // heading 2 degrees wrong
 
@@ -92,7 +90,7 @@ Error: 0.10 m</code></pre><p>With 3% slip:</p><p class="code-label">Expected out
 Odometry says: x=11.30 y=1.00
 Error: 0.30 m</code></pre><p>Twice the distance makes twice the error, and three times the slip makes three times the error. Odometry error grows with how far the robot drives.</p></details>
 
-<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p class="meta"><a href="code-map.html">Source map and exact reviewed versions</a> · Private team repository; excerpts remain readable here.</p><p>CTRE’s swerve library runs odometry in its own fast loop, about 250 times a second on the practice bot (<code>Drive/OdometryHz</code>). The practice-bot code also keeps a second, odometry-only pose that cameras never correct, logged as <code>Drive/OdometryOnlyPose</code>. Drive around and compare it with <code>Drive/Pose</code> in AdvantageScope: the two estimates can separate. Neither trace is ground truth: compare them with an independent physical reference. A bad camera or mount can move the corrected pose the wrong way, and this second tracker also runs at a different update rate.</p><p class="code-label">Reading example from <a href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java"><code>src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java</code></a>, inside <code>periodic()</code> — do not paste</p><pre><code>SwerveDriveState state = getState();
+<div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p class="meta"><a href="code-map.html">Source map and exact reviewed versions</a> · Private team repository; excerpts remain readable here.</p><p>CTRE’s swerve library runs odometry in its own fast loop, about 250 times a second on the practice bot (<code>Drive/OdometryHz</code>). The practice-bot code also keeps a second, odometry-only pose that cameras never correct, logged as <code>Drive/OdometryOnlyPose</code>. Drive around and compare it with <code>Drive/Pose</code> in AdvantageScope: the two estimates can separate. Neither trace is ground truth: compare them with an independent physical reference. A bad camera or mount can move the corrected pose the wrong way, and this second tracker also runs at a different update rate.</p><p class="code-label">Reading example from <a title="Optional source · private team repository; team access required" href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java"><code>src/main/java/frc/robot/subsystems/drivetrain/CommandSwerveDrivetrain.java</code></a>, inside <code>periodic()</code> — do not paste</p><pre><code>SwerveDriveState state = getState();
 Rotation2d gyro = rawHeading(state);
 Pose2d odometryOnlyPose = odometryOnly.update(gyro, state.ModulePositions);
 
@@ -102,7 +100,7 @@ Logger.recordOutput(&quot;Drive/OdometryOnlyPose&quot;, odometryOnlyPose);</code
 <div class="box seam"><span class="box-tag">2027 differences</span>In the WPILib 2027 alpha, <code>Rotation2d.kZero</code> is renamed <code>Rotation2d.ZERO</code> and the classes live in <code>org.wpilib.math.geometry</code>. Odometry itself works the same way. Keep your practice on WPILib 2026.</div>
 
 <div class="checkpoint"><b>Pause and check</b><p>Explain the difference between the two mistakes in sections 3 and 4. Then explain why a carried robot can fool odometry but not the gyro.</p></div>
-<section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>You now know why the robot needs something that can see the field. Next in this track: cameras and AprilTags, which give the robot a fix on where it really is.</p>
+<section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>You now know why the robot needs something that can see the field. Next, make a short PathPlanner path and connect it to the model; cameras and AprilTags follow.</p>
 <p>Save your files. In your learning notes, write one thing you changed, what happened, and one question. Note the page name so you can resume here next time.</p></section>
 <nav class="lesson-next" aria-label="Lesson navigation">
 <a href="advanced-2-swerve.html" rel="prev"><span class="lesson-direction">← Back</span> <span>How a swerve drive moves</span></a>

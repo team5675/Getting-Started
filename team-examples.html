@@ -57,7 +57,7 @@ WPILib’s <b>scheduler</b> does that coordinating work. This short method in la
   }</code></pre>
 <h3>Unpack the two layers</h3><ol><li><code>@Override</code> says this method supplies the behavior for a method defined by the parent class.</li>
 <li><code>public void robotPeriodic()</code> defines a method called robotPeriodic. It takes no arguments and returns no result value.</li>
-<li>WPILib calls that method repeatedly. It is different from the <code>robotInit()</code> examples that run once at startup.</li>
+<li>WPILib calls that method repeatedly. It is different from the <code>practice()</code> examples called once by our <code>Robot()</code> constructor at startup.</li>
 <li><code>CommandScheduler.getInstance()</code> gets the shared scheduler object. You do not create another scheduler with <code>new</code>.</li>
 <li><code>.run()</code> calls that object’s run method. It handles scheduled commands and subsystem periodic work.</li></ol>
 <figure><div class="learning-cycle"><div>WPILib calls<br><b>robotPeriodic()</b></div><div>This method calls<br><b>the scheduler</b></div><div>The scheduler manages<br><b>active commands</b></div></div><figcaption>Read left to right, or top to bottom on a phone. The framework repeats this sequence; it is not a loop you write yourself.</figcaption></figure>
@@ -100,7 +100,7 @@ The intake selector walks enum declaration order, rather than reading stored num
 two sources adding the same request type can interfere when one removes it. Review ownership, arbitration, duplicate requests, and cleanup before reusing this design.</p></details>
 <div class="checkpoint"><b>A useful stopping point</b><p>Choose one excerpt and explain it in your own words using
 “first… then…”. Write one thing you recognize from your practice code and one question you still have.
-That is enough for this reading session.</p></div><p><a href="lessons.html">Return to the lesson list</a></p></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+That is enough for this reading session.</p></div><p><a href="lessons.html">Return to the lesson list</a></p></main><footer class="page-footer">Beginner revision · October 15, 2026 · Student route updated · Student tools: WPILib 2026<br>
 <a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
 Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a><p class="artwork-credit">Photos and logos: <a href="https://wiredcatrobotics.org/">WiredCats Team 5675</a>. Robot photos show past seasons; lesson diagrams explain the concepts. Character portraits are AI-created learning illustrations. <a href="assets/team/sources.json">Photo sources</a>.</p></footer>
 </div></body></html>

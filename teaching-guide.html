@@ -22,7 +22,7 @@
   <p class="sub" style="margin-top:10px">Read this alongside
   <a href="exercises.html">Robot Programming Practice</a>. Use the contents list to find
   the topic named by an activity; you can leave the other sections for later.</p>
-</header><section class="start-card" id="later-reference"><h2>Later reference: Robot architecture</h2><p>New to programming? Start with the <a href="lesson-1-setup.html">step-by-step beginner lessons</a>. This page covers later work and is not required for your first few hours.</p><p>Use it with a mentor when the topic becomes relevant. The team-project activities need a separate, tested training repository; SystemCore work uses its own bench setup.</p></section>
+</header><div class="box note"><h2>Current hands-on course</h2><p>For runnable beginner practice, start with <a href="robot-project.html">the stable simulation starter</a> and <a href="sim-lab.html">six linked labs</a>. This architecture reference describes the broader robot design; older TemplateSubsystem exercises require a separately implemented baseline.</p></div><section class="start-card" id="later-reference"><h2>Later reference: Robot architecture</h2><p>New to programming? Start with the <a href="lesson-1-setup.html">step-by-step beginner lessons</a>. This page covers later work and is not required for your first few hours.</p><p>Use it with a mentor when the topic becomes relevant. The team-project activities need a separate, tested training repository; SystemCore work uses its own bench setup.</p></section>
 <div class="box read"><span class="box-tag">Use this as a reference</span>
 Start with <a href="index.html">Getting Started</a> and <a href="first-command.html">your first command</a>.
 Return to a section here when an activity needs it. This page describes the planned teaching
@@ -613,7 +613,7 @@ Re-apply the two ★-marked 5675 edits after any regeneration.</td></tr>
 <td><code>RobotController.getSerialNumber()</code> reads a roboRIO serial; verify the
 SystemCore equivalent and update the one detection method.</td></tr>
 <tr><td>Joystick math</td><td><code>util/JoystickUtil.java</code></td>
-<td>2027 WPILib adds an official 2D joystick utility doing what this class does —
+<td>WPILib 2026.2.1 already includes vector deadband in MathUtil.applyDeadband. Review the remaining scaling and shaping separately —
 consider swapping to it. Concepts transfer 1:1.</td></tr>
 <tr><td>Dashboard chooser</td><td><code>RobotContainer.java</code></td>
 <td>SmartDashboard/NT3 are removed in 2027; this codebase already uses zero

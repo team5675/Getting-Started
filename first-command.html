@@ -1,112 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team 5675 — Start and stop one action</title>
+<title>Start and stop one action · WiredCats 5675</title>
 <link rel="stylesheet" href="style.css?v=20261014"><link rel="stylesheet" href="assets/course.css?v=20261014"><link rel="icon" href="assets/team/wired-icon.webp" type="image/webp"><script defer src="assets/course.js?v=20261014"></script><link rel="stylesheet" href="assets/identity.css?v=20261014team"></head><body data-course-track="java">
 <a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><a class="brand" href="index.html" aria-label="WiredCats 5675 programming lab home"><img src="assets/team/wired-logo.webp" width="650" height="216" alt=""><span>PROGRAMMING LAB<small>TEAM 5675 · MATTAWAN, MI</small></span></a><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
-<main id="main-content" tabindex="-1"><header class="hero"><!-- PHOTO:START --><img class="lesson-photo" src="assets/team/programming.webp" width="1200" height="1200" alt="" fetchpriority="high"><a class="photo-credit" href="https://wiredcatrobotics.org/">Programming with the WiredCats ↗</a><!-- PHOTO:END --><span class="hero-tag">Lesson 8 of 8 · Begin at your own pace</span><h1>Start and stop one action</h1><p class="lede">Let the robot framework start a small action and clean up when it ends.</p></header>
-<section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Turn a pretend light on for about two seconds, then off. Trace which method runs at each stage.</p>
-<p><b>Before you start:</b> Complete Lesson 7 and work with a mentor for this transition. Keep your original Command Robot template. No physical light or gamepad is required.</p><p class="meta">Allow 45–75 minutes with a mentor. This is a planning estimate, not a time limit. Pauses and questions count as learning.</p></section>
-<p class="lesson-trail"><a href="lesson-7-objects.html">← Build two objects</a> · <a href="lessons.html">All lessons</a></p>
-<details><summary>Programmed before? Read this first</summary><p>Do this lesson fully, even if Java is familiar. Command-based code turns the usual order around. You don’t write a loop that runs your action. Instead, WPILib calls <em>your</em> methods (<code>initialize</code>, <code>end</code>) at the right moments. Methods that a framework calls for you are named <b>callbacks</b>.</p></details>
-<!-- GUIDE:START --><aside class="guide-callout tip" aria-label="Learning prompt"><img class="companion" src="assets/companions/explainer.webp" width="480" height="400" loading="lazy" alt=""><div><span class="eyebrow">TEAM TIP</span><h3>Think about when it starts and stops.</h3><p>A command describes a task over time. Read the example in order: start it, let it run, and find what makes it finish.</p></div></aside><!-- GUIDE:END -->
-<h2>1. Two jobs, two classes</h2><p>A <b>subsystem</b> groups the state and operations for one part of a robot.
-A <b>command</b> describes an action using a subsystem. In this practice example, the subsystem stores a boolean called
-<code>on</code>. The command changes it at the start and end of an action.</p>
-<p>The <b>scheduler</b> is framework code that starts and stops commands. You will give it an action to run;
-you do not write a loop that waits two seconds.</p>
-<h2>2. Add the light subsystem</h2><ol><li>In Explorer, expand <code>src/main/java/frc/robot</code>.</li>
-<li>Open its <code>subsystems</code> folder, or create that folder if missing. Create <code>PracticeLight.java</code> inside it.</li>
-<li>Paste this complete file. Save and run <b>WPILib: Build Robot Code</b>. At this stage, it should build but will not print light messages yet.</li></ol>
-<p class="code-label">Complete file: subsystems/PracticeLight.java</p><pre><code>package frc.robot.subsystems;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-public class PracticeLight extends SubsystemBase {
-    private boolean on = false;
-
-    public void setOn(boolean requestedState) {
-        on = requestedState;
-        System.out.println(&quot;Light on: &quot; + on);
-    }
-}</code></pre>
-<p><code>import</code> makes another class’s name available in this file. <code>extends SubsystemBase</code>
-means our class builds on WPILib’s subsystem class. The field and method inside should look familiar from PracticeCounter.</p>
-<p>Calling <code>setOn(true)</code> stores true and prints it; <code>setOn(false)</code> stores false and prints it.
-The state stays in the field between calls. Nothing in this class drives real hardware.</p>
-<h2>3. Add the action</h2><ol><li>Create <code>KeepLightOn.java</code> in the existing <code>commands</code> folder under <code>frc/robot</code>. Create the folder if necessary.</li>
-<li>Paste this complete file and save. Build again before changing anything else.</li></ol>
-<p class="code-label">Complete file: commands/KeepLightOn.java</p><pre><code>package frc.robot.commands;
-
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.PracticeLight;
-
-public class KeepLightOn extends Command {
-    private final PracticeLight light;
-
-    public KeepLightOn(PracticeLight light) {
-        this.light = light;
-        addRequirements(light);
-    }
-
-    @Override
-    public void initialize() {
-        light.setOn(true);
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        light.setOn(false);
-    }
-}</code></pre><div class="table-scroll"><table><thead><tr><th scope="col">Piece</th><th scope="col">What it means here</th></tr></thead><tbody><tr><td><code>private final PracticeLight light;</code></td><td>This field keeps a reference to the light object. Final means we do not replace that reference; the light’s own state can still change.</td></tr><tr><td><code>KeepLightOn(PracticeLight light)</code></td><td>The constructor receives the light object the command will use. It does not create a second light.</td></tr><tr><td><code>this.light = light;</code></td><td>The left side is this command object’s field; the right side is the constructor parameter. Store the received reference.</td></tr><tr><td><code>addRequirements(light);</code></td><td>Tell the scheduler this command needs exclusive use of the light subsystem while it runs.</td></tr><tr><td><code>initialize()</code></td><td>The scheduler calls this once when the action starts. It turns on the pretend light.</td></tr><tr><td><code>end(boolean interrupted)</code></td><td>The scheduler calls this when the action ends. This example turns off the light whether it finished or was canceled.</td></tr></tbody></table></div>
-<p>You do not need <code>execute()</code> here: there is no changing output to recompute each cycle.
-The inherited <code>isFinished()</code> returns false, so this command will keep running until something ends it.
-We will add a timeout at the place that creates the action.</p>
-<h2>4. Connect one light in RobotContainer</h2><p>Open <code>RobotContainer.java</code>, beside Robot.java.
-This class connects subsystems and commands in the generated template. Do not replace the entire file.</p>
-<ol><li>Add these imports below the package line, skipping any already present:</li></ol>
-<p class="code-label">Code to use</p><pre><code>import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.KeepLightOn;
-import frc.robot.subsystems.PracticeLight;</code></pre>
-<ol start="2"><li>Inside the RobotContainer class, add this field beside the existing fields, above the constructor. It creates one light object:</li></ol>
-<p class="code-label">Code to use</p><pre><code>private final PracticeLight practiceLight = new PracticeLight();</code></pre>
-<ol start="3"><li>Find the existing <code>getAutonomousCommand()</code> method using <code>Ctrl+F</code>. Replace only that complete method with the one below. Keep all other template code.</li></ol>
-<p class="code-label">Code to use</p><pre><code>public Command getAutonomousCommand() {
-    return new KeepLightOn(practiceLight).withTimeout(2.0);
-}</code></pre>
-<p>Read the return line in two parts: <code>new KeepLightOn(practiceLight)</code> creates an action using our
-existing light; <code>.withTimeout(2.0)</code> wraps it so it is ended after about two seconds.
-The returned command is scheduled by the template when Autonomous starts.</p>
-<h2>5. Run one action</h2><ol><li>Save all changed files with <b>File → Save All</b>. Stop any previous simulation and launch <b>WPILib: Simulate Robot Code</b>.</li>
-<li>At startup, your earlier Lesson 7 messages may print. That is expected; they are separate from the light action.</li>
-<li>In the Simulation GUI, find <b>Robot State</b>. Select <b>Autonomous</b>. That mode runs the command returned by getAutonomousCommand. In versions with a separate enable control, enable Autonomous too.</li>
-<li>Watch the VS Code Terminal. Look for these two messages about two seconds apart:</li></ol>
-<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Light on: true
-Light on: false</code></pre>
-<p>Autonomous means the robot program performs a scheduled action without a driver holding a button.
-Our action changes a boolean only. No robot shape, real lamp, or moving motor should appear.</p>
-<figure><div class="learning-cycle"><div><b>Enable Autonomous</b><p>The template schedules our timed action.</p></div><div><b>initialize()</b><p>Store true and print it.</p></div><div><b>Timeout expires</b><p>end() stores false and prints it.</p></div></div><figcaption>A timeout is a limit on how long the action can run; it does not freeze the rest of the program.</figcaption></figure>
-<h2>6. Repeat, then change one thing</h2><ol><li>Select <b>Disabled</b>, then Autonomous again. Each transition starts the action again.</li>
-<li>Change 2.0 to 4.0 in RobotContainer. Save, restart the simulation, then enable Autonomous. Predict how the gap between messages changes.</li>
-<li>On another run, select Disabled after about one second. The action should clean up early and print false.</li></ol>
-<p>The timeout interrupts the inner command when time runs out. Disabling also cancels the action. Our cleanup
-does not depend on which of those happened; both need the light turned off.</p>
-<details><summary>Nothing prints for the light</summary><ol><li>Check the build succeeded and you restarted after saving.</li><li>Check you selected Autonomous, not only launched the disabled simulator.</li><li>Check you replaced the existing getAutonomousCommand, rather than adding an unrelated method.</li><li>Ask a mentor to confirm the template’s Robot.autonomousInit schedules that returned command and robotPeriodic still runs the scheduler.</li></ol></details><details><summary>A package or class cannot be found</summary><p>Check each file’s package against its folder: PracticeLight is in frc.robot.subsystems; KeepLightOn is in frc.robot.commands. Compare both imports in RobotContainer and save all files. Do not solve this by adding hardware vendor libraries; this example only uses WPILib.</p></details><div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p class="meta"><a href="code-map.html">Source map and exact reviewed versions</a> · Private team repository; excerpts remain readable here.</p><p>The real robot uses the same three pieces you just connected: subsystems, commands, and a <code>RobotContainer</code> that wires them together. Here is how it starts the selected auto:</p><p class="code-label">Reading example from <a href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/Robot.java"><code>src/main/java/frc/robot/Robot.java</code></a> — do not paste</p><pre><code>public void autonomousInit() {
-  // (one camera-check line is left out here)
-  container.onAutonomousStart();
-  autonomousCommand = container.getAutonomousCommand();
-  if (autonomousCommand != null) {
-    CommandScheduler.getInstance().schedule(autonomousCommand);
-  }
-}</code></pre><p class="code-label">And one driver button, in RobotContainer.java — do not paste</p><pre><code>// A: brake (X-lock).
-driver.a().whileTrue(drivetrain.applyRequest(() -&gt; brake).withName(&quot;Brake&quot;));</code></pre><p>The first excerpt matches what your template does when Autonomous starts. It asks <code>RobotContainer</code> for a command, then hands it to the scheduler. (Generated templates can call <code>CommandScheduler.getInstance().schedule(...)</code> or the command’s <code>schedule()</code> method. Keep the generated style for your installed release.)</p><p>The second binds a button. <code>whileTrue</code> starts the brake command when A is pressed. It ends the command when A is released, so the command’s cleanup runs just like your light’s <code>end()</code>. <code>() -&gt; brake</code> is a <b>lambda</b>, a tiny method with no name. Part 2 of this guide shows lambdas in context.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, branch <code>codex/camera-verification</code>, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
-<div class="box try"><span class="box-tag">Practice at home</span><p>The <a href="home-java.html">home starter</a> covers Java fundamentals, arrays, simple pose math and health decisions without a robot project. The more detailed workbook activity below uses the 2026 class project.</p><p>Try two changes in your sandbox. Give the light action a 1-second timeout, then make it print a different message in <code>end()</code> when <code>interrupted</code> is true. Run Autonomous both ways, letting it time out and disabling early, and compare the output. Both interrupt the inner <code>KeepLightOn</code>, so <code>interrupted</code> is true in both cases. That flag alone does not tell you whether a timeout or Disable caused the interruption. If you ever need a known-good starting point, <code>PracticeLight.java</code> and <code>KeepLightOn.java</code> are in the practice workbook’s <code>answers/lesson-8</code> folder.</p></div>
-<div class="checkpoint"><b>Pause and check</b><p>Trace the action with your finger: RobotContainer creates one light; the command remembers it; initialize turns it on; end turns it off. Explain why creating the Java files alone did not start the action.</p></div><section class="start-card" aria-labelledby="pause"><h2 id="pause">A good place to stop</h2><p>This is a substantial new idea. Repeat it before moving to a larger project. When you can explain start and cleanup, try the last-year command reading with a mentor. The full swerve/vision project can wait.</p>
-<p>Save your files. In your learning notes, write one thing you changed, what happened,
-and one question. Note the lesson number so you can resume here next time.</p></section>
-<div class="box note"><span class="box-tag">Looking ahead</span><p>This lesson uses Commands v2, which also works on SystemCore. After it makes sense, read the optional <a href="commands-v2-v3.html">v2/v3 comparison</a>. You do not need a second framework to continue.</p></div><nav class="lesson-next" aria-label="Lesson navigation">
-<a href="lesson-7-objects.html" rel="prev"><span class="lesson-direction">← Back</span> <span>Build two objects</span></a>
-<a href="git-guide.html" rel="next"><span class="lesson-direction">Next →</span> <span>Save and share with Git</span></a>
-</nav></main><footer class="page-footer">Beginner revision · September 23, 2026 · Student tools: WPILib 2026<br>
+<main id="main-content" tabindex="-1"><header class="hero"><!-- PHOTO:START --><img class="lesson-photo" src="assets/team/programming.webp" width="1200" height="1200" alt="" fetchpriority="high"><a class="photo-credit" href="https://wiredcatrobotics.org/">Programming with the WiredCats ↗</a><!-- PHOTO:END --><span class="hero-tag">Lesson 8 · Commands</span><h1>Start and stop one action</h1><p class="lede">Make an action run, finish and clean up.</p></header><section class="start-card"><h2>One action over time</h2><p>Use the <a href="robot-project.html">simulation starter</a>. Turn its pretend light on for two seconds, then change the duration and interrupt it. No physical light is connected.</p></section><!-- GUIDE:START --><aside class="guide-callout tip" aria-label="Learning prompt"><img class="companion" src="assets/companions/explainer.webp" width="480" height="400" loading="lazy" alt=""><div><span class="eyebrow">TEAM TIP</span><h3>Think about when it starts and stops.</h3><p>A command describes a task over time. Read the example in order: start it, let it run, and find what makes it finish.</p></div></aside><!-- GUIDE:END -->
+<h2>1. Meet the subsystem and command</h2><p>Open <code>subsystems/PracticeLight.java</code>. It remembers a boolean. Open <code>commands/KeepLightOn.java</code>. Its constructor receives that same light object and declares a requirement:</p><pre><code>public KeepLightOn(PracticeLight light) {
+    this.light = light;
+    addRequirements(light);
+}
+@Override public void initialize() { light.setOn(true); }
+@Override public void end(boolean interrupted) { light.setOn(false); }</code></pre><p>A subsystem owns state and operations. A command describes an action over time. The scheduler calls initialize once when the command starts, and end when it finishes or is interrupted. The requirement prevents two commands from independently controlling the light at once.</p><p><code>this.light</code> is the command’s field; the constructor parameter is the light object it was given. <code>extends Command</code> supplies framework behavior. <code>@Override</code> checks the callback spelling. The inherited isFinished returns false, so the action needs an external ending condition.</p><h2>2. Find the timeout</h2><p>In <code>RobotContainer.java</code>, find <code>autonomousCommand</code>. Its timed-light choice returns:</p><pre><code>return lightCommand().withTimeout(2.0);</code></pre><p><code>lightCommand()</code> creates a fresh action. withTimeout wraps it in a two-second limit without waiting inside a Java loop. Robot.autonomousInit schedules the returned action; robotPeriodic runs the scheduler on each pass.</p><h2>3. Run, change, interrupt</h2><ol><li>Start the simulation. Choose <b>Timed light</b> in the browser station, then Autonomous. Expect Light on: true, then false roughly two seconds later.</li><li>Disable and stop. Change only <code>2.0</code> to <code>4.0</code>, save and restart. Repeat; predict the new gap.</li><li>On another run, click Disabled after about one second. The light must turn off immediately.</li><li>Inside <code>end</code>, add <code>System.out.println("Interrupted: " + interrupted);</code>. Save and restart. Compare timeout and Disable: both interrupt the inner light command, so both print true. That flag does not identify the cause.</li></ol><figure><div class="learning-cycle"><div><b>Enable Autonomous</b><p>Schedule the selected action.</p></div><div><b>initialize</b><p>Turn the light on.</p></div><div><b>Timeout or Disable</b><p>end turns the light off.</p></div></div><figcaption>The framework manages time while the rest of the program keeps running.</figcaption></figure><details><summary>The light never starts</summary><p>Choose Timed light, not TrainingLine. Select Autonomous, and keep the browser focused; switching windows disables the model. Check the Terminal for a build error. Save and restart after edits.</p></details><h2>4. Make the next connection yourself</h2><p><a href="sim-lab.html#lab-1">Lab 1 binds the light to an input</a>. This is your next short task: hold Space to start it and release to stop it. Then make a Git checkpoint.</p><div class="box next"><span class="box-tag">In the real 2027 practice robot</span><p>This reviewed driver binding uses the same command lifecycle:</p><pre><code>driver.a().whileTrue(drivetrain.applyRequest(() -&gt; brake).withName(&quot;Brake&quot;));</code></pre><p>The A button starts a brake command on press and cancels it on release. Its subsystem and cleanup are more substantial than the pretend light, but the start/stop idea is the same. This is a reading excerpt; do not paste a hardware command into the teaching model. <a href="code-map.html">Source map</a>.</p></div><div class="checkpoint"><b>Explain it</b><p>Why did creating a command object not start it? Which method cleans up? What happens if another command requires the light?</p></div><nav class="lesson-next" aria-label="Lesson navigation"><a href="robot-project.html" rel="prev"><span class="lesson-direction">← Back</span><span>Your robot project</span></a><a href="git-guide.html" rel="next"><span class="lesson-direction">Next →</span><span>Save a Git checkpoint</span></a></nav></main><footer class="page-footer">Learning route revised · October 15, 2026 · Student tools: WPILib 2026<br>
 <a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
 Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a><p class="artwork-credit">Photos and logos: <a href="https://wiredcatrobotics.org/">WiredCats Team 5675</a>. Robot photos show past seasons; lesson diagrams explain the concepts. Character portraits are AI-created learning illustrations. <a href="assets/team/sources.json">Photo sources</a>.</p></footer>
 </div></body></html>
