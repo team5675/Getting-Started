@@ -4,16 +4,18 @@ Current course source, revised 15 October 2026. Static HTML/CSS/JavaScript; no r
 
 ## Learning route
 
-Lessons 1–7 use the same plain-Java starter at home and in class. `robot-project.html` introduces a separate stable-2026 simulation project, followed by Lesson 8 and six cumulative checkpoints in `sim-lab.html`. The later math, camera, pose and timing lessons connect these experiences to the reviewed robot excerpts. `course-finish.html` supplies a capstone and `practice-bot-transfer.html` explains supervised hardware transfer.
+There is one student route of 39 steps, listed in `../course-route.json`. Lessons, the seven simulation labs (`lab-1.html` to `lab-6.html`, then `mechanism-lab.html`) and four short Java toolbox pages (`toolbox-*.html`) sit in the order students need them. `sim-lab.html` and `java-toolbox.html` are overviews that keep the old `#lab-N` and `#inheritance`-style anchors working.
 
-`home-java.html` is a shortcut to the same route. `practice-workbook.html` is optional repetition. The original TemplateSubsystem activities in `exercises.html` are a collapsed mentor reference requiring an implemented baseline.
+Do not hand-edit Back/Next buttons, the "Step N of 39" strip or the step list on `lessons.html`. Change the order in `course-route.json`, then run `python site/build_route.py` from the workspace. `--check` reports drift without writing and is part of `validate-course.bat`. Every page must be either a route step or listed under `reference` in the route file; only steps carry Back/Next buttons, and hand-written "← ..." or "Next ..." links must point at the real neighbouring steps. Label a link to a later lab "Coming up" rather than "Next". The script owns only the text between its `STEP`, `NEXT` and `STEPS` marker comments; `assets/route.css` styles them.
+
+`home-java.html` points to step 1. `practice-workbook.html`, `extra-help.html` and `team-examples.html` are optional. The original TemplateSubsystem activities in `exercises.html` are a collapsed mentor reference requiring an implemented baseline.
 
 ## Source and downloads
 
 Edit these HTML pages directly. Editable exercise projects live in `../course-src/`:
 - home-java-starter: fourteen small Java examples and answers.
 - practice-workbook: optional exercises with 52 JUnit checks.
-- sim-starter: Gradle project, browser station, actual AdvantageKit logging, PathPlanner paths, six checkpoints and answers.
+- sim-starter: Gradle project, browser station, actual AdvantageKit logging, PathPlanner paths, six checkpoints and answers (one lab page each).
 
 Package them with `python site/build_course_downloads.py` from the workspace. `site/build_sim_checkpoints.py` regenerates checkpoint/answer Java and path files; it resets the working starter to checkpoint 1. Review that script before changing the curriculum. `site/build_course_imagery.py` maintains authentic team photos, logos and unnamed illustrated prompts without rewriting lesson content.
 
@@ -64,9 +66,18 @@ run on the normal program path, alongside the original self-checks.
 their reading limits, Java 17 guard, and optional account/payment boundary. Do not
 send new learners to an unrestricted newest-Java installation tutorial.
 
-Use `help.html#backup` before experimentation until Git has been learned. Lesson 8
-leads to Lab 1; the lab table supplies later prerequisites. The supplied trigger
+Use `help.html#backup` before experimentation until Git has been learned. Lesson 8 leads to Lab 1; since 16 October 2026 the route
+itself places every later lab after its prerequisites. The supplied trigger
 helpers make lambdas unnecessary for Lab 1; the toolbox introduces them before
 AutoBuilder and deferred events. Mentor notes include a first-time-student trial.
 Review and preservation evidence: `reviews/beginner-review-2026-10-15/` outside
 the published tree. No site publication was performed.
+
+## Single route — 16 October 2026
+
+One 39-step route replaces the separate Next chains. sim-lab.html was split into
+lab-1.html to lab-6.html and java-toolbox.html into four toolbox pages; the code
+blocks moved unchanged and their validation/snippets.json entries moved with them.
+The home page has one primary Start Lesson 1 button. Evidence and the one-time
+migration script: reviews/route-fixes-2026-10-16/ outside the published tree.
+No site publication was performed.

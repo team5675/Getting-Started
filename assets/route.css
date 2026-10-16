@@ -1,0 +1,24 @@
+/* The one learning route: "Step N of M" strip in each lesson hero, the step list on
+   lessons.html, and Back/Next labels. The HTML is written by site/build_route.py. */
+.route-step{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;max-width:60%;margin:0 0 16px;padding:7px 14px;border:1px solid #ffffff33;border-radius:999px;background:#ffffff14;color:#d3e1f1;font-size:13px;line-height:1.4}
+.route-step a{color:#fff;font-weight:600;text-decoration:none}
+.route-step a:hover,.route-step a:focus-visible{text-decoration:underline}
+.route-step a b{font-weight:800;letter-spacing:.02em}
+.route-step-badge{padding:1px 9px;border-radius:999px;background:#ffc779;color:#12243c;font-size:12px;font-weight:700}
+.route-step-bar{flex:1 1 80px;min-width:80px;height:6px;border-radius:3px;background:#ffffff2b;overflow:hidden}
+.route-step-bar span{display:block;height:100%;border-radius:3px;background:#9aead8}
+.lesson-next .lesson-direction{text-transform:none;letter-spacing:.01em;font-size:14px}
+.route-list h3{margin-top:34px}
+.route-list h3 small{font-size:15px;font-weight:600;color:var(--ink-soft,#506078)}
+.route-steps{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.route-steps li{position:relative;padding:14px 18px 14px 70px;border:1px solid var(--line,#d7e0ed);border-radius:12px;background:var(--card,#fff)}
+.route-steps a{font-weight:700;text-decoration:none}
+.route-steps a:hover,.route-steps a:focus-visible{text-decoration:underline}
+.route-label{display:inline-block;min-width:0;margin-right:6px;padding:1px 8px;border-radius:6px;background:var(--blue-soft,#edf3ff);color:var(--blue,#174cae);font-size:13px;font-weight:700}
+.route-meta{display:block;margin-top:2px;color:var(--ink-soft,#506078);font-size:14px}
+.route-steps p{margin:4px 0 0}
+.route-steps .route-note{color:var(--amber,#895007);font-size:14px}
+.route-steps li:target{border-color:var(--blue,#174cae);box-shadow:0 0 0 3px var(--blue-soft,#edf3ff)}
+.route-num{position:absolute;left:16px;top:13px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#0c2038;color:#fff;font-weight:800;font-size:15px}
+@media(max-width:700px){.route-step{max-width:100%;border-radius:14px}.route-steps li{padding:12px 14px 12px 60px}.route-num{left:12px;width:36px;height:36px}}
+@media print{.route-step{display:none}}
