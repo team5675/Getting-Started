@@ -5,7 +5,7 @@
 <!-- Practice workbook page, October 2026. See README.md. -->
 <a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><a class="brand" href="index.html" aria-label="WiredCats 5675 programming lab home"><img src="assets/team/wired-logo.webp" width="650" height="216" alt=""><span>PROGRAMMING LAB<small>TEAM 5675 · MATTAWAN, MI</small></span></a><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
 <main id="main-content" tabindex="-1"><header class="hero"><!-- PHOTO:START --><img class="lesson-photo" src="assets/team/programming.webp" width="1200" height="1200" alt="" fetchpriority="high"><a class="photo-credit" href="https://wiredcatrobotics.org/">Programming with the WiredCats ↗</a><!-- PHOTO:END --><span class="hero-tag">Practice at home · Java, robot loops and pose</span><h1>Your practice workbook</h1><p class="lede">Extra exercises for each lesson, with self-checks that tell you when you’ve got it right.</p></header><div class="box note"><span class="box-tag">Optional extra practice</span><p>Lessons 2–7 use Java foundations. Use this workbook later inside a copy of <a href="robot-project.html">sim-starter</a>, which supplies WPILib and JUnit. Copy the workbook practice packages into the matching src/main/java and src/test/java folders; keep all simulator files. Its Java tasks do not require enabling the robot.</p></div>
-<div class="box next"><span class="box-tag">Choose your download</span><p><a href="home-java.html">home Java starter</a>: ten independent files, no robot-project setup, terminal self-checks. The workbook below is the existing <b>2026 WPILib project</b> extension, including geometry and command practice. Do not merge it into the plain Java folder.</p></div>
+<div class="box next"><span class="box-tag">Choose your download</span><p><a href="home-java.html">home Java starter</a>: 14 Java files (some run by inspection, others have self-checks), no robot-project setup, terminal self-checks. The workbook below is the existing <b>2026 WPILib project</b> extension, including geometry and command practice. Do not merge it into the plain Java folder.</p></div>
 <section class="start-card" aria-labelledby="goal"><h2 id="goal">Today’s small goal</h2><p>Set up a second practice project on your own computer, run one practice file, and use a self-check to confirm an exercise.</p>
 <p><b>Before you start:</b> WPILib 2026.2.1 is installed and your <code>sim-starter</code> from the robot-project setup builds. You need the workbook download (under 100 KB).</p><p class="meta">Allow about 15 minutes, once. After that, each practice file takes 15–30 minutes.</p></section>
 
@@ -17,12 +17,7 @@
 <tr><td><code>answers/</code></td><td>Finished versions of each practice file. Look at them <em>after</em> you have tried. Comparing a working answer with your own is a good way to learn.</td></tr>
 <tr><td><code>README.txt</code></td><td>A short copy of these instructions.</td></tr></tbody></table></div>
 
-<h2>2. Make a second project</h2><p>Keep the workbook separate from your lesson sandbox, so that an unfinished exercise can never stop a lesson from building.</p>
-<ol><li>In WPILib VS Code 2026, press <code>Ctrl+Shift+P</code> and choose <b>WPILib: Create a new project</b>.</li>
-<li>Choose exactly what you chose in Lesson 1: <b>Template</b>, <b>Java</b>, <b>Command Robot</b>, base folder <code>C:\dev</code>, team number <code>5675</code>.</li>
-<li>Name the project <code>practice-workbook</code>. Generate it, but don’t open it yet.</li></ol>
-
-<h2>3. Copy the practice files in</h2><ol><li>Download <a href="downloads/practice-workbook.zip"><code>practice-workbook.zip</code></a>. In File Explorer, right-click it and choose <b>Extract All</b>.</li>
+<h2>2. Make a separate workbook project</h2><p>Download a fresh <a href="downloads/sim-starter.zip">sim-starter</a> and extract it to <code>C:\dev\practice-workbook</code>. The folder you open must contain build.gradle, gradlew.bat and src. This keeps unfinished workbook exercises separate from your main simulation work. Do not create a new WPILib template project.</p><h2>3. Copy the practice files in</h2><ol><li>Download <a href="downloads/practice-workbook.zip"><code>practice-workbook.zip</code></a>. In File Explorer, right-click it and choose <b>Extract All</b>.</li>
 <li>Open the extracted folder, then the <code>practice-workbook</code> folder inside it if needed, until you see <code>src</code>, <code>answers</code> and <code>README.txt</code>. Copy <code>src</code>.</li>
 <li>Open <code>C:\dev\practice-workbook</code>, the folder that contains <code>build.gradle</code>, and paste. Windows merges the two <code>src</code> folders: your project keeps its own files and gains a <code>practice</code> folder. No file should be replaced. If Windows asks to replace a file, choose <b>Skip</b> and ask a mentor.</li>
 <li>Copy the <code>answers</code> folder into <code>C:\dev\practice-workbook</code> too. It sits outside <code>src</code>, so Java ignores it.</li>
@@ -38,7 +33,7 @@
 
 <h2>5. Check your work</h2><ol><li>Finish the exercises in one practice file.</li>
 <li>Near the top of that file, change <code>CHECK_MY_WORK = false</code> to <code>CHECK_MY_WORK = true</code>. Save.</li>
-<li>Press <code>Ctrl+Shift+P</code> and choose <b>WPILib: Test Robot Code</b>. Watch the Terminal.</li></ol>
+<li>Choose <b>Terminal → New Terminal</b> and run <code>.\gradlew.bat test --tests "frc.robot.practice.*"</code>. Watch the Terminal.</li></ol>
 <div class="table-scroll"><table><thead><tr><th scope="col">You see</th><th scope="col">It means</th></tr></thead><tbody>
 <tr><td><code>BUILD SUCCESSFUL</code></td><td>Every check you switched on passed.</td></tr>
 <tr><td>A line with <code>FAILED</code>, such as <code>Check04Decisions &gt; exercise2_exactlyOnTheBoundaries() FAILED</code></td><td>That exercise isn’t right yet. The next lines give a hint, for example <i>exactly 11.5 is NOT below 11.5</i>. FAILED here means “not finished”; it doesn’t mean anything is broken.</td></tr>

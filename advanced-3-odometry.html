@@ -50,7 +50,7 @@ import edu.wpi.first.math.geometry.Transform2d;</code></pre>
 <tr><td><code>Rotation2d.kZero</code></td><td>A ready-made angle of 0°: facing +X, toward the red wall.</td></tr>
 <tr><td><code>new Transform2d(0.10, 0.0, Rotation2d.kZero)</code></td><td>A move measured from the robot’s own point of view: 0.10 m forward, nothing sideways, no turn.</td></tr>
 <tr><td><code>truth.plus(trueStep)</code></td><td>Apply that move starting from the pose. “Forward” means the way the pose faces, so the heading matters.</td></tr>
-<tr><td><code>truth = truth.plus(...)</code></td><td>A Pose2d cannot be changed after it is made. <code>plus</code> returns a <em>new</em> pose, so we store it back in the same variable. (Your PracticeCounter worked differently: its <code>addOne()</code> changed the object itself.)</td></tr>
+<tr><td><code>truth = truth.plus(...)</code></td><td>A Pose2d cannot be changed after it is made. <code>plus</code> returns a <em>new</em> pose, so we store it back in the same variable. (Your Counter worked differently: its <code>increment()</code> changed the object itself.)</td></tr>
 <tr><td><code>getDistance(...)</code></td><td>The straight-line distance between where odometry thinks the robot is and where it really is.</td></tr></tbody></table></div>
 <p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>.\gradlew.bat simulateJava</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
 <p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Real robot:    x=6.00 y=1.00

@@ -613,8 +613,7 @@ Re-apply the two ★-marked 5675 edits after any regeneration.</td></tr>
 <td><code>RobotController.getSerialNumber()</code> reads a roboRIO serial; verify the
 SystemCore equivalent and update the one detection method.</td></tr>
 <tr><td>Joystick math</td><td><code>util/JoystickUtil.java</code></td>
-<td>WPILib 2026.2.1 already includes vector deadband in MathUtil.applyDeadband. Review the remaining scaling and shaping separately —
-consider swapping to it. Concepts transfer 1:1.</td></tr>
+<td>WPILib 2026.2.1 already includes vector deadband in MathUtil.applyDeadband. Review the remaining scaling and shaping separately. Use the library deadband where it matches the intended behavior. Concepts transfer 1:1.</td></tr>
 <tr><td>Dashboard chooser</td><td><code>RobotContainer.java</code></td>
 <td>SmartDashboard/NT3 are removed in 2027; this codebase already uses zero
 SmartDashboard, and the chooser goes through AdvantageKit's

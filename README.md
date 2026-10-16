@@ -23,7 +23,7 @@ Do not rerun archived prose/visual generators over current HTML. The older `adva
 
 WPILib 2026.2.1, actual JDK 17, AdvantageKit 26.0.2, PathPlanner 2026.1.2, Commands v2. Keep the 2027 alpha bench separate. Simulator sources mark anticipated migration with `SYSTEMCORE-2027:`. Never run the 2027 importer on this project.
 
-Validation evidence lives in `reviews/course-implementation-2026-10-15/`: fourteen Java answer programs, four extra boundaries, 52 workbook checks on answers and unfinished sources, and native simulation integration tests on reference and completed student programs. Final report records browser/log/site checks and their limits. Fresh Windows installer/VS Code and native PathPlanner GUI acceptance remain manual mentor checks. Hardware behavior is not established by simulation.
+Run `.\site\validate-course.bat` from the FRC2027 workspace; see `../VALIDATION.md` for setup, coverage and limits. Maintained checks live in `../validation/`, and each run writes evidence to `../validation-results/`. The latest JSON points to the most recent attempted run, including failures. The earlier dated reviews remain historical evidence. Fresh Windows installer/VS Code, native PathPlanner GUI acceptance and a real first-time-student walkthrough remain manual checks. Hardware behavior is not established by simulation.
 
 Photos and logos come from wiredcatrobotics.org; see `assets/team/sources.json`. Character portraits are unnamed generated learning illustrations. Keep the colorful presentation, technical diagrams, keyboard focus and reduced-motion styles.
 
@@ -32,3 +32,41 @@ Photos and logos come from wiredcatrobotics.org; see `assets/team/sources.json`.
 Ed alone runs `site/publish-getting-started.bat`; see `../PUBLISHING.md`. Never edit GitHub or the publishing clone directly. Source is this directory. The publisher copies it to the authorized clone and asks Ed to confirm the change list. No publishing is performed by agents.
 
 The local viewer v11, raw logs, test caches and review evidence remain outside this tree. Exercise ZIPs contain sources and required Gradle wrapper files, not build outputs or logs.
+
+
+## Evening re-review fixes — 15 October 2026
+
+Added controller-bridge.html and mechanism-lab.html; Lesson 8 now includes a
+LightForSeconds authoring exercise. Simulator test fixtures live under build/,
+not student source. Standard virtual-controller input preserves screen WASD.
+The .auto controls odometry reset; manual faults preserve request telemetry,
+while autonomous faults cancel the time-based auto. TrainingHarness holds supplied
+browser/logging plumbing. See course-src/sim-starter/README.md and the source
+command-lab/mechanism-lab folders before changing downloadable lessons.
+
+Foundations now include optional prediction checks, type/reassignment examples,
+accumulation, aliasing/field-local experiments and independent Part B tasks.
+Public home log instructions use AdvantageScope; v11 remains locally supplied.
+The assessment and implementation evidence are outside the published source in
+reviews/course-rereview-2026-10-15 and reviews/course-fixes-2026-10-15.
+
+## Fresh beginner review — 15 October 2026
+
+Keep the foundation sequence, but distinguish required practice from optional
+reading. Lessons 2–7 now have specific observable exits and short robot glimpses;
+all original code blocks remain, including full robot excerpts inside disclosures.
+The three added examples (two-way decision, minutes method, countdown) are executed
+by the maintained Java snippet checks. Download task comments and Part B answers
+match the revised pages. Part B answers for Methods, Loops and ObjectsPractice also
+run on the normal program path, alongside the original self-checks.
+
+`extra-help.html` curates optional dev.java and Codecademy readings by topic. Keep
+their reading limits, Java 17 guard, and optional account/payment boundary. Do not
+send new learners to an unrestricted newest-Java installation tutorial.
+
+Use `help.html#backup` before experimentation until Git has been learned. Lesson 8
+leads to Lab 1; the lab table supplies later prerequisites. The supplied trigger
+helpers make lambdas unnecessary for Lab 1; the toolbox introduces them before
+AutoBuilder and deferred events. Mentor notes include a first-time-student trial.
+Review and preservation evidence: `reviews/beginner-review-2026-10-15/` outside
+the published tree. No site publication was performed.
