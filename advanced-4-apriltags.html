@@ -62,7 +62,7 @@ import edu.wpi.first.math.geometry.Translation2d;</code></pre>
         + &quot; heading=&quot; + String.format(&quot;%.1f&quot;, pose.getRotation().getDegrees()));
 }</code></pre>
 <p><code>inverse()</code> turns a move around: if <code>cameraToTag</code> goes from the camera to the tag, its inverse goes from the tag back to the camera. Starting at the tag and applying it lands on the camera. The second step does the same with the mount.</p>
-<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>.\gradlew.bat simulateJava</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then type <code>.\robot</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
 <p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Camera: x=5.00 y=3.50 heading=0.0
 Robot : x=4.70 y=3.50 heading=0.0</code></pre>
 

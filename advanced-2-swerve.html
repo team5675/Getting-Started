@@ -56,7 +56,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;</code></pre>
 <tr><td><code>toSwerveModuleStates(...)</code></td><td>Returns an array of four <code>SwerveModuleState</code> objects, one per module.</td></tr>
 <tr><td><code>states[i].speedMetersPerSecond</code>, <code>states[i].angle</code></td><td>One wheel’s answer: how fast to roll and which way to point. These are public fields, so we read them directly without a getter method.</td></tr>
 <tr><td><code>String[] names</code> and the <code>for</code> loop</td><td>Print the four answers with readable labels, in the same order as the module list.</td></tr></tbody></table></div>
-<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>.\gradlew.bat simulateJava</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then type <code>.\robot</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
 <p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Forward 1 m/s:
   Front left   speed 1.00 m/s, angle 0.0 degrees
   Front right  speed 1.00 m/s, angle 0.0 degrees

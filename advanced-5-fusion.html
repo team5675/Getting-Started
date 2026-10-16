@@ -60,7 +60,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;</code></pre>
 <tr><td><code>9_999_999</code></td><td>A huge std dev for heading: “never let the camera change the heading.” Underscores make big numbers readable; Java ignores them.</td></tr>
 <tr><td><code>updateWithTime(...)</code></td><td>One odometry update, as the real robot does every loop. The wheels report no movement here.</td></tr>
 <tr><td><code>addVisionMeasurement(cameraSays, time)</code></td><td>One camera fix, with the time the picture was taken (Advanced 6).</td></tr></tbody></table></div>
-<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>.\gradlew.bat simulateJava</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then type <code>.\robot</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
 <p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>After camera fix 1: x = 5.100
 After camera fix 2: x = 5.175
 After camera fix 3: x = 5.231

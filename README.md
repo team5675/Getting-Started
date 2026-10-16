@@ -81,3 +81,14 @@ blocks moved unchanged and their validation/snippets.json entries moved with the
 The home page has one primary Start Lesson 1 button. Evidence and the one-time
 migration script: reviews/route-fixes-2026-10-16/ outside the published tree.
 No site publication was performed.
+
+## One-word launchers — 16 October 2026 (pass 2)
+
+home-java-starter ships `run.cmd` (`.\run HelloWorld`, `.\run Methods check`) and
+sim-starter ships `robot.cmd` (`.\robot`, `.\robot build`, `.\robot test ...`). Both use
+`%PUBLIC%\wpilib\2026\jdk`, where the WPILib 2026 installer puts Java for both install
+options (checked in the installer source, tag v2026.2.1); `WPILIB_2026_JDK` overrides it.
+Pages no longer ask students to set `$javaForLessons` or `JAVA_HOME`. Keep the launchers
+CRLF. `validation/launcher_checks.py` runs them from the shipped ZIPs on Windows.
+Lesson 1 now gives the installer click path, an Extract All destination of `C:\dev`, and a
+`.\run` readiness check. Evidence: reviews/route-fixes-2026-10-16/pass-2/.

@@ -17,7 +17,7 @@
 <tr><td><code>answers/</code></td><td>Finished versions of each practice file. Look at them <em>after</em> you have tried. Comparing a working answer with your own is a good way to learn.</td></tr>
 <tr><td><code>README.txt</code></td><td>A short copy of these instructions.</td></tr></tbody></table></div>
 
-<h2>2. Make a separate workbook project</h2><p>Download a fresh <a href="downloads/sim-starter.zip">sim-starter</a> and extract it to <code>C:\dev\practice-workbook</code>. The folder you open must contain build.gradle, gradlew.bat and src. This keeps unfinished workbook exercises separate from your main simulation work. Do not create a new WPILib template project.</p><h2>3. Copy the practice files in</h2><ol><li>Download <a href="downloads/practice-workbook.zip"><code>practice-workbook.zip</code></a>. In File Explorer, right-click it and choose <b>Extract All</b>.</li>
+<h2>2. Make a separate workbook project</h2><p>Download a fresh <a href="downloads/sim-starter.zip">sim-starter</a> and extract it to <code>C:\dev\practice-workbook</code>. The folder you open must contain build.gradle, robot.cmd and src. This keeps unfinished workbook exercises separate from your main simulation work. Do not create a new WPILib template project.</p><h2>3. Copy the practice files in</h2><ol><li>Download <a href="downloads/practice-workbook.zip"><code>practice-workbook.zip</code></a>. In File Explorer, right-click it and choose <b>Extract All</b>.</li>
 <li>Open the extracted folder, then the <code>practice-workbook</code> folder inside it if needed, until you see <code>src</code>, <code>answers</code> and <code>README.txt</code>. Copy <code>src</code>.</li>
 <li>Open <code>C:\dev\practice-workbook</code>, the folder that contains <code>build.gradle</code>, and paste. Windows merges the two <code>src</code> folders: your project keeps its own files and gains a <code>practice</code> folder. No file should be replaced. If Windows asks to replace a file, choose <b>Skip</b> and ask a mentor.</li>
 <li>Copy the <code>answers</code> folder into <code>C:\dev\practice-workbook</code> too. It sits outside <code>src</code>, so Java ignores it.</li>
@@ -33,7 +33,7 @@
 
 <h2>5. Check your work</h2><ol><li>Finish the exercises in one practice file.</li>
 <li>Near the top of that file, change <code>CHECK_MY_WORK = false</code> to <code>CHECK_MY_WORK = true</code>. Save.</li>
-<li>Choose <b>Terminal → New Terminal</b> and run <code>.\gradlew.bat test --tests "frc.robot.practice.*"</code>. Watch the Terminal.</li></ol>
+<li>Choose <b>Terminal → New Terminal</b> and run <code>.\robot test --tests "frc.robot.practice.*"</code>. Watch the Terminal.</li></ol>
 <div class="table-scroll"><table><thead><tr><th scope="col">You see</th><th scope="col">It means</th></tr></thead><tbody>
 <tr><td><code>BUILD SUCCESSFUL</code></td><td>Every check you switched on passed.</td></tr>
 <tr><td>A line with <code>FAILED</code>, such as <code>Check04Decisions &gt; exercise2_exactlyOnTheBoundaries() FAILED</code></td><td>That exercise isn’t right yet. The next lines give a hint, for example <i>exactly 11.5 is NOT below 11.5</i>. FAILED here means “not finished”; it doesn’t mean anything is broken.</td></tr>

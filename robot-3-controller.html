@@ -33,7 +33,7 @@
     }
 }</code></pre>
 <p><code>String.format("%5.2f", raw)</code> prints a number with 2 decimals, padded to 5 characters wide so the columns line up. <code>Math.copySign(a, b)</code> gives <code>a</code> with the sign of <code>b</code>, so squaring −0.457 gives −0.208, not +0.208.</p>
-<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then use <code>.\gradlew.bat simulateJava</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then type <code>.\robot</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
 <p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>raw  0.03  clean  0.000  curved  0.000  speed  0.00 m/s
 raw  0.08  clean  0.000  curved  0.000  speed  0.00 m/s
 raw  0.10  clean  0.022  curved  0.000  speed  0.00 m/s
@@ -52,7 +52,7 @@ public void teleopPeriodic() {
         System.out.println("screen right / field X: " + input.x()
             + "  screen up / field Y: " + input.y());
     }
-}</code></pre><ol><li>Save, restart with <code>.\gradlew.bat simulateJava</code>, and open the browser station.</li><li>Choose Teleop and click its keyboard area. Hold D, then W, then A, then S.</li><li>Read the Terminal afterward. Changing windows disables the model; select Teleop again to continue.</li></ol><p>Expect D to produce X = 1 and Y = 0; W gives X = 0 and Y = 1. A and S produce the corresponding negatives. With no key held both values are zero. The model will not move until you connect its default command in <a href="lab-2.html">Lab 2</a>. Turning the model does not rotate these screen-oriented controls.</p><p>A real stick provides continuous values between −1 and 1 and may drift near zero. The keyboard gives discrete −1/0/+1 values, so use the calculation in section 2 to explore deadband and curved response.</p>
+}</code></pre><ol><li>Save, restart with <code>.\robot</code>, and open the browser station.</li><li>Choose Teleop and click its keyboard area. Hold D, then W, then A, then S.</li><li>Read the Terminal afterward. Changing windows disables the model; select Teleop again to continue.</li></ol><p>Expect D to produce X = 1 and Y = 0; W gives X = 0 and Y = 1. A and S produce the corresponding negatives. With no key held both values are zero. The model will not move until you connect its default command in <a href="lab-2.html">Lab 2</a>. Turning the model does not rotate these screen-oriented controls.</p><p>A real stick provides continuous values between −1 and 1 and may drift near zero. The keyboard gives discrete −1/0/+1 values, so use the calculation in section 2 to explore deadband and curved response.</p>
 <h2>4. Try one variation</h2><p>In section 2, change the deadband from 0.08 to 0.15. Predict which rows change before you run.</p>
 <details><summary>Hint and expected result</summary><p>Rows 0.03, 0.08 and 0.10 are now all inside the deadband, so all three print 0.000. The 0.50 row becomes (0.50 − 0.15) / 0.85 = 0.412, so curved 0.170 and speed 0.68 m/s. Full stick still gives 4.00. A bigger deadband ignores more stick drift but makes the robot less responsive to small pushes.</p></details>
 
