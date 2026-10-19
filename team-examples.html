@@ -33,7 +33,7 @@ the code that uses them determines their effect. <code>0.5</code> is one half, o
 does not tell you a measured speed in meters per second.</p><div class="table-scroll"><table><thead><tr><th scope="col">Choice</th><th scope="col">Stored X limit</th><th scope="col">Stored Y limit</th></tr></thead><tbody><tr><td>FULL</td><td>1.0</td><td>1.0</td></tr><tr><td>HALF</td><td>0.5</td><td>0.5</td></tr><tr><td>SLOW</td><td>0.15</td><td>0.15</td></tr><tr><td>X_ONLY</td><td>1.0</td><td>0.0</td></tr><tr><td>Y_ONLY</td><td>0.0</td><td>1.0</td></tr></tbody></table></div>
 <h3>Your turn: read a different row</h3><p>Which choice stores zero for X and 1.0 for Y? Point to both numbers before checking.</p><details><summary>Hint: read the first number first</summary><p>The first input is X. Look for a pair beginning with <code>0.0</code>.</p></details><details><summary>Check your explanation</summary><p><code>Y_ONLY(0.0, 1.0)</code>. Its X setting is zero and its Y setting is 1.0. You identified stored values; determining the actual robot motion would require reading the code that uses them.</p></details>
 <h2 id="getter">2. Ask an object for one stored value</h2><p><b>Before this reading:</b> the previous reading and the two objects in Lesson 7.</p>
-<p>The practice counter’s <code>getCount()</code> returned a stored number. The real drive-speed choices have a similar
+<p>The Lesson 7 counter’s <code>getValue()</code> returned a stored number. The real drive-speed choices have a similar
 method, <code>getXMax()</code>. A method whose main job is to return a value is often called a <b>getter</b>.</p><p class="meta">2026 source: <code>src/main/java/frc/robot/subsystems/DriveSpeeds.java</code>, lines 27–33. Exact excerpt; surrounding code is omitted.</p><p class="code-label">Reading example — do not paste into your sandbox</p><pre><code>    private final double xMax;
     private final double yMax;
     private final double rotationMax;
@@ -57,7 +57,7 @@ WPILib’s <b>scheduler</b> does that coordinating work. This short method in la
   }</code></pre>
 <h3>Unpack the two layers</h3><ol><li><code>@Override</code> says this method supplies the behavior for a method defined by the parent class.</li>
 <li><code>public void robotPeriodic()</code> defines a method called robotPeriodic. It takes no arguments and returns no result value.</li>
-<li>WPILib calls that method repeatedly. It is different from the <code>practice()</code> examples called once by our <code>Robot()</code> constructor at startup.</li>
+<li>WPILib calls that method repeatedly. It is different from your Lesson 2–7 <code>main</code> programs, which run once and exit, and from the <code>practice()</code> helper that the simulation project’s <code>Robot()</code> constructor calls once at startup.</li>
 <li><code>CommandScheduler.getInstance()</code> gets the shared scheduler object. You do not create another scheduler with <code>new</code>.</li>
 <li><code>.run()</code> calls that object’s run method. It handles scheduled commands and subsystem periodic work.</li></ol>
 <figure><div class="learning-cycle"><div>WPILib calls<br><b>robotPeriodic()</b></div><div>This method calls<br><b>the scheduler</b></div><div>The scheduler manages<br><b>active commands</b></div></div><figcaption>Read left to right, or top to bottom on a phone. The framework repeats this sequence; it is not a loop you write yourself.</figcaption></figure>
