@@ -116,3 +116,14 @@ robot-project.html shows a numbered screenshot of the real Simulation Station
 `course-src/.../station.html` (needs Pillow and Playwright); rerun it when the station page
 changes. Lesson 7 now shows its Counter example open, written as the starter writes it;
 the two optional extensions follow Part B. Evidence: reviews/route-fixes-2026-10-16/pass-4/.
+
+## Download files a beginner can read — 19 October 2026 (pass 5)
+
+Java foundations files put TASK before PART B and wrap every comment at 80 columns; the
+starter files leave out the mentor ROBOT CONNECTION and SYSTEMCORE-2027 notes (the answer
+files keep them). Checkpoint headers say what is done ("Checkpoint 03: Labs 1–2 done;
+start Lab 3"); `site/build_sim_checkpoints.py` now writes the same bytes on Windows and
+Linux. Lab 3 and Lab 7 code uses only taught syntax (no var, arrow switch or nested ?:).
+`.\robot lab8` and `.\robot lab7` add a lab's starter files to src without replacing an
+edited file, so Lesson 8 and Lab 7 no longer ask students to copy folders by hand. The
+station's Space button says it is the A button. Evidence: reviews/route-fixes-2026-10-16/pass-5/.
