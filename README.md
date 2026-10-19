@@ -92,3 +92,14 @@ Pages no longer ask students to set `$javaForLessons` or `JAVA_HOME`. Keep the l
 CRLF. `validation/launcher_checks.py` runs them from the shipped ZIPs on Windows.
 Lesson 1 now gives the installer click path, an Extract All destination of `C:\dev`, and a
 `.\run` readiness check. Evidence: reviews/route-fixes-2026-10-16/pass-2/.
+
+## Error help that matches Java — 16 October 2026 (pass 3)
+
+help.html#java-errors explains how to read a Java error and lists the messages
+beginners hit in Lessons 2–7, each with its usual cause and fix, plus mistakes that
+run but give a wrong answer and the `.\run`/`.\robot` messages. Each lesson's "If you
+get stuck" now lists that lesson's own likely mistakes. Every quoted message is checked
+against real Java 17 by `validation/error_checks.py`: add a case there when you quote a
+new one. PAUSE & PREDICT prompts in Lessons 2, 4, 6 and 7 sit below the code they ask
+about (`build_course_imagery.guide_position`). Try it in Lessons 3–6 is a numbered list.
+No code block changed. Evidence: reviews/route-fixes-2026-10-16/pass-3/.
