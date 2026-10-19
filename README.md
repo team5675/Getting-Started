@@ -103,3 +103,16 @@ against real Java 17 by `validation/error_checks.py`: add a case there when you 
 new one. PAUSE & PREDICT prompts in Lessons 2, 4, 6 and 7 sit below the code they ask
 about (`build_course_imagery.guide_position`). Try it in Lessons 3–6 is a numbered list.
 No code block changed. Evidence: reviews/route-fixes-2026-10-16/pass-3/.
+
+## Pictures — 19 October 2026 (pass 4)
+
+Lessons 2, 3, 4, 5, 7 and 8 have small inline SVG pictures beside the code they explain
+(where your lines go, one variable box, the else-if path, one method call, two objects and
+one shared object, scheduler/command/subsystem). `site/build_lesson_diagrams.py` draws them
+between `DIAGRAM` marker comments; edit pictures there and rerun it (`--check` reports
+drift), never by hand in the page. Their text matches the lesson starter files.
+robot-project.html shows a numbered screenshot of the real Simulation Station
+(`assets/station/station-annotated.webp`), made by `site/build_station_picture.py` from
+`course-src/.../station.html` (needs Pillow and Playwright); rerun it when the station page
+changes. Lesson 7 now shows its Counter example open, written as the starter writes it;
+the two optional extensions follow Part B. Evidence: reviews/route-fixes-2026-10-16/pass-4/.
