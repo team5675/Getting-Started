@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camera check in depth · WiredCats 5675</title>
+<link rel="stylesheet" href="style.css?v=20261014"><link rel="stylesheet" href="assets/course.css?v=20261014"><link rel="icon" href="assets/team/wired-icon.webp" type="image/webp"><script defer src="assets/course.js?v=20261014"></script><link rel="stylesheet" href="assets/identity.css?v=20261014team"><link rel="stylesheet" href="assets/route.css?v=20261019"></head><body data-course-track="explore">
+<!-- Advanced track ("Drive and know where you are"), October 2026. Reading order and maintenance notes: README.md. -->
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><a class="brand" href="index.html" aria-label="WiredCats 5675 programming lab home"><img src="assets/team/wired-logo.webp" width="650" height="216" alt=""><span>PROGRAMMING LAB<small>TEAM 5675 · MATTAWAN, MI</small></span></a><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><!-- PHOTO:START --><img class="lesson-photo" src="assets/team/note-worthy-2024.webp" width="1600" height="1306" alt="" fetchpriority="high"><a class="photo-credit" href="https://wiredcatrobotics.org/our-robots/">Note Worthy · 2024 team robot ↗</a><!-- PHOTO:END --><span class="hero-tag">Optional camera track · after the capstone</span><h1>Camera check in depth</h1><p class="lede">The full method behind Advanced 8: how a jig places the robot, where the scatter formula comes from, how to investigate a bias and how to check a lens calibration.</p></header><div class="box note"><span class="box-tag">An optional track</span><p>You do not need this page to finish the course. Do it after the <a href="course-finish.html">capstone</a>, or alongside <a href="advanced-8-camera-check.html">Advanced 8</a> with a mentor. It uses the same <a href="robot-project.html">simulation starter</a> and the same <code>practice()</code> helper: replace only that helper for each calculation.</p></div>
+<p class="lesson-trail"><a href="advanced-8-camera-check.html">← Advanced 8</a> · <a href="pose-lab.html">Pose lab</a> · <a href="lessons.html">All lessons</a></p>
+<div class="section-index"><b>On this page</b><ul><li><a href="#jig">1. Put the robot somewhere you have measured</a></li><li><a href="#scatter">2. Where the scatter number comes from</a></li><li><a href="#investigate">3. Investigate, then prove it on a station you didn’t tune</a></li><li><a href="#lens">4. Checking the lens calibration the right way</a></li><li><a href="#recorder">5. The practice bot’s recorder and workbench</a></li><li><a href="#pose-lab">6. Try it with sliders: the pose lab</a></li></ul></div>
+<h2 id="jig">1. Put the robot somewhere you have measured</h2><p>One tape measurement gives one distance, but a pose needs three numbers: x, y and heading. A simple <b>jig</b> gives all three: two contact pads against a rigid chassis face, and one stop on a perpendicular face.</p>
+<figure><svg viewBox="-40 0 800 300" role="img" aria-labelledby="a81-title"><title id="a81-title">Top view of a measuring jig. An L-shaped rail is placed from a field reference. The robot's chassis rests against two contact pads 750 millimeters apart on the long side, which set its heading and one coordinate, and one stop on the short side, which sets the other coordinate.</title><defs><marker id="a81-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#182430"/></marker></defs><rect x="60" y="230" width="640" height="14" fill="#4a5a68"/><text x="380.0" y="268.0" text-anchor="middle" class="svg-t" font-size="12" fill="#182430" font-weight="700">long rail: placed from a field reference you trust</text><rect x="60" y="40" width="14" height="190" fill="#4a5a68"/><text x="48.0" y="130.0" text-anchor="end" class="svg-t" font-size="11" fill="#a86407" font-weight="700">one stop:</text><text x="48.0" y="146.0" text-anchor="end" class="svg-t" font-size="11" fill="#a86407" font-weight="700">the other</text><text x="48.0" y="162.0" text-anchor="end" class="svg-t" font-size="11" fill="#a86407" font-weight="700">coordinate</text><rect x="90" y="60" width="420" height="160" rx="8" fill="#e3edf8" stroke="#0f5cab" stroke-width="2"/><text x="300.0" y="110.0" text-anchor="middle" class="svg-t" font-size="12" fill="#0b3f76" font-weight="700">robot chassis (rigid frame,</text><text x="300.0" y="128.0" text-anchor="middle" class="svg-t" font-size="12" fill="#0b3f76" font-weight="700">not the soft bumper)</text><rect x="136" y="220" width="28" height="10" fill="#a86407"/><rect x="436" y="220" width="28" height="10" fill="#a86407"/><rect x="74" y="126" width="16" height="28" fill="#a86407"/><line x1="150.0" y1="205.0" x2="450.0" y2="205.0" stroke="#a86407" stroke-width="1.5" stroke-dasharray="4 3"/><text x="300.0" y="200.0" text-anchor="middle" class="svg-t" font-size="11" fill="#a86407" font-weight="700">two contact pads, 750 mm apart: heading + one coordinate</text></svg><figcaption>Two pads set the heading and one coordinate; the stop sets the other. Touch rigid chassis parts, not soft bumpers.</figcaption></figure>
+<p>The jig itself must be placed from field features you trust, and you must know the offset from the contact faces to the robot’s center. A robot pressed square against a rail on the carpet is placed <em>repeatably</em>, but that alone doesn’t say where on the <em>field</em> it is.</p>
+<p>How precise is the heading? If one pad can be off by 5 mm more than the other, the heading is uncertain by atan(5 ÷ spacing). The farther apart the pads, the better.</p>
+<p class="placement"><b>Where this goes:</b> in <code>Robot.java</code> in your simulation starter, replace only <code>practice()</code>.</p>
+<p class="code-label">Code to use</p><pre><code>private void practice() {
+    double gapMm = 5.0;      // how far one contact point can be off, compared with the other
+    double sightlineM = 4.0; // how far away the tags are
+    double[] spacingsMm = {375.0, 750.0, 1000.0};
+    for (double spacing : spacingsMm) {
+        double headingDeg = Math.toDegrees(Math.atan(gapMm / spacing));
+        double sidewaysMm = sightlineM * 1000.0 * Math.tan(Math.toRadians(headingDeg));
+        System.out.println(&quot;Contacts &quot; + spacing + &quot; mm apart: heading +/-&quot;
+            + String.format(&quot;%.2f&quot;, headingDeg) + &quot; degrees, at 4 m that is +/-&quot;
+            + String.format(&quot;%.0f&quot;, sidewaysMm) + &quot; mm&quot;);
+    }
+}</code></pre>
+<p class="run-reminder"><b>Run the new version:</b> save with <code>Ctrl+S</code>, stop the previous simulation, then type <code>.\robot</code>. Watch the VS Code Terminal. These startup examples run while the simulator is disabled. No robot, controller or camera is needed.</p>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Contacts 375.0 mm apart: heading +/-0.76 degrees, at 4 m that is +/-53 mm
+Contacts 750.0 mm apart: heading +/-0.38 degrees, at 4 m that is +/-27 mm
+Contacts 1000.0 mm apart: heading +/-0.29 degrees, at 4 m that is +/-20 mm</code></pre>
+<p>A third of a degree sounds tiny, but 4 m away it is about 27 mm sideways. That is the same size as the camera mistakes you are trying to find. Spread the contacts as far apart as the chassis allows.</p>
+
+
+<h2 id="scatter">2. Where the scatter number comes from</h2><p>Advanced 8’s <code>scatter</code> helper returns the <b>standard deviation</b>. Here it is by hand, for the same three readings as Advanced 8’s table: 2.03, 2.04 and 2.02 m, whose average is 2.03 m.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Reading (m)</th><th scope="col">Minus the average (m)</th><th scope="col">Squared (m²)</th></tr></thead><tbody>
+<tr><td>2.03</td><td>0.00</td><td>0.0000</td></tr>
+<tr><td>2.04</td><td>+0.01</td><td>0.0001</td></tr>
+<tr><td>2.02</td><td>−0.01</td><td>0.0001</td></tr>
+<tr><td colspan="2"><b>Sum of the squares</b></td><td><b>0.0002</b></td></tr></tbody></table></div>
+<ol><li><b>Square each difference.</b> Squaring makes every difference positive, so a reading above the average and one below it cannot cancel out.</li>
+<li><b>Divide by one less than the count.</b> 0.0002 ÷ (3 − 1) = 0.0001. Using one less than the count corrects for measuring the differences from the readings’ own average; with many readings it hardly matters.</li>
+<li><b>Take the square root.</b> √0.0001 = 0.01 m. The square root brings the answer back to meters.</li></ol>
+<p>So a typical reading sits about 1 cm from the average, which is what Advanced 8’s “check the hand table” run printed. The same steps, written out with loops instead of a helper, compute both numbers for ten readings:</p>
+<p class="placement"><b>Where this goes:</b> replace only <code>practice()</code>.</p>
+<p class="code-label">Code to use</p><pre><code>private void practice() {
+    double referenceX = 2.000; // measured with the jig and a tape measure
+    double[] cameraX = {2.031, 2.027, 2.035, 2.029, 2.033, 2.030, 2.028, 2.034, 2.032, 2.031};
+
+    double sum = 0.0;
+    for (double x : cameraX) {
+        sum = sum + x;
+    }
+    double average = sum / cameraX.length;
+
+    double sumOfSquares = 0.0;
+    for (double x : cameraX) {
+        sumOfSquares = sumOfSquares + (x - average) * (x - average);
+    }
+    double scatter = Math.sqrt(sumOfSquares / (cameraX.length - 1));
+
+    System.out.println(&quot;Bias:    &quot; + String.format(&quot;%+.4f&quot;, average - referenceX) + &quot; m&quot;);
+    System.out.println(&quot;Scatter: &quot; + String.format(&quot;%.4f&quot;, scatter) + &quot; m&quot;);
+}</code></pre>
+<p class="code-label">Expected output — read this; do not paste it into Java</p><pre><code>Bias:    +0.0310 m
+Scatter: 0.0026 m</code></pre>
+<p>The first loop is the average; the second adds up the squared differences; the last line divides by one less than the count and takes the square root. Advanced 8’s helpers do exactly this.</p>
+<h2 id="investigate">3. Investigate, then prove it on a station you didn’t tune</h2><p>A bias is a clue, not a diagnosis. Measure at least two stations, A and B, with different positions, headings and distances, and look for a pattern:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">What repeats</th><th scope="col">Look at first</th></tr></thead><tbody>
+<tr><td>One camera is off at many stations</td><td>That camera’s mount, lens calibration, focus, and whether it is the camera you think it is</td></tr>
+<tr><td>Several cameras are off near one tag</td><td>That tag’s place in the field map, and the reference survey</td></tr>
+<tr><td>The error changes a lot with heading</td><td>The mount angles, the offset to the robot’s center, the heading reference (Advanced 4, section 6)</td></tr>
+<tr><td>The error changes across the picture or with distance</td><td>The lens model, mount/heading angles, tag size and solve geometry; distance alone does not identify the cause</td></tr>
+<tr><td>Big scatter with no steady bias</td><td>Motion, blur, lighting, blocked tags, or timing (Advanced 6)</td></tr>
+<tr><td>The result changes when the robot is placed again</td><td>The jig and the reference, not the camera</td></tr></tbody></table></div>
+<p>Then try a <em>small</em> correction that makes physical sense, such as a mount angle a mechanic could believe. Try it offline on the recorded data. A real fix improves several stations, not just one. Finally, test it at a third station, C, which you did <b>not</b> use while choosing the correction. If C fails, the correction was wrong, however good A looked. Never change the mount, the lens and the field map all at once to make one view look right.</p>
+
+<h2 id="lens">4. Checking the lens calibration the right way</h2><p>Advanced 4 said a low reprojection score only proves the model fits its own pictures. To check a lens calibration honestly:</p>
+<ol><li><b>Keep the existing lens model fixed.</b> Don’t recalibrate. Save the old calibration files first.</li>
+<li><b>Take 15–25 new pictures</b> of a flat, measured ChArUco board, covering the center, edges and corners at several tilts and distances. Keep them separate from any calibration set.</li>
+<li>Estimate the board pose in each new image while holding the lens model fixed, then compare projected and detected corners. Do not refit the lens model on these check images. Look at the misses by region of the picture, not only one average. Errors that grow toward the edges point to the lens model.</li>
+<li><b>Check a real distance.</b> Measure the camera’s answer to a correctly sized tag at a few known distances, measured from a defined point on the camera.</li></ol>
+<p>If the old model fails, make a new calibration from a <em>different</em> set of pictures and compare both on the same held-out pictures. A lower fitting score alone is not a reason to switch.</p>
+
+<h2 id="recorder">5. The practice bot’s recorder and workbench</h2><div class="box next"><span class="box-tag">In the real robot · 2027Practice</span><p class="meta"><a href="code-map.html">Source map and exact reviewed versions</a> · Private team repository; excerpts remain readable here.</p><p>The practice bot has a built-in recorder for this check. Its timing is a few named constants, each with a comment:</p><p class="code-label">Reading example from <a title="Optional source · private team repository; team access required" href="https://github.com/team5675/2027Practice/blob/ddb14a2edd498cdef6cd0ceae859033c19f2e7ad/src/main/java/frc/robot/Constants.java"><code>src/main/java/frc/robot/Constants.java</code></a> — do not paste</p><pre><code>/** Seconds the robot must hold still before recording starts. */
+public static final double SETTLE_S = 0.5;
+
+/** Seconds of camera frames to record once settled. */
+public static final double CAPTURE_S = 2.0;
+
+/** Seconds from D-pad Up until the capture gives up and reports FAILED. */
+public static final double ATTEMPT_TIMEOUT_S = 6.0;</code></pre><p class="code-label">And how many pictures make a capture — do not paste</p><pre><code>/** Fewest qualified multi-tag frames for a COMPLETE capture. */
+public static final int MIN_FRAMES = 10;</code></pre><p>With the robot disabled at a measured station, the operator presses D-pad Up. The robot pauses normal vision, waits until it has been still for half a second, then records camera frames for two seconds. A capture needs at least 10 frames that each see two or more tags, and gives up after 6 seconds. D-pad Down leaves the check, and the robot then needs a fresh MegaTag1 fix (Advanced 5). The saved session opens in an offline <b>workbench</b> in a web browser, where small mount changes can be tried on the recorded data. “COMPLETE” means enough data was recorded. It does <em>not</em> mean the camera passed.</p><p class="meta">From the team’s 2027 practice-bot code (repository 2027Practice, October 2026). It is built with the 2027 test version of WPILib, so a few names differ from your 2026 tools. Read it; don’t paste it.</p></div>
+<div class="box note"><span class="box-tag">Optional · with a mentor</span><p>The team also has an offline workbench for this check that opens in a web browser. It is not one of this website’s downloads, so you do not need it to finish this page. If your mentor shows it to you, try a correction on its made-up example and compare two stations: a wrong correction can improve one, both or neither, so success on one station alone is not enough.</p></div>
+<details class="for-mentors"><summary>For mentors</summary><p>The workbench is <code>src/main/deploy/verification/index.html</code> in the private 2027Practice repository; open it in a normal web browser. Choose <b>Load synthetic example</b>, then try the known correction: X +3 cm, Y −1 cm, Z −2 cm, roll −1°, pitch +2°, yaw +4°. Both made-up stations drop to almost zero error. This workbench changes saved MT1 transforms; it does not rerun the camera’s image solver, validate lens intrinsics or faithfully recompute MT2. Its pitch is positive nose-down, the WPILib convention. The numbers are made up for teaching; they are not the team’s cameras.</p></details>
+
+<h2 id="pose-lab">6. Try it with sliders: the pose lab</h2><p>The <a href="pose-lab.html">pose lab</a> runs in this browser with nothing to install. Move sliders to see what a camera mount mistake, a trust setting or a late picture does to the robot’s idea of where it is. It goes with Advanced 4, 5 and 6, and makes a good review after this page.</p>
+<div class="checkpoint"><b>Pause and check</b><p>Work out the standard deviation of 1.99, 2.00 and 2.01 m by hand. Then explain why a correction must be tested at a station that was not used to choose it.</p><details><summary>Compare your answer</summary><p>The average is 2.00. The differences are −0.01, 0.00 and +0.01; their squares add up to 0.0002; 0.0002 ÷ 2 = 0.0001; √0.0001 = 0.01 m. A correction chosen to fix stations A and B can fit their particular mistakes without being right; only a station it never saw can show that.</p></details></div>
+<p class="lesson-trail">Return to <a href="advanced-8-camera-check.html">Advanced 8</a> · <a href="course-finish.html">the capstone</a> · <a href="lessons.html">All lessons</a></p>
+</main><footer class="page-footer">Advanced track · October 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a><p class="artwork-credit">Photos and logos: <a href="https://wiredcatrobotics.org/">WiredCats Team 5675</a>. Robot photos show past seasons; lesson diagrams explain the concepts. Character portraits are AI-created learning illustrations. <a href="assets/team/sources.json">Photo sources</a>.</p></footer>
+</div></body></html>
