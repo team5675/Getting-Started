@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Many values: ArrayList and EnumSet · WiredCats 5675</title>
+<link rel="stylesheet" href="style.css?v=20261014"><link rel="stylesheet" href="assets/course.css?v=20261014"><link rel="icon" href="assets/team/wired-icon.webp" type="image/webp"><script defer src="assets/course.js?v=20261014"></script><link rel="stylesheet" href="assets/identity.css?v=20261014team"><link rel="stylesheet" href="assets/route.css?v=20261019"></head><body data-course-track="robot">
+<a class="skip-link" href="#main-content">Skip to content</a><div class="wrap"><nav class="site-nav" aria-label="Main navigation"><a class="brand" href="index.html" aria-label="WiredCats 5675 programming lab home"><img src="assets/team/wired-logo.webp" width="650" height="216" alt=""><span>PROGRAMMING LAB<small>TEAM 5675 · MATTAWAN, MI</small></span></a><a href="index.html">Start here</a><a href="lessons.html">Lessons</a><a href="help.html">Help & words</a><a href="team-examples.html">Team examples</a></nav>
+<main id="main-content" tabindex="-1"><header class="hero"><!-- PHOTO:START --><img class="lesson-photo" src="assets/team/note-worthy-2024.webp" width="1600" height="1306" alt="" fetchpriority="high"><a class="photo-credit" href="https://wiredcatrobotics.org/our-robots/">Note Worthy · 2024 team robot ↗</a><!-- PHOTO:END --><!-- STEP:START --><nav class="route-step" aria-label="Your place in the course"><a href="lessons.html#step-44"><b>Step 44</b> of 46</a><span class="route-step-part">Part 4 · Make it move</span><span class="route-step-bar" aria-hidden="true"><span style="width:96%"></span></span></nav><!-- STEP:END --><span class="hero-tag">Java toolbox 5 of 5</span><h1>Many values: ArrayList and EnumSet</h1><p class="lede">Keep a list that grows, and a set of named choices.</p></header>
+<section class="start-card"><h2>Why this comes now</h2><p>An array (<a href="robot-2-arrays.html">Robot basics 2</a>) has a length fixed when it is made: four wheels, two cameras. Some code cannot know the length in advance. A pre-match health check does not know how many problems it will find, and a mechanism may have several requests active at once. Team code uses an <b>ArrayList</b> for the first and an <b>EnumSet</b> for the second.</p><p>You will run <code>lessons/ListsPractice.java</code> from the <code>home-java-starter</code> folder you already have, in a second VS Code window, then return to your robot project.</p></section><section id="lists"><h2>See it</h2><p>The program below collects health-check problems in a list, then keeps track of which requests are active in a set.</p><pre><code>// Read the matching Java toolbox section, then do its change-and-predict task.
+import java.util.ArrayList;
+import java.util.EnumSet;
+
+public class ListsPractice {
+    enum Request { EJECT, RUN, HOLD }   // listed first = most important
+
+    public static void main(String[] args) {
+        // A list starts empty and grows each time you add to it.
+        ArrayList&lt;String&gt; problems = new ArrayList&lt;&gt;();
+        double batteryVolts = 12.1;
+        boolean gyroConnected = false;
+        if (batteryVolts &lt; 12.3) {
+            problems.add(&quot;Battery low: &quot; + batteryVolts + &quot; V&quot;);
+        }
+        if (!gyroConnected) {
+            problems.add(&quot;Gyro not connected&quot;);
+        }
+        System.out.println(problems.size() + &quot; problems&quot;);
+        for (String problem : problems) {
+            System.out.println(&quot;- &quot; + problem);
+        }
+        System.out.println(&quot;First: &quot; + problems.get(0));
+
+        // A set of enum values: each value is either in the set or not.
+        EnumSet&lt;Request&gt; active = EnumSet.noneOf(Request.class);
+        active.add(Request.HOLD);
+        active.add(Request.RUN);
+        active.add(Request.RUN);            // already in the set: no change
+        System.out.println(&quot;Active: &quot; + active);
+        System.out.println(&quot;Holding? &quot; + active.contains(Request.HOLD));
+        active.remove(Request.RUN);
+        System.out.println(&quot;Active: &quot; + active);
+    }
+}</code></pre><div class="table-scroll"><table><tr><th>Piece</th><th>What it does</th></tr><tr><td><code>ArrayList&lt;String&gt; problems = new ArrayList&lt;&gt;();</code></td><td>Makes an empty list. <code>&lt;String&gt;</code> says what it holds: text. The empty <code>&lt;&gt;</code> on the right repeats it for you.</td></tr><tr><td><code>problems.add(...)</code></td><td>Puts one more item at the end. The list grows.</td></tr><tr><td><code>problems.size()</code></td><td>How many items it holds now, like an array’s <code>length</code>.</td></tr><tr><td><code>problems.get(0)</code></td><td>The item at position 0, the first one. Positions start at 0, as in an array.</td></tr><tr><td><code>for (String problem : problems)</code></td><td>Visits every item in order, the same loop you used for arrays.</td></tr><tr><td><code>EnumSet.noneOf(Request.class)</code></td><td>Makes an empty set that can hold Request values.</td></tr><tr><td><code>active.add</code>, <code>remove</code>, <code>contains</code></td><td>Put a value in, take it out, ask whether it is in. Each value is either in the set or not; adding it twice changes nothing.</td></tr></table></div><p>Two rules to remember. A list of numbers is written <code>ArrayList&lt;Double&gt;</code> or <code>ArrayList&lt;Integer&gt;</code>, with a capital letter, because lists hold objects and those are the object versions of <code>double</code> and <code>int</code>. And an EnumSet always lists its values in the order the enum declares them, whatever order you added them in.</p><h2>Try it in ListsPractice.java</h2><ol class="toolbox-steps"><li><b>Open.</b> Leave the robot project as it is. In VS Code choose <b>File → New Window</b>, then <b>File → Open Folder</b> and pick the <code>home-java-starter</code> folder from Lessons 2–7B (for example <code>C:\dev\home-java-starter</code>). Folder missing? <a href="lesson-1-setup.html">Lesson 1</a> shows how to get it. No <code>ListsPractice.java</code> in its lessons folder? <a href="help.html#new-lesson-files">Add the new lesson files</a>.</li><li><b>Run it unchanged.</b> Press <code>Ctrl+P</code> and open <code>lessons/ListsPractice.java</code>. Choose <b>Terminal → New Terminal</b> in this window, then type:<pre><code>.\run ListsPractice</code></pre><p class="code-label">Expected output before you change anything</p><pre><code>2 problems
+- Battery low: 12.1 V
+- Gyro not connected
+First: Battery low: 12.1 V
+Active: [RUN, HOLD]
+Holding? true
+Active: [HOLD]</code></pre></li><li><b>Change, save, run again.</b> Do the task below, save with <code>Ctrl+S</code> and run the same command.</li><li><b>Return.</b> When you have explained the result, close this window. Your robot project is still open in the other <code>sim-starter</code> window. Then press <b>Next</b>.</li></ol><p><b>Task.</b> Predict each result before you run.</p><ol><li>HOLD was added before RUN, yet the set prints <code>[RUN, HOLD]</code>. Find the reason in the enum line.</li><li>Change <code>batteryVolts</code> to <code>12.6</code>. Run: one problem, and <code>First:</code> is now the gyro.</li><li>Also change <code>gyroConnected</code> to <code>true</code>. Run. Expect <code>0 problems</code>, then an error whose first line ends in <code>java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0</code>. An empty list has no position 0.</li><li>Fix it: print <code>Ready</code> when <code>problems.isEmpty()</code> is true, and the <code>First:</code> line only otherwise. Use an <code>if</code> and an <code>else</code>. Run again.</li><li>Add <code>active.add(Request.EJECT);</code> before the last print. Predict where EJECT appears in the printed set, then run.</li></ol><p>The team’s request pattern uses exactly this ordering: requests are declared from most to least important, so walking the set visits the most important active request first.</p><div class="checkpoint"><b>Explain the boundary</b><p>Why did <code>get(0)</code> fail when nothing was wrong? Why does a set never show a value twice, and why does EJECT print first?</p></div></section>
+<!-- NEXT:START --><nav class="lesson-next" aria-label="Lesson navigation"><a href="motor-lab-3.html" rel="prev"><span class="lesson-direction">← Back · step 43</span><span>Motor lab 3 · Let the TalonFX do the math</span></a><a href="course-finish.html" rel="next"><span class="lesson-direction">Next → step 45</span><span>Capstone · Your next working project</span></a></nav><!-- NEXT:END --></main><footer class="page-footer">Learning route revised · October 15, 2026 · Student tools: WPILib 2026<br>
+<a href="lessons.html">Lesson list</a> · <a href="help.html">Help &amp; word guide</a> · <a href="mentor-notes.html">For mentors</a><br>
+Later references: <a href="exercises.html">Team-project practice</a> · <a href="teaching-guide.html">Robot architecture</a><p class="artwork-credit">Photos and logos: <a href="https://wiredcatrobotics.org/">WiredCats Team 5675</a>. Robot photos show past seasons; lesson diagrams explain the concepts. Character portraits are AI-created learning illustrations. <a href="assets/team/sources.json">Photo sources</a>.</p></footer>
+</div></body></html>

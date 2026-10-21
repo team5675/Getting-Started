@@ -4,9 +4,9 @@ Current course source, revised 15 October 2026. Static HTML/CSS/JavaScript; no r
 
 ## Learning route
 
-There is one student route of 39 steps, listed in `../course-route.json`. Lessons, the seven simulation labs (`lab-1.html` to `lab-6.html`, then `mechanism-lab.html`) and four short Java toolbox pages (`toolbox-*.html`) sit in the order students need them. `sim-lab.html` and `java-toolbox.html` are overviews that keep the old `#lab-N` and `#inheritance`-style anchors working.
+There is one student route of 46 steps, listed in `../course-route.json`. Lessons, the seven simulation labs (`lab-1.html` to `lab-6.html`, then `mechanism-lab.html`), the three motor labs (`motor-lab-1.html` to `motor-lab-3.html`) and five short Java toolbox pages (`toolbox-*.html`) sit in the order students need them. `sim-lab.html` and `java-toolbox.html` are overviews that keep the old `#lab-N` and `#inheritance`-style anchors working.
 
-Do not hand-edit Back/Next buttons, the "Step N of 39" strip or the step list on `lessons.html`. Change the order in `course-route.json`, then run `python site/build_route.py` from the workspace. `--check` reports drift without writing and is part of `validate-course.bat`. Every page must be either a route step or listed under `reference` in the route file; only steps carry Back/Next buttons, and hand-written "← ..." or "Next ..." links must point at the real neighbouring steps. Label a link to a later lab "Coming up" rather than "Next". The script owns only the text between its `STEP`, `NEXT` and `STEPS` marker comments; `assets/route.css` styles them.
+Do not hand-edit Back/Next buttons, the "Step N of 46" strip or the step list on `lessons.html`. Change the order in `course-route.json`, then run `python site/build_route.py` from the workspace. `--check` reports drift without writing and is part of `validate-course.bat`. Every page must be either a route step or listed under `reference` in the route file; only steps carry Back/Next buttons, and hand-written "← ..." or "Next ..." links must point at the real neighbouring steps. Label a link to a later lab "Coming up" rather than "Next". The script owns only the text between its `STEP`, `NEXT` and `STEPS` marker comments; `assets/route.css` styles them.
 
 `home-java.html` points to step 1. `practice-workbook.html`, `extra-help.html` and `team-examples.html` are optional. The original TemplateSubsystem activities in `exercises.html` are a collapsed mentor reference requiring an implemented baseline.
 
@@ -127,3 +127,30 @@ Linux. Lab 3 and Lab 7 code uses only taught syntax (no var, arrow switch or nes
 `.\robot lab8` and `.\robot lab7` add a lab's starter files to src without replacing an
 edited file, so Lesson 8 and Lab 7 no longer ask students to copy folders by hand. The
 station's Space button says it is the A button. Evidence: reviews/route-fixes-2026-10-16/pass-5/.
+
+## Make it move — 20 October 2026 (pass 7.1)
+
+Part 4 (steps 39–44): Motors 1 and 2 (`motors-1-volts.html`, `motors-2-feedback.html`), Motor
+labs 1–3 and Java toolbox 5 (`toolbox-lists.html`, ArrayList and EnumSet). The capstone and
+hardware transfer are now Part 5 (steps 45–46). Motor labs 1 and 2 drive a roller modelled
+with WPILib's FlywheelSim and a Kraken X60, plus friction, an optional load and a one-loop-old
+speed reading (`course-src/sim-starter/motor-lab-1/starter/.../sim/RollerPhysics.java`).
+Students measure kS and kV, then hold a speed with feedforward and kP. Motor lab 3 is the only
+step that adds CTRE Phoenix 6 (26.3.0): `.\robot talonfx` copies its vendordep into the
+student's project. `.\robot motors1`, `motors2` and `talonfx` copy only missing files, like
+`lab8`/`lab7`. The motor pictures are drawn by `site/build_lesson_diagrams.py` from the same
+numbers as RollerPhysics.java. Evidence: reviews/route-fixes-2026-10-16/pass-7-1/.
+
+## Make it move, review fixes — 20 October 2026 (pass 7.1b)
+
+Five fixes from the independent Pass 7.1 review. The station's **O** key switches Object
+present on or off in the keyboard area, so a student can hold B and add the load in Motor
+labs 2 and 3 (clicking the checkbox moved focus and released B); help.html#motor-lab-files
+now also replaces `station.html`. Motor lab 2 shows the four-line switch block to comment out.
+Motor lab 3's undo is the backup, or all three steps (files, the three StudentProgram lines,
+the `//`), and its Phoenix 6 reassurance is scoped to before `.\robot talonfx`. Motor lab 1
+says MotorRoller is simulation only and what a real subsystem adds. VALIDATION.md's Phoenix
+warm-up adds `.\robot motors1` first and checks the ZIP and the DLL separately. New checks:
+the station group (`validation/station_checks.cjs`), the Part 4 literal edits in the HTML
+examples group, a native `talonfx-rollback` case, and a returning simulation student from the
+published 6B download in the motor pages group. Evidence: reviews/route-fixes-2026-10-16/pass-7-1b/.
