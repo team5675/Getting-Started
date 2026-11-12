@@ -154,3 +154,20 @@ warm-up adds `.\robot motors1` first and checks the ZIP and the DLL separately. 
 the station group (`validation/station_checks.cjs`), the Part 4 literal edits in the HTML
 examples group, a native `talonfx-rollback` case, and a returning simulation student from the
 published 6B download in the motor pages group. Evidence: reviews/route-fixes-2026-10-16/pass-7-1b/.
+
+## First class follow-up — 12 November 2026 (Mac launchers, Lessons 1–6 steps)
+
+After the first class (11 November, with a Mac): the Mac launchers are now `run` and
+`robot` (no `.sh`), so a Mac student types `./run HelloWorld`: only the slash differs from
+the pages' `.\run HelloWorld`. On Windows, `.\run` still starts `run.cmd`, the same way
+`.\gradlew` starts `gradlew.bat` beside the Mac `gradlew`; the launcher group now proves
+that through PowerShell and cmd.exe. Help and Lesson 1 cover `zsh: command not found: .run`
+(a backslash typed on a Mac) and an older folder's `run.sh` (`mv run.sh run`).
+Lessons 2–7B: every Try it and Part B is numbered steps that say where to type (each Part B
+starts with "Find where to type"; Values, Decisions, Methods, Loops, ObjectsPractice,
+ObjectsTogether and TextAndConditions have `// PART B` comments at the spot), what to
+replace, an Expected output block and the one change to try, plus a "Compare your lines"
+block. Lesson 7's optional extensions say which lines to replace, how to undo (Ctrl+Z) and
+how to make Scratch.java. Each lesson and drill box has an "On a Mac" line.
+New group: `validation/walkthrough_checks.py` follows those steps literally in the shipped
+files and requires the pages' outputs. Evidence: reviews/route-fixes-2026-10-16/early-lessons-2026-11-12/.
